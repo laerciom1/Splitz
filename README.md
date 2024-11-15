@@ -1,14 +1,23 @@
 # Splitz
 Personal app to split bills
 
-### TODOs:
+### Next steps:
+- [ ] Base Screen
+- [ ] Add splash (check isSignedIn and redirect to the correct screen)
+- [ ] SettleUp service
+- [ ] Splitz Service
 
-- [ ] Handle failures
-- [ ] Filter Split list by Category
-- [ ] Filter Split list by Date (before/after some date)
-- [ ] Filter Split list by Date (specific month)
-- [ ] Filter Split list by Date (specific interval)
-- [ ] Load more button on Splits list
+### Must have:
 - [ ] Edit config (Settings page)
-- [ ] Encrypt data on Firebase
+- [ ] Handle failures
+- [ ] (?) Encrypt data on Firebase 
+
+### Good to have:
 - [ ] Initial settings to new users
+- [ ] Load more button on Splits list
+- [ ] Filters:
+  - [ ] Category
+  - [ ] Date:
+    - [ ] before/after some date
+    - [ ] specific month
+    - [ ] specific interval

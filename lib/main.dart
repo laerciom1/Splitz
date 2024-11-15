@@ -1,10 +1,10 @@
-// ignore_for_file: prefer_const_constructors
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:splitz/firebase_options.dart';
+import 'package:splitz/presentation/screens/home.dart';
+import 'package:splitz/presentation/screens/login.dart';
+import 'package:splitz/services/auth.dart';
+import 'package:splitz/services/navigator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,46 +20,11 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  Future<User?> loginWithGoogle() async {
-    try {
-      final googleAccount = await GoogleSignIn(
-        // scopes: [
-        //   'https://www.googleapis.com/auth/userinfo.email',
-        //   'https://www.googleapis.com/auth/userinfo.profile,'
-        // ],
-      ).signIn();
-      final googleAuth = await googleAccount?.authentication;
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
-      );
-      final userCredential =
-          await FirebaseAuth.instance.signInWithCredential(credential);
-
-      return userCredential.user;
-    } catch (e) {
-      print(e);
-      return null;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              MaterialButton(
-                onPressed: loginWithGoogle,
-                child: Text('Login'),
-              ),
-              Text('Hello World!'),
-            ],
-          ),
-        ),
-      ),
+      navigatorKey: AppNavigator.navigator,
+      home: const LoginScreen(),
     );
   }
 }
