@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:splitz/presentation/screens/home.dart';
 import 'package:splitz/presentation/widgets/buttons/primary_button.dart';
 import 'package:splitz/presentation/widgets/snackbar/snackbar.dart';
 import 'package:splitz/services/auth.dart';
@@ -10,7 +11,7 @@ class LoginScreen extends StatelessWidget {
   Future<void> doLogin() async {
     final user = await Auth.signIn();
     if (user != null) {
-      AppNavigator.replaceAll([]);
+      AppNavigator.replaceAll([const HomeScreen()]);
     } else {
       showToast('Login with Google has failed');
     }

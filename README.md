@@ -2,7 +2,6 @@
 Personal app to split bills
 
 ### Next steps:
-- [ ] Base Screen
 - [ ] Add splash (check isSignedIn and redirect to the correct screen)
 - [ ] SettleUp service
 - [ ] Splitz Service
@@ -11,6 +10,8 @@ Personal app to split bills
 - [ ] Edit config (Settings page)
 - [ ] Handle failures
 - [ ] (?) Encrypt data on Firebase 
+- [ ] Delete/edit (with swipe command)
+- [ ] Permission to edit group preferences
 
 ### Good to have:
 - [ ] Initial settings to new users
@@ -21,3 +22,4 @@ Personal app to split bills
     - [ ] before/after some date
     - [ ] specific month
     - [ ] specific interval
+- [ ] Dynamic theme (light/dark)

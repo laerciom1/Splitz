@@ -12,12 +12,16 @@ dependencies:
   firebase_core: ^3.8.0
   firebase_auth: ^5.3.3
   firebase_database: ^11.1.6
+  flutter_native_splash: ^2.4.2
+  google_fonts: ^6.2.1
   google_sign_in: ^6.2.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.14.1
+
 
 flutter:
   uses-material-design: true
