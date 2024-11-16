@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 
 // https://coolors.co/000505-3b3355-5d5d81-bfcde0-fefcfd
 // https://material-foundation.github.io/material-theme-builder/
+// https://api.flutter.dev/flutter/material/ThemeData/useMaterial3.html
 
 class MaterialTheme {
   final TextTheme textTheme;

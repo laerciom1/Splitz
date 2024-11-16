@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:splitz/firebase_options.dart';
 import 'package:splitz/presentation/screens/home.dart';
-import 'package:splitz/presentation/screens/login.dart';
+import 'package:splitz/presentation/screens/login_settle_up.dart';
+import 'package:splitz/presentation/screens/login_splitz.dart';
 import 'package:splitz/services/auth.dart';
 import 'package:splitz/services/navigator.dart';
 import 'package:splitz/presentation/theme/theme.dart';
@@ -24,7 +25,8 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  bool _isSignedIn = true;
+  bool _isSignedInToSplitz = true;
+  bool _isSignedInToSettleUp = true;
 
   @override
   void initState() {
@@ -33,11 +35,21 @@ class _MainAppState extends State<MainApp> {
   }
 
   Future<void> checkAuth() async {
-    final isSignedIn = await Auth.isSignedIn;
+    final isSignedInToSplitz = Auth.isSignedInToSplitz;
+    final isSignedInToSettleUp = await Auth.isSignedInToSettleUp;
     setState(() {
-      _isSignedIn = isSignedIn;
+      _isSignedInToSplitz = isSignedInToSplitz;
+      _isSignedInToSettleUp = isSignedInToSettleUp;
       FlutterNativeSplash.remove();
     });
+  }
+
+  Widget getFirstScreen() {
+    if (_isSignedInToSplitz && _isSignedInToSettleUp) return const HomeScreen();
+    if (_isSignedInToSplitz && !_isSignedInToSettleUp) {
+      return SettleUpLoginScreen();
+    }
+    return const SplitzLoginScreen();
   }
 
   @override
@@ -48,7 +60,7 @@ class _MainAppState extends State<MainApp> {
     MaterialTheme theme = MaterialTheme(textTheme);
     return MaterialApp(
       navigatorKey: AppNavigator.navigator,
-      home: _isSignedIn ? const HomeScreen() : const LoginScreen(),
+      home: getFirstScreen(),
       theme: brightness == Brightness.light ? theme.light() : theme.dark(),
     );
   }

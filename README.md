@@ -2,9 +2,9 @@
 Personal app to split bills
 
 ### Next steps:
-- [ ] Add splash (check isSignedIn and redirect to the correct screen)
 - [ ] SettleUp service
 - [ ] Splitz Service
+- [x] Add splash (check isSignedIn and redirect to the correct screen)
 
 ### Must have:
 - [ ] Edit config (Settings page)
