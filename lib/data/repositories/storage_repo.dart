@@ -1,6 +1,6 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-abstract class Storage {
+abstract class StorageService {
   static const _storage = FlutterSecureStorage();
 
   static Future<String?> read(String key) async =>

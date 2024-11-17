@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:oauth2/oauth2.dart';
-import 'package:splitz/services/log.dart';
-import 'package:splitz/services/storage.dart';
+import 'package:splitz/services/log_service.dart';
+import 'package:splitz/data/repositories/storage_repo.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 // Splitz
@@ -26,20 +26,20 @@ final _grant = AuthorizationCodeGrant(
   basicAuth: false,
 );
 
-abstract class Auth {
+abstract class AuthService {
   // Splitz
   static bool get isSignedInToSplitz {
     try {
       return FirebaseAuth.instance.currentUser != null;
     } catch (e, s) {
-      Log.that('Error on Auth.isSignedInToSplitz', error: e, stackTrace: s);
+      LogService.log('Error on Auth.isSignedInToSplitz', error: e, stackTrace: s);
       return false;
     }
   }
 
   static Future<bool?> splitzSignIn() async {
     try {
-      if (Auth.isSignedInToSplitz) return null;
+      if (AuthService.isSignedInToSplitz) return null;
       final googleAccount = await _googleAccount.signIn();
       final googleAuth = await googleAccount?.authentication;
       final credential = GoogleAuthProvider.credential(
@@ -49,7 +49,7 @@ abstract class Auth {
       await FirebaseAuth.instance.signInWithCredential(credential);
       return true;
     } catch (e, s) {
-      Log.that('Error on Auth.splitzSignIn', error: e, stackTrace: s);
+      LogService.log('Error on Auth.splitzSignIn', error: e, stackTrace: s);
       return false;
     }
   }
@@ -59,13 +59,13 @@ abstract class Auth {
   static Future<String?> get splitwiseToken async {
     try {
       if (_splitwiseToken != null) return _splitwiseToken;
-      final storedCredentials = await Storage.read(_storageKey);
+      final storedCredentials = await StorageService.read(_storageKey);
       if (storedCredentials == null) return null;
       final credentials = Credentials.fromJson(storedCredentials);
       _splitwiseToken = credentials.accessToken;
       return _splitwiseToken;
     } catch (e, s) {
-      Log.that('Error on Auth.splitwiseToken', error: e, stackTrace: s);
+      LogService.log('Error on Auth.splitwiseToken', error: e, stackTrace: s);
       return null;
     }
   }
@@ -74,7 +74,7 @@ abstract class Auth {
     try {
       return (await splitwiseToken) != null;
     } catch (e, s) {
-      Log.that('Error on Auth.isSignedInToSplitwise', error: e, stackTrace: s);
+      LogService.log('Error on Auth.isSignedInToSplitwise', error: e, stackTrace: s);
       return false;
     }
   }
@@ -93,14 +93,14 @@ abstract class Auth {
           final credentials =
               (await _grant.handleAuthorizationResponse(queryParams))
                   .credentials;
-          await Storage.save(_storageKey, credentials.toJson());
+          await StorageService.save(_storageKey, credentials.toJson());
           onResult(true);
           return NavigationDecision.prevent;
         }
       }
       return NavigationDecision.navigate;
     } catch (e, s) {
-      Log.that('Auth.onNavigationRequest', error: e, stackTrace: s);
+      LogService.log('Auth.onNavigationRequest', error: e, stackTrace: s);
       onResult(false);
       return NavigationDecision.prevent;
     }
@@ -110,16 +110,16 @@ abstract class Auth {
   static Future<void> signOut() async {
     try {
       var futures = <Future<void>>[];
-      if (await Auth.isSignedInToSplitwise) {
-        futures.add(Storage.clear(_storageKey));
+      if (await AuthService.isSignedInToSplitwise) {
+        futures.add(StorageService.clear(_storageKey));
       }
-      if (Auth.isSignedInToSplitz) {
+      if (AuthService.isSignedInToSplitz) {
         futures.add(FirebaseAuth.instance.signOut());
       }
       await Future.wait(futures);
       await _googleAccount.disconnect();
     } catch (e, s) {
-      Log.that('Error on Auth.signOut', error: e, stackTrace: s);
+      LogService.log('Error on Auth.signOut', error: e, stackTrace: s);
     }
   }
 }
