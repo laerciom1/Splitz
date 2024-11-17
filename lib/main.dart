@@ -1,14 +1,16 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:splitz/data/entities/init_result.dart';
 import 'package:splitz/firebase_options.dart';
-import 'package:splitz/presentation/screens/home.dart';
+import 'package:splitz/presentation/screens/group.dart';
+import 'package:splitz/presentation/screens/groups_list.dart';
 import 'package:splitz/presentation/screens/login_splitwise.dart';
 import 'package:splitz/presentation/screens/login_splitz.dart';
-import 'package:splitz/services/auth.dart';
-import 'package:splitz/services/navigator.dart';
+import 'package:splitz/navigator.dart';
 import 'package:splitz/presentation/theme/theme.dart';
 import 'package:splitz/presentation/theme/util.dart';
+import 'package:splitz/services/splitz_service.dart';
 
 void main() async {
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -25,8 +27,7 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  bool _isSignedInToSplitz = true;
-  bool _isSignedInToSplitwise = true;
+  InitResult? initResult;
 
   @override
   void initState() {
@@ -35,21 +36,27 @@ class _MainAppState extends State<MainApp> {
   }
 
   Future<void> checkAuth() async {
-    final isSignedInToSplitz = Auth.isSignedInToSplitz;
-    final isSignedInToSplitwise = await Auth.isSignedInToSplitwise;
+    final result = await SplitzService.init();
     setState(() {
-      _isSignedInToSplitz = isSignedInToSplitz;
-      _isSignedInToSplitwise = isSignedInToSplitwise;
+      initResult = result;
       FlutterNativeSplash.remove();
     });
   }
 
   Widget getFirstScreen() {
-    if (_isSignedInToSplitz && _isSignedInToSplitwise) return const HomeScreen();
-    if (_isSignedInToSplitz && !_isSignedInToSplitwise) {
-      return const SplitwiseLoginScreen();
+    switch (initResult?.firstScreen) {
+      case null:
+      case FirstScreen.splitzLogin:
+        return const SplitzLoginScreen();
+      case FirstScreen.splitwiseLogin:
+        return const SplitwiseLoginScreen();
+      case FirstScreen.groupsList:
+        return const GroupsListScreen();
+      case FirstScreen.group:
+        return GroupScreen(
+          groupId: initResult!.args as String,
+        );
     }
-    return const SplitzLoginScreen();
   }
 
   @override
