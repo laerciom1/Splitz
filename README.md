@@ -2,18 +2,21 @@
 Personal app to split bills
 
 ### Next steps:
-- [ ] Handle failures
-- [ ] WIP Splitwise service
-- [ ] WIP Splitz Service
+> DONT FORGET TO HANDLE FAILURES !
+- [ ] Group Config and Category Config
+- [ ] WIP Splitz Service (application layer)
+- [ ] WIP Splitz Repository (data access)
+- [ ] Improve Login Screens
+- [x] Splitwise Repository
 - [x] Add splash (check isSignedIn and redirect to the correct screen)
 
 ### Must have:
-- [ ] Edit config (Settings page)
-- [ ] (?) Encrypt data on Firebase 
-- [ ] Delete/edit (with swipe command)
+- [ ] Delete/Edit (with swipe command)
 - [ ] Permission to edit group preferences
+- [ ] (?) Encrypt data on Firebase 
 
 ### Good to have:
+- [ ] Export data from the bills of the month
 - [ ] Onboarding flow (tutorial)
 - [ ] Load more button on Splits list
 - [ ] Filters:
