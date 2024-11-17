@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:splitz/presentation/screens/login_splitwise.dart';
 import 'package:splitz/presentation/widgets/button_primary.dart';
 import 'package:splitz/presentation/widgets/snackbar.dart';
-import 'package:splitz/services/auth.dart';
-import 'package:splitz/services/navigator.dart';
+import 'package:splitz/services/auth_service.dart';
+import 'package:splitz/navigator.dart';
 
 class SplitzLoginScreen extends StatelessWidget {
   const SplitzLoginScreen({super.key});
 
   Future<void> doLogin() async {
-    final result = await Auth.splitzSignIn();
+    final result = await AuthService.splitzSignIn();
     if (result == false) {
       showToast('Login with Google has failed');
     } else {
@@ -19,13 +19,15 @@ class SplitzLoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            PrimaryButton(onPressed: doLogin, text: 'Login with Google'),
-          ],
+    return SafeArea(
+      child: Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              PrimaryButton(onPressed: doLogin, text: 'Login with Google'),
+            ],
+          ),
         ),
       ),
     );

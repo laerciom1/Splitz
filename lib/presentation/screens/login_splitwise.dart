@@ -2,11 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:splitz/extensions/widgets.dart';
-import 'package:splitz/presentation/screens/home.dart';
+import 'package:splitz/presentation/screens/groups_list.dart';
 import 'package:splitz/presentation/widgets/button_primary.dart';
 import 'package:splitz/presentation/widgets/snackbar.dart';
-import 'package:splitz/services/auth.dart';
-import 'package:splitz/services/navigator.dart';
+import 'package:splitz/services/auth_service.dart';
+import 'package:splitz/navigator.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class SplitwiseLoginScreen extends StatefulWidget {
@@ -32,7 +32,7 @@ class _SplitwiseLoginScreenState extends State<SplitwiseLoginScreen> {
       ..setNavigationDelegate(
         NavigationDelegate(
           onNavigationRequest: (NavigationRequest request) =>
-              Auth.onNavigationRequest(
+              AuthService.onNavigationRequest(
             request,
             onResult,
           ),
@@ -42,7 +42,7 @@ class _SplitwiseLoginScreenState extends State<SplitwiseLoginScreen> {
 
   void onResult(bool success) {
     if (success) {
-      AppNavigator.push(const HomeScreen());
+      AppNavigator.push(const GroupsListScreen());
     } else {
       showToast('Login to Splitwise has failed');
       setState(() {
@@ -54,23 +54,26 @@ class _SplitwiseLoginScreenState extends State<SplitwiseLoginScreen> {
   Future<void> doLogin() async {
     setState(() {
       shouldLoadPage = true;
-      controller.loadRequest(Auth.getSplitwiseAuthURL());
+      controller.loadRequest(AuthService.getSplitwiseAuthURL());
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: shouldLoadPage
-          ? WebViewWidget(controller: controller)
-          : Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  PrimaryButton(text: 'Login to Splitwise', onPressed: doLogin)
-                ],
-              ).withPadding(const EdgeInsets.symmetric(horizontal: 24)),
-            ),
+    return SafeArea(
+      child: Scaffold(
+        body: shouldLoadPage
+            ? WebViewWidget(controller: controller)
+            : Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    PrimaryButton(
+                        text: 'Login to Splitwise', onPressed: doLogin)
+                  ],
+                ).withPadding(const EdgeInsets.symmetric(horizontal: 24)),
+              ),
+      ),
     );
   }
 }

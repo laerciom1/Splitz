@@ -1,0 +1,68 @@
+import 'package:flutter/material.dart';
+import 'package:splitz/data/models/splitwise/get_groups/get_groups_response.dart';
+import 'package:splitz/extensions/list.dart';
+import 'package:splitz/extensions/widgets.dart';
+import 'package:splitz/navigator.dart';
+import 'package:splitz/presentation/screens/group.dart';
+import 'package:splitz/presentation/widgets/group_item.dart';
+import 'package:splitz/presentation/widgets/loading.dart';
+import 'package:splitz/presentation/widgets/snackbar.dart';
+import 'package:splitz/services/splitz_service.dart';
+
+class GroupsListScreen extends StatefulWidget {
+  const GroupsListScreen({super.key});
+
+  @override
+  State<GroupsListScreen> createState() => _GroupsListScreenState();
+}
+
+class _GroupsListScreenState extends State<GroupsListScreen> {
+  List<Group>? groups;
+  @override
+  void initState() {
+    super.initState();
+    getGroups();
+  }
+
+  Future<void> getGroups() async {
+    final result = await SplitzService.getGroups();
+    if (result == null) {
+      showToast(
+        'Something went wrong retrieving your groups. Drag down to refresh.',
+      );
+    } else {
+      setState(() {
+        groups = result;
+      });
+    }
+  }
+
+  Future<void> onSelectGroup(Group group) async {
+    await SplitzService.selectGroup('${group.id}');
+    AppNavigator.push(GroupScreen(groupId: '${group.id}'));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        body: groups == null
+            ? const Loading()
+            : RefreshIndicator(
+                onRefresh: getGroups,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: groups!
+                        .map<Widget>(
+                          (e) => GroupItem(group: e, onTap: onSelectGroup),
+                        )
+                        .intersperse(const SizedBox(height: 12))
+                        .toList(),
+                  ).withPadding(const EdgeInsets.all(24)),
+                ),
+              ),
+      ),
+    );
+  }
+}

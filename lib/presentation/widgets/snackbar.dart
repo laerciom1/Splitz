@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:splitz/services/navigator.dart';
+import 'package:splitz/navigator.dart';
 
 void showToast(
   String message, {
