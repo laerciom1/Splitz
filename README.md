@@ -2,19 +2,19 @@
 Personal app to split bills
 
 ### Next steps:
-- [ ] SettleUp service
-- [ ] Splitz Service
+- [ ] Handle failures
+- [ ] WIP Splitwise service
+- [ ] WIP Splitz Service
 - [x] Add splash (check isSignedIn and redirect to the correct screen)
 
 ### Must have:
 - [ ] Edit config (Settings page)
-- [ ] Handle failures
 - [ ] (?) Encrypt data on Firebase 
 - [ ] Delete/edit (with swipe command)
 - [ ] Permission to edit group preferences
 
 ### Good to have:
-- [ ] Initial settings to new users
+- [ ] Onboarding flow (tutorial)
 - [ ] Load more button on Splits list
 - [ ] Filters:
   - [ ] Category

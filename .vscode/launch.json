@@ -5,21 +5,30 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "splitz",
-      "request": "launch",
-      "type": "dart"
-    },
-    {
-      "name": "splitz (profile mode)",
+      "name": "[sandbox] splitz (debug)",
       "request": "launch",
       "type": "dart",
-      "flutterMode": "profile"
+      "args": [
+        "--dart-define-from-file=config/.env"
+      ]
     },
     {
-      "name": "splitz (release mode)",
+      "name": "[sandbox] splitz (profile)",
       "request": "launch",
       "type": "dart",
-      "flutterMode": "release"
+      "flutterMode": "profile",
+      "args": [
+        "--dart-define-from-file=config/.env"
+      ]
+    },
+    {
+      "name": "[sandbox] splitz (release)",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release",
+      "args": [
+        "--dart-define-from-file=config/.env"
+      ]
     }
   ]
 }

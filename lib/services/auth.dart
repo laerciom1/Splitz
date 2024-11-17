@@ -1,57 +1,39 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:splitz/services/firebase/settle_up_firebase.dart';
-import 'package:splitz/services/firebase/splitz_firebase.dart';
+import 'package:oauth2/oauth2.dart';
 import 'package:splitz/services/log.dart';
+import 'package:splitz/services/storage.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
-final _googleAccount = GoogleSignIn(
-    // scopes: [
-    //   'https://www.googleapis.com/auth/userinfo.email',
-    //   'https://www.googleapis.com/auth/userinfo.profile,'
-    // ],
-    );
+// Splitz
+final _googleAccount = GoogleSignIn();
+
+// Splitwise
+const _consumerKey = String.fromEnvironment('SW_CONSUMER_KEY');
+const _consumerSecret = String.fromEnvironment('SW_CONSUMER_SECRET');
+final _authEndpoint =
+    Uri.parse(const String.fromEnvironment('SW_AUTH_ENDPOINT'));
+final _tokenEndpoint =
+    Uri.parse(const String.fromEnvironment('SW_TOKEN_ENDPOINT'));
+final _redirectUrl = Uri.parse(const String.fromEnvironment('SW_REDIRECT_URL'));
+const _storageKey = 'SW_AUTH_STORAGE_KEY';
+
+final _grant = AuthorizationCodeGrant(
+  _consumerKey,
+  _authEndpoint,
+  _tokenEndpoint,
+  secret: _consumerSecret,
+  basicAuth: false,
+);
 
 abstract class Auth {
+  // Splitz
   static bool get isSignedInToSplitz {
     try {
-      return SplitzFirebase.auth.currentUser != null;
-    } catch (error, stackTrace) {
-      Log.that('Error on Auth.isSignedInToSplitz',
-          error: error, stackTrace: stackTrace);
+      return FirebaseAuth.instance.currentUser != null;
+    } catch (e, s) {
+      Log.that('Error on Auth.isSignedInToSplitz', error: e, stackTrace: s);
       return false;
-    }
-  }
-
-  static Future<bool> get isSignedInToSettleUp async {
-    try {
-      final settleUpFirebaseAuth = await SettleUpFirebase.auth;
-      return settleUpFirebaseAuth.currentUser != null;
-    } catch (error, stackTrace) {
-      Log.that('Error on Auth.isSignedInToSettleUp',
-          error: error, stackTrace: stackTrace);
-      return false;
-    }
-  }
-
-  static Future<String?> get settleUpUserId async {
-    try {
-      final settleUpFirebaseAuth = await SettleUpFirebase.auth;
-      return settleUpFirebaseAuth.currentUser?.uid;
-    } catch (error, stackTrace) {
-      Log.that('Error on Auth.settleUpUserId',
-          error: error, stackTrace: stackTrace);
-      return '';
-    }
-  }
-
-  static Future<String?> get settleUpIdToken async {
-    try {
-      final settleUpFirebaseAuth = await SettleUpFirebase.auth;
-      return settleUpFirebaseAuth.currentUser?.getIdToken();
-    } catch (error, stackTrace) {
-      Log.that('Error on Auth.settleUpIdToken',
-          error: error, stackTrace: stackTrace);
-      return '';
     }
   }
 
@@ -64,43 +46,80 @@ abstract class Auth {
         accessToken: googleAuth?.accessToken,
         idToken: googleAuth?.idToken,
       );
-      await SplitzFirebase.auth.signInWithCredential(credential);
+      await FirebaseAuth.instance.signInWithCredential(credential);
       return true;
-    } catch (error, stackTrace) {
-      Log.that('Error on Auth.signIn', error: error, stackTrace: stackTrace);
+    } catch (e, s) {
+      Log.that('Error on Auth.splitzSignIn', error: e, stackTrace: s);
       return false;
     }
   }
 
-  static Future<bool?> settleUpSignIn(String email, String password) async {
+  // Splitwise
+  static String? _splitwiseToken;
+  static Future<String?> get splitwiseToken async {
     try {
-      if (await Auth.isSignedInToSettleUp) return null;
-      final settleUpFirebaseAuth = await SettleUpFirebase.auth;
-      await settleUpFirebaseAuth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      return true;
-    } catch (error, stackTrace) {
-      Log.that('Error on Auth.signIn', error: error, stackTrace: stackTrace);
+      if (_splitwiseToken != null) return _splitwiseToken;
+      final storedCredentials = await Storage.read(_storageKey);
+      if (storedCredentials == null) return null;
+      final credentials = Credentials.fromJson(storedCredentials);
+      _splitwiseToken = credentials.accessToken;
+      return _splitwiseToken;
+    } catch (e, s) {
+      Log.that('Error on Auth.splitwiseToken', error: e, stackTrace: s);
+      return null;
+    }
+  }
+
+  static Future<bool> get isSignedInToSplitwise async {
+    try {
+      return (await splitwiseToken) != null;
+    } catch (e, s) {
+      Log.that('Error on Auth.isSignedInToSplitwise', error: e, stackTrace: s);
       return false;
     }
   }
 
+  static Uri getSplitwiseAuthURL() => _grant.getAuthorizationUrl(_redirectUrl);
+
+  static Future<NavigationDecision> onNavigationRequest(
+    NavigationRequest request,
+    void Function(bool success) onResult,
+  ) async {
+    try {
+      if (request.url.contains(_redirectUrl.toString())) {
+        final uri = Uri.parse(request.url);
+        final queryParams = uri.queryParameters;
+        if (queryParams.containsKey('code')) {
+          final credentials =
+              (await _grant.handleAuthorizationResponse(queryParams))
+                  .credentials;
+          await Storage.save(_storageKey, credentials.toJson());
+          onResult(true);
+          return NavigationDecision.prevent;
+        }
+      }
+      return NavigationDecision.navigate;
+    } catch (e, s) {
+      Log.that('Auth.onNavigationRequest', error: e, stackTrace: s);
+      onResult(false);
+      return NavigationDecision.prevent;
+    }
+  }
+
+  // Common
   static Future<void> signOut() async {
     try {
       var futures = <Future<void>>[];
-      if (await Auth.isSignedInToSettleUp) {
-        final settleUpFirebaseAuth = await SettleUpFirebase.auth;
-        futures.add(settleUpFirebaseAuth.signOut());
+      if (await Auth.isSignedInToSplitwise) {
+        futures.add(Storage.clear(_storageKey));
       }
       if (Auth.isSignedInToSplitz) {
-        futures.add(SplitzFirebase.auth.signOut());
+        futures.add(FirebaseAuth.instance.signOut());
       }
       await Future.wait(futures);
       await _googleAccount.disconnect();
-    } catch (error, stackTrace) {
-      Log.that('Error on Auth.signOut', error: error, stackTrace: stackTrace);
+    } catch (e, s) {
+      Log.that('Error on Auth.signOut', error: e, stackTrace: s);
     }
   }
 }

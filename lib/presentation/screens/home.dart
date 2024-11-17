@@ -3,7 +3,8 @@ import 'package:splitz/presentation/screens/login_splitz.dart';
 import 'package:splitz/presentation/widgets/button_primary.dart';
 import 'package:splitz/services/auth.dart';
 import 'package:splitz/services/navigator.dart';
-import 'package:splitz/services/settle_up.dart';
+import 'package:splitz/services/splitz.dart';
+import 'package:splitz/services/splitwise.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -22,7 +23,8 @@ class HomeScreen extends StatelessWidget {
           children: [
             PrimaryButton(onPressed: doLogout, text: 'Logout'),
             const PrimaryButton(
-                onPressed: SettleUp.test, text: 'SettleUp.test'),
+                onPressed: Splitwise.test, text: 'Splitwise.test'),
+            const PrimaryButton(onPressed: Splitz.test, text: 'Splitz.test'),
           ],
         ),
       ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:splitz/presentation/screens/login_settle_up.dart';
+import 'package:splitz/presentation/screens/login_splitwise.dart';
 import 'package:splitz/presentation/widgets/button_primary.dart';
 import 'package:splitz/presentation/widgets/snackbar.dart';
 import 'package:splitz/services/auth.dart';
@@ -13,7 +13,7 @@ class SplitzLoginScreen extends StatelessWidget {
     if (result == false) {
       showToast('Login with Google has failed');
     } else {
-      AppNavigator.push(SettleUpLoginScreen());
+      AppNavigator.push(const SplitwiseLoginScreen());
     }
   }
 

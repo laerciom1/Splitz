@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:splitz/firebase_options.dart';
 import 'package:splitz/presentation/screens/home.dart';
-import 'package:splitz/presentation/screens/login_settle_up.dart';
+import 'package:splitz/presentation/screens/login_splitwise.dart';
 import 'package:splitz/presentation/screens/login_splitz.dart';
 import 'package:splitz/services/auth.dart';
 import 'package:splitz/services/navigator.dart';
@@ -26,7 +26,7 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> {
   bool _isSignedInToSplitz = true;
-  bool _isSignedInToSettleUp = true;
+  bool _isSignedInToSplitwise = true;
 
   @override
   void initState() {
@@ -36,18 +36,18 @@ class _MainAppState extends State<MainApp> {
 
   Future<void> checkAuth() async {
     final isSignedInToSplitz = Auth.isSignedInToSplitz;
-    final isSignedInToSettleUp = await Auth.isSignedInToSettleUp;
+    final isSignedInToSplitwise = await Auth.isSignedInToSplitwise;
     setState(() {
       _isSignedInToSplitz = isSignedInToSplitz;
-      _isSignedInToSettleUp = isSignedInToSettleUp;
+      _isSignedInToSplitwise = isSignedInToSplitwise;
       FlutterNativeSplash.remove();
     });
   }
 
   Widget getFirstScreen() {
-    if (_isSignedInToSplitz && _isSignedInToSettleUp) return const HomeScreen();
-    if (_isSignedInToSplitz && !_isSignedInToSettleUp) {
-      return SettleUpLoginScreen();
+    if (_isSignedInToSplitz && _isSignedInToSplitwise) return const HomeScreen();
+    if (_isSignedInToSplitz && !_isSignedInToSplitwise) {
+      return const SplitwiseLoginScreen();
     }
     return const SplitzLoginScreen();
   }
