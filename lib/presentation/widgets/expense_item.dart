@@ -1,20 +1,25 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:cached_network_image/cached_network_image.dart';
+// import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:splitz/data/models/splitwise/get_expenses/get_expenses_response.dart';
 import 'package:splitz/extensions/datetime.dart';
 import 'package:splitz/extensions/double.dart';
 import 'package:splitz/extensions/widgets.dart';
 
-const _cardHeight = 84.0;
-const _imageSize = 44.0;
+const _cardHeight = 80.0;
 
 class ExpenseItem extends StatelessWidget {
   const ExpenseItem({required this.expense, required this.onTap, super.key});
 
   final Expense expense;
   final void Function(Expense) onTap;
+
+  Widget getInfo(String str) => Text(
+        style: TextStyle(fontSize: 12),
+        str,
+        softWrap: true,
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -27,10 +32,11 @@ class ExpenseItem extends StatelessWidget {
         height: _cardHeight,
         width: double.infinity,
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              height: _imageSize,
-              width: _imageSize,
+              height: _cardHeight,
+              width: _cardHeight,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(
                   Radius.circular((1 / 10) * _cardHeight),
@@ -40,14 +46,11 @@ class ExpenseItem extends StatelessWidget {
               child: Container(
                 decoration: BoxDecoration(color: Colors.amber),
               ),
-              // child: CachedNetworkImage(
-              //   imageUrl: avatarUrl,
-              //   placeholder: (_, __) => CircularProgressIndicator()
-              //       .withPadding(EdgeInsets.all((1 / 4) * _cardHeight)),
-              // ),
             ),
+            SizedBox(width: 12.0, height: 1),
             Flexible(
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
@@ -57,27 +60,23 @@ class ExpenseItem extends StatelessWidget {
                         expense.description!,
                         softWrap: true,
                       ),
-                      Text(
-                        double.parse(expense.cost!).toBRL(),
-                        softWrap: true,
-                      )
                     ],
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        expense.createdAt!.toDateFormat('dd/MM/yyyy'),
-                        softWrap: true,
-                      ),
+                      getInfo(expense.createdAt!.toDateFormat('dd/MM/yyyy')),
                       Column(
+                        mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
+                          getInfo(
+                            'Total: ${double.parse(expense.cost!).toBRL()}',
+                          ),
                           ...expense.users!.map(
-                            (e) => Text(
+                            (e) => getInfo(
                               '${e.user!.firstName}: ${double.parse(e.owedShare!).toBRL()}',
-                              softWrap: true,
                             ),
                           )
                         ],
@@ -85,11 +84,11 @@ class ExpenseItem extends StatelessWidget {
                     ],
                   )
                 ],
-              ).withPadding(EdgeInsets.all(12)),
+              ),
             ),
           ],
         ),
-      ),
+      ).withPadding(EdgeInsets.all(12.0)),
     );
   }
 }

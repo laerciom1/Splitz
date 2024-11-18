@@ -18,13 +18,19 @@ class GroupsListScreen extends StatefulWidget {
 
 class _GroupsListScreenState extends State<GroupsListScreen> {
   List<Group>? groups;
+  bool isRefreshing = false;
+
   @override
   void initState() {
     super.initState();
     getGroups();
   }
 
-  Future<void> getGroups() async {
+  Future<void> getGroups({bool refreshing = false}) async {
+    setState(() {
+      groups = null;
+      isRefreshing = refreshing;
+    });
     final result = await SplitzService.getGroups();
     if (result == null) {
       showToast(
@@ -33,6 +39,7 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
     } else {
       setState(() {
         groups = result;
+        isRefreshing = false;
       });
     }
   }
@@ -46,10 +53,9 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: groups == null
-            ? const Loading()
-            : RefreshIndicator(
-                onRefresh: getGroups,
+        body: groups != null
+            ? RefreshIndicator(
+                onRefresh: () => getGroups(refreshing: true),
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -57,11 +63,23 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
                         .map<Widget>(
                           (e) => GroupItem(group: e, onTap: onSelectGroup),
                         )
-                        .intersperse(const SizedBox(height: 12))
+                        .intersperse(
+                          const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 6),
+                            child: Divider(
+                              height: 1,
+                              indent: 24,
+                              endIndent: 24,
+                            ),
+                          ),
+                        )
                         .toList(),
                   ).withPadding(const EdgeInsets.all(24)),
                 ),
-              ),
+              )
+            : isRefreshing
+                ? const SizedBox()
+                : const Loading(),
       ),
     );
   }

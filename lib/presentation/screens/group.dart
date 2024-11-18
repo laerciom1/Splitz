@@ -5,6 +5,7 @@ import 'package:splitz/extensions/widgets.dart';
 import 'package:splitz/presentation/widgets/expense_item.dart';
 import 'package:splitz/presentation/widgets/loading.dart';
 import 'package:splitz/presentation/widgets/snackbar.dart';
+import 'package:splitz/services/log_service.dart';
 import 'package:splitz/services/splitz_service.dart';
 
 class GroupScreen extends StatefulWidget {
@@ -18,13 +19,18 @@ class GroupScreen extends StatefulWidget {
 
 class _GroupScreenState extends State<GroupScreen> {
   List<Expense>? expenses;
+  bool isRefreshing = false;
   @override
   void initState() {
     super.initState();
     getExpenses();
   }
 
-  Future<void> getExpenses() async {
+  Future<void> getExpenses({bool refreshing = false}) async {
+    setState(() {
+      expenses = null;
+      isRefreshing = refreshing;
+    });
     final result = await SplitzService.getExpenses(widget.groupId);
     if (result == null) {
       showToast(
@@ -33,22 +39,22 @@ class _GroupScreenState extends State<GroupScreen> {
     } else {
       setState(() {
         expenses = result;
+        isRefreshing = false;
       });
     }
   }
 
   void onTap(Expense expense) {
-    print(expense.description);
+    LogService.log(expense.description!);
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: expenses == null
-            ? const Loading()
-            : RefreshIndicator(
-                onRefresh: getExpenses,
+        body: expenses != null
+            ? RefreshIndicator(
+                onRefresh: () => getExpenses(refreshing: true),
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
@@ -56,11 +62,23 @@ class _GroupScreenState extends State<GroupScreen> {
                         .map<Widget>(
                           (e) => ExpenseItem(expense: e, onTap: onTap),
                         )
-                        .intersperse(const SizedBox(height: 12))
+                        .intersperse(
+                          const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 6),
+                            child: Divider(
+                              height: 1,
+                              indent: 24,
+                              endIndent: 24,
+                            ),
+                          ),
+                        )
                         .toList(),
                   ).withPadding(const EdgeInsets.all(24)),
                 ),
-              ),
+              )
+            : isRefreshing
+                ? const SizedBox()
+                : const Loading(),
       ),
     );
   }

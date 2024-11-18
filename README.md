@@ -3,6 +3,9 @@ Personal app to split bills
 
 ### Next steps:
 > DONT FORGET TO HANDLE FAILURES !
+
+> Disclaimer: not caring about decoupling right now.
+
 - [ ] Group Config and Category Config
 - [ ] WIP Splitz Service (application layer)
 - [ ] WIP Splitz Repository (data access)
@@ -14,6 +17,7 @@ Personal app to split bills
 - [ ] Delete/Edit (with swipe command)
 - [ ] Permission to edit group preferences
 - [ ] (?) Encrypt data on Firebase 
+- [ ] Remove lint ignores from the code
 
 ### Good to have:
 - [ ] Export data from the bills of the month

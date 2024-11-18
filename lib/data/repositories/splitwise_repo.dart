@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:splitz/data/models/splitwise/get_expenses/get_expenses_response.dart';
 import 'package:splitz/data/models/splitwise/get_groups/get_groups_response.dart';
-import 'package:splitz/presentation/widgets/snackbar.dart';
 import 'package:splitz/services/auth_service.dart';
 import 'package:splitz/services/log_service.dart';
 
@@ -18,10 +17,6 @@ abstract class SplitwiseRepository {
           onRequest: (options, handler) {
             options.headers['Authorization'] = 'Bearer $splitwiseToken';
             return handler.next(options);
-          },
-          onError: (e, handler) async {
-            showToast('Splitwise.dio.onError: ${e.response?.statusCode}');
-            handler.next(e);
           },
         ),
       );
