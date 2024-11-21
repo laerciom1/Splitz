@@ -57,7 +57,7 @@ class ExpenseItem extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        expense.description!,
+                        expense.description ?? '',
                         softWrap: true,
                       ),
                     ],
@@ -66,17 +66,17 @@ class ExpenseItem extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      getInfo(expense.createdAt!.toDateFormat('dd/MM/yyyy')),
+                      getInfo(expense.createdAt.toDateFormat('dd/MM/yyyy')),
                       Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           getInfo(
-                            'Total: ${double.parse(expense.cost!).toBRL()}',
+                            'Total: ${double.parse(expense.cost ?? '0.0').toBRL()}',
                           ),
-                          ...expense.users!.map(
+                          ...(expense.users ?? []).map(
                             (e) => getInfo(
-                              '${e.user!.firstName}: ${double.parse(e.owedShare!).toBRL()}',
+                              '${e.user?.firstName}: ${double.parse(e.owedShare ?? '0.0').toBRL()}',
                             ),
                           )
                         ],

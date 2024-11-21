@@ -1,8 +1,12 @@
 import 'package:splitz/data/entities/app_preferences.dart';
 import 'package:splitz/data/entities/init_result.dart';
+import 'package:splitz/data/models/splitwise/common/group.dart';
 import 'package:splitz/data/models/splitwise/get_expenses/get_expenses_response.dart';
-import 'package:splitz/data/models/splitwise/get_groups/get_groups_response.dart';
+import 'package:splitz/data/models/splitwise/get_group/get_group_response.dart';
+import 'package:splitz/data/models/splitz/group_config.dart';
 import 'package:splitz/data/repositories/splitwise_repo.dart';
+import 'package:splitz/data/repositories/splitz_repo.dart';
+import 'package:splitz/extensions/list.dart';
 import 'package:splitz/extensions/strings.dart';
 import 'package:splitz/services/auth_service.dart';
 import 'package:splitz/data/repositories/storage_repo.dart';
@@ -42,6 +46,57 @@ abstract class SplitzService {
     return InitResult(firstScreen: FirstScreen.groupsList);
   }
 
+  static Future<List<Expense>?> getExpenses(String groupId) async {
+    final response = await SplitwiseRepository.getExpenses();
+    if (response == null) return null;
+    final filteredExpenses = (response.expenses ?? [])
+        .where((e) => groupId == '${e.groupId}' && e.deletedAt == null)
+        .toList();
+    return filteredExpenses;
+  }
+
+  static List<SplitConfig> getSplitConfigsFromMembers(List<Member> members) {
+    final result = <SplitConfig>[];
+    double sum = 0;
+    for (int idx = 0; idx < members.length - 1; idx++) {
+      sum += (100 / members.length).round();
+      result.add(SplitConfig(
+        id: members[idx].id,
+        name: members[idx].firstName,
+        avatarUrl: members[idx].picture?.large,
+        slice: (100 / members.length).round(),
+      ));
+    }
+    result.add(SplitConfig(
+      id: members.last.id,
+      name: members.last.firstName,
+      avatarUrl: members.last.picture?.large,
+      slice: (100 - sum).round(),
+    ));
+    return result;
+  }
+
+  static List<SplitConfig> mergeSplitConfigs(
+    List<SplitConfig> a,
+    List<SplitConfig> b,
+  ) {
+    if (a.isEmpty) return b;
+    if (b.isEmpty) return a;
+    return [...a, ...b].unique((config) => config.id);
+  }
+
+  static Future<GetGroupResponse?> getGroupInfo(String groupId) async {
+    final response = await SplitwiseRepository.getGroupInfo(groupId);
+    if (response == null) return null;
+    return response;
+  }
+
+  static Future<GroupConfig?> getGroupConfig(String groupId) async {
+    final response = await SplitzRepository.getGroupConfig(groupId);
+    if (response == null) return null;
+    return response;
+  }
+
   static Future<void> selectGroup(String group) async {
     _appPreferences!.selectedGroup = group;
     await StorageService.save(_storageKey, _appPreferences!.toJson());
@@ -50,17 +105,10 @@ abstract class SplitzService {
   static Future<List<Group>?> getGroups() async {
     final response = await SplitwiseRepository.getGroups();
     if (response == null || response.groups == null) return null;
-    final groups = response.groups!
-      ..sort((a, b) => b.updatedAt!.compareTo(a.updatedAt!));
+    final groups = (response.groups ?? [])
+      ..sort((a, b) => (b.updatedAt ?? DateTime.now()).compareTo(
+            (a.updatedAt ?? DateTime.now()),
+          ));
     return groups;
-  }
-
-  static Future<List<Expense>?> getExpenses(String groupId) async {
-    final response = await SplitwiseRepository.getExpenses();
-    if (response == null || response.expenses == null) return null;
-    final filteredExpenses = response.expenses!
-        .where((e) => groupId == '${e.groupId}' && e.deletedAt == null)
-        .toList();
-    return filteredExpenses;
   }
 }

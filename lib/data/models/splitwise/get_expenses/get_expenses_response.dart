@@ -1,11 +1,18 @@
 import 'dart:convert';
 
 class GetExpensesResponse {
-    final List<Expense>? expenses;
+    List<Expense>? expenses;
 
     GetExpensesResponse({
         this.expenses,
     });
+
+    GetExpensesResponse copyWith({
+        List<Expense>? expenses,
+    }) => 
+        GetExpensesResponse(
+            expenses: expenses ?? this.expenses,
+        );
 
     factory GetExpensesResponse.fromJson(String str) => GetExpensesResponse.fromMap(json.decode(str));
 
@@ -21,35 +28,35 @@ class GetExpensesResponse {
 }
 
 class Expense {
-    final String? cost;
-    final String? description;
-    final String? details;
-    final DateTime? date;
-    final String? repeatInterval;
-    final String? currencyCode;
-    final int? categoryId;
-    final int? id;
-    final int? groupId;
-    final int? friendshipId;
-    final int? expenseBundleId;
-    final bool? repeats;
-    final bool? emailReminder;
-    final dynamic emailReminderInAdvance;
-    final String? nextRepeat;
-    final int? commentsCount;
-    final bool? payment;
-    final bool? transactionConfirmed;
-    final List<Repayment>? repayments;
-    final DateTime? createdAt;
-    final TedBy? createdBy;
-    final DateTime? updatedAt;
-    final TedBy? updatedBy;
-    final DateTime? deletedAt;
-    final TedBy? deletedBy;
-    final Category? category;
-    final Receipt? receipt;
-    final List<UserElement>? users;
-    final List<Comment>? comments;
+    String? cost;
+    String? description;
+    String? details;
+    DateTime? date;
+    String? repeatInterval;
+    String? currencyCode;
+    dynamic categoryId;
+    int? id;
+    int? groupId;
+    dynamic friendshipId;
+    dynamic expenseBundleId;
+    bool? repeats;
+    bool? emailReminder;
+    int? emailReminderInAdvance;
+    DateTime? nextRepeat;
+    int? commentsCount;
+    bool? payment;
+    bool? transactionConfirmed;
+    List<Repayment>? repayments;
+    DateTime? createdAt;
+    TedBy? createdBy;
+    DateTime? updatedAt;
+    TedBy? updatedBy;
+    DateTime? deletedAt;
+    TedBy? deletedBy;
+    Category? category;
+    Receipt? receipt;
+    List<UserElement>? users;
+    List<dynamic>? comments;
 
     Expense({
         this.cost,
@@ -83,6 +90,69 @@ class Expense {
         this.comments,
     });
 
+    Expense copyWith({
+        String? cost,
+        String? description,
+        String? details,
+        DateTime? date,
+        String? repeatInterval,
+        String? currencyCode,
+        dynamic categoryId,
+        int? id,
+        int? groupId,
+        dynamic friendshipId,
+        dynamic expenseBundleId,
+        bool? repeats,
+        bool? emailReminder,
+        int? emailReminderInAdvance,
+        DateTime? nextRepeat,
+        int? commentsCount,
+        bool? payment,
+        bool? transactionConfirmed,
+        List<Repayment>? repayments,
+        DateTime? createdAt,
+        TedBy? createdBy,
+        DateTime? updatedAt,
+        TedBy? updatedBy,
+        DateTime? deletedAt,
+        TedBy? deletedBy,
+        Category? category,
+        Receipt? receipt,
+        List<UserElement>? users,
+        List<dynamic>? comments,
+    }) => 
+        Expense(
+            cost: cost ?? this.cost,
+            description: description ?? this.description,
+            details: details ?? this.details,
+            date: date ?? this.date,
+            repeatInterval: repeatInterval ?? this.repeatInterval,
+            currencyCode: currencyCode ?? this.currencyCode,
+            categoryId: categoryId ?? this.categoryId,
+            id: id ?? this.id,
+            groupId: groupId ?? this.groupId,
+            friendshipId: friendshipId ?? this.friendshipId,
+            expenseBundleId: expenseBundleId ?? this.expenseBundleId,
+            repeats: repeats ?? this.repeats,
+            emailReminder: emailReminder ?? this.emailReminder,
+            emailReminderInAdvance: emailReminderInAdvance ?? this.emailReminderInAdvance,
+            nextRepeat: nextRepeat ?? this.nextRepeat,
+            commentsCount: commentsCount ?? this.commentsCount,
+            payment: payment ?? this.payment,
+            transactionConfirmed: transactionConfirmed ?? this.transactionConfirmed,
+            repayments: repayments ?? this.repayments,
+            createdAt: createdAt ?? this.createdAt,
+            createdBy: createdBy ?? this.createdBy,
+            updatedAt: updatedAt ?? this.updatedAt,
+            updatedBy: updatedBy ?? this.updatedBy,
+            deletedAt: deletedAt ?? this.deletedAt,
+            deletedBy: deletedBy ?? this.deletedBy,
+            category: category ?? this.category,
+            receipt: receipt ?? this.receipt,
+            users: users ?? this.users,
+            comments: comments ?? this.comments,
+        );
+
     factory Expense.fromJson(String str) => Expense.fromMap(json.decode(str));
 
     String toJson() => json.encode(toMap());
@@ -102,7 +172,7 @@ class Expense {
         repeats: json["repeats"],
         emailReminder: json["email_reminder"],
         emailReminderInAdvance: json["email_reminder_in_advance"],
-        nextRepeat: json["next_repeat"],
+        nextRepeat: json["next_repeat"] == null ? null : DateTime.parse(json["next_repeat"]),
         commentsCount: json["comments_count"],
         payment: json["payment"],
         transactionConfirmed: json["transaction_confirmed"],
@@ -116,7 +186,7 @@ class Expense {
         category: json["category"] == null ? null : Category.fromMap(json["category"]),
         receipt: json["receipt"] == null ? null : Receipt.fromMap(json["receipt"]),
         users: json["users"] == null ? [] : List<UserElement>.from(json["users"]!.map((x) => UserElement.fromMap(x))),
-        comments: json["comments"] == null ? [] : List<Comment>.from(json["comments"]!.map((x) => Comment.fromMap(x))),
+        comments: json["comments"] == null ? [] : List<dynamic>.from(json["comments"]!.map((x) => x)),
     );
 
     Map<String, dynamic> toMap() => {
@@ -134,7 +204,7 @@ class Expense {
         "repeats": repeats,
         "email_reminder": emailReminder,
         "email_reminder_in_advance": emailReminderInAdvance,
-        "next_repeat": nextRepeat,
+        "next_repeat": nextRepeat?.toIso8601String(),
         "comments_count": commentsCount,
         "payment": payment,
         "transaction_confirmed": transactionConfirmed,
@@ -148,18 +218,27 @@ class Expense {
         "category": category?.toMap(),
         "receipt": receipt?.toMap(),
         "users": users == null ? [] : List<dynamic>.from(users!.map((x) => x.toMap())),
-        "comments": comments == null ? [] : List<dynamic>.from(comments!.map((x) => x.toMap())),
+        "comments": comments == null ? [] : List<dynamic>.from(comments!.map((x) => x)),
     };
 }
 
 class Category {
-    final int? id;
-    final String? name;
+    int? id;
+    String? name;
 
     Category({
         this.id,
         this.name,
     });
+
+    Category copyWith({
+        int? id,
+        String? name,
+    }) => 
+        Category(
+            id: id ?? this.id,
+            name: name ?? this.name,
+        );
 
     factory Category.fromJson(String str) => Category.fromMap(json.decode(str));
 
@@ -176,114 +255,14 @@ class Category {
     };
 }
 
-class Comment {
-    final int? id;
-    final String? content;
-    final String? commentType;
-    final String? relationType;
-    final int? relationId;
-    final DateTime? createdAt;
-    final DateTime? deletedAt;
-    final CommentUser? user;
-
-    Comment({
-        this.id,
-        this.content,
-        this.commentType,
-        this.relationType,
-        this.relationId,
-        this.createdAt,
-        this.deletedAt,
-        this.user,
-    });
-
-    factory Comment.fromJson(String str) => Comment.fromMap(json.decode(str));
-
-    String toJson() => json.encode(toMap());
-
-    factory Comment.fromMap(Map<String, dynamic> json) => Comment(
-        id: json["id"],
-        content: json["content"],
-        commentType: json["comment_type"],
-        relationType: json["relation_type"],
-        relationId: json["relation_id"],
-        createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
-        deletedAt: json["deleted_at"] == null ? null : DateTime.parse(json["deleted_at"]),
-        user: json["user"] == null ? null : CommentUser.fromMap(json["user"]),
-    );
-
-    Map<String, dynamic> toMap() => {
-        "id": id,
-        "content": content,
-        "comment_type": commentType,
-        "relation_type": relationType,
-        "relation_id": relationId,
-        "created_at": createdAt?.toIso8601String(),
-        "deleted_at": deletedAt?.toIso8601String(),
-        "user": user?.toMap(),
-    };
-}
-
-class CommentUser {
-    final int? id;
-    final String? firstName;
-    final String? lastName;
-    final UserPicture? picture;
-
-    CommentUser({
-        this.id,
-        this.firstName,
-        this.lastName,
-        this.picture,
-    });
-
-    factory CommentUser.fromJson(String str) => CommentUser.fromMap(json.decode(str));
-
-    String toJson() => json.encode(toMap());
-
-    factory CommentUser.fromMap(Map<String, dynamic> json) => CommentUser(
-        id: json["id"],
-        firstName: json["first_name"],
-        lastName: json["last_name"],
-        picture: json["picture"] == null ? null : UserPicture.fromMap(json["picture"]),
-    );
-
-    Map<String, dynamic> toMap() => {
-        "id": id,
-        "first_name": firstName,
-        "last_name": lastName,
-        "picture": picture?.toMap(),
-    };
-}
-
-class UserPicture {
-    final String? medium;
-
-    UserPicture({
-        this.medium,
-    });
-
-    factory UserPicture.fromJson(String str) => UserPicture.fromMap(json.decode(str));
-
-    String toJson() => json.encode(toMap());
-
-    factory UserPicture.fromMap(Map<String, dynamic> json) => UserPicture(
-        medium: json["medium"],
-    );
-
-    Map<String, dynamic> toMap() => {
-        "medium": medium,
-    };
-}
-
 class TedBy {
-    final int? id;
-    final String? firstName;
-    final String? lastName;
-    final String? email;
-    final String? registrationStatus;
-    final CreatedByPicture? picture;
-    final bool? customPicture;
+    int? id;
+    String? firstName;
+    dynamic lastName;
+    dynamic email;
+    dynamic registrationStatus;
+    CreatedByPicture? picture;
+    bool? customPicture;
 
     TedBy({
         this.id,
@@ -294,6 +273,25 @@ class TedBy {
         this.picture,
         this.customPicture,
     });
+
+    TedBy copyWith({
+        int? id,
+        String? firstName,
+        dynamic lastName,
+        dynamic email,
+        dynamic registrationStatus,
+        CreatedByPicture? picture,
+        bool? customPicture,
+    }) => 
+        TedBy(
+            id: id ?? this.id,
+            firstName: firstName ?? this.firstName,
+            lastName: lastName ?? this.lastName,
+            email: email ?? this.email,
+            registrationStatus: registrationStatus ?? this.registrationStatus,
+            picture: picture ?? this.picture,
+            customPicture: customPicture ?? this.customPicture,
+        );
 
     factory TedBy.fromJson(String str) => TedBy.fromMap(json.decode(str));
 
@@ -321,15 +319,26 @@ class TedBy {
 }
 
 class CreatedByPicture {
-    final String? small;
-    final String? medium;
-    final String? large;
+    dynamic small;
+    String? medium;
+    dynamic large;
 
     CreatedByPicture({
         this.small,
         this.medium,
         this.large,
     });
+
+    CreatedByPicture copyWith({
+        dynamic small,
+        String? medium,
+        dynamic large,
+    }) => 
+        CreatedByPicture(
+            small: small ?? this.small,
+            medium: medium ?? this.medium,
+            large: large ?? this.large,
+        );
 
     factory CreatedByPicture.fromJson(String str) => CreatedByPicture.fromMap(json.decode(str));
 
@@ -349,13 +358,22 @@ class CreatedByPicture {
 }
 
 class Receipt {
-    final String? large;
-    final String? original;
+    dynamic large;
+    dynamic original;
 
     Receipt({
         this.large,
         this.original,
     });
+
+    Receipt copyWith({
+        dynamic large,
+        dynamic original,
+    }) => 
+        Receipt(
+            large: large ?? this.large,
+            original: original ?? this.original,
+        );
 
     factory Receipt.fromJson(String str) => Receipt.fromMap(json.decode(str));
 
@@ -373,15 +391,26 @@ class Receipt {
 }
 
 class Repayment {
-    final int? from;
-    final int? to;
-    final String? amount;
+    int? from;
+    int? to;
+    String? amount;
 
     Repayment({
         this.from,
         this.to,
         this.amount,
     });
+
+    Repayment copyWith({
+        int? from,
+        int? to,
+        String? amount,
+    }) => 
+        Repayment(
+            from: from ?? this.from,
+            to: to ?? this.to,
+            amount: amount ?? this.amount,
+        );
 
     factory Repayment.fromJson(String str) => Repayment.fromMap(json.decode(str));
 
@@ -401,11 +430,11 @@ class Repayment {
 }
 
 class UserElement {
-    final CommentUser? user;
-    final int? userId;
-    final String? paidShare;
-    final String? owedShare;
-    final String? netBalance;
+    UserUser? user;
+    int? userId;
+    String? paidShare;
+    String? owedShare;
+    String? netBalance;
 
     UserElement({
         this.user,
@@ -415,12 +444,27 @@ class UserElement {
         this.netBalance,
     });
 
+    UserElement copyWith({
+        UserUser? user,
+        int? userId,
+        String? paidShare,
+        String? owedShare,
+        String? netBalance,
+    }) => 
+        UserElement(
+            user: user ?? this.user,
+            userId: userId ?? this.userId,
+            paidShare: paidShare ?? this.paidShare,
+            owedShare: owedShare ?? this.owedShare,
+            netBalance: netBalance ?? this.netBalance,
+        );
+
     factory UserElement.fromJson(String str) => UserElement.fromMap(json.decode(str));
 
     String toJson() => json.encode(toMap());
 
     factory UserElement.fromMap(Map<String, dynamic> json) => UserElement(
-        user: json["user"] == null ? null : CommentUser.fromMap(json["user"]),
+        user: json["user"] == null ? null : UserUser.fromMap(json["user"]),
         userId: json["user_id"],
         paidShare: json["paid_share"],
         owedShare: json["owed_share"],
@@ -433,5 +477,77 @@ class UserElement {
         "paid_share": paidShare,
         "owed_share": owedShare,
         "net_balance": netBalance,
+    };
+}
+
+class UserUser {
+    int? id;
+    String? firstName;
+    dynamic lastName;
+    UserPicture? picture;
+
+    UserUser({
+        this.id,
+        this.firstName,
+        this.lastName,
+        this.picture,
+    });
+
+    UserUser copyWith({
+        int? id,
+        String? firstName,
+        dynamic lastName,
+        UserPicture? picture,
+    }) => 
+        UserUser(
+            id: id ?? this.id,
+            firstName: firstName ?? this.firstName,
+            lastName: lastName ?? this.lastName,
+            picture: picture ?? this.picture,
+        );
+
+    factory UserUser.fromJson(String str) => UserUser.fromMap(json.decode(str));
+
+    String toJson() => json.encode(toMap());
+
+    factory UserUser.fromMap(Map<String, dynamic> json) => UserUser(
+        id: json["id"],
+        firstName: json["first_name"],
+        lastName: json["last_name"],
+        picture: json["picture"] == null ? null : UserPicture.fromMap(json["picture"]),
+    );
+
+    Map<String, dynamic> toMap() => {
+        "id": id,
+        "first_name": firstName,
+        "last_name": lastName,
+        "picture": picture?.toMap(),
+    };
+}
+
+class UserPicture {
+    String? medium;
+
+    UserPicture({
+        this.medium,
+    });
+
+    UserPicture copyWith({
+        String? medium,
+    }) => 
+        UserPicture(
+            medium: medium ?? this.medium,
+        );
+
+    factory UserPicture.fromJson(String str) => UserPicture.fromMap(json.decode(str));
+
+    String toJson() => json.encode(toMap());
+
+    factory UserPicture.fromMap(Map<String, dynamic> json) => UserPicture(
+        medium: json["medium"],
+    );
+
+    Map<String, dynamic> toMap() => {
+        "medium": medium,
     };
 }

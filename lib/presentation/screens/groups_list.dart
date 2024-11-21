@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:splitz/data/models/splitwise/get_groups/get_groups_response.dart';
+import 'package:splitz/data/models/splitwise/common/group.dart';
 import 'package:splitz/extensions/list.dart';
 import 'package:splitz/extensions/widgets.dart';
 import 'package:splitz/navigator.dart';
@@ -65,7 +65,7 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
                         )
                         .intersperse(
                           const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 6),
+                            padding: EdgeInsets.symmetric(vertical: 12),
                             child: Divider(
                               height: 1,
                               indent: 24,

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:splitz/data/models/splitwise/get_expenses/get_expenses_response.dart';
+import 'package:splitz/data/models/splitz/group_config.dart';
 import 'package:splitz/extensions/list.dart';
 import 'package:splitz/extensions/widgets.dart';
+import 'package:splitz/navigator.dart';
+import 'package:splitz/presentation/screens/group_config.dart';
+import 'package:splitz/presentation/widgets/button_primary.dart';
 import 'package:splitz/presentation/widgets/expense_item.dart';
 import 'package:splitz/presentation/widgets/loading.dart';
 import 'package:splitz/presentation/widgets/snackbar.dart';
@@ -19,11 +23,23 @@ class GroupScreen extends StatefulWidget {
 
 class _GroupScreenState extends State<GroupScreen> {
   List<Expense>? expenses;
+  GroupConfig? config;
   bool isRefreshing = false;
+
   @override
   void initState() {
     super.initState();
-    getExpenses();
+    initGroup();
+  }
+
+  Future<void> initGroup() async {
+    final result = await SplitzService.getGroupConfig(widget.groupId);
+    if (result == null) {
+      await AppNavigator.push(
+        GroupConfigScreen(id: widget.groupId, config: null),
+      );
+    }
+    await getExpenses();
   }
 
   Future<void> getExpenses({bool refreshing = false}) async {
@@ -45,7 +61,7 @@ class _GroupScreenState extends State<GroupScreen> {
   }
 
   void onTap(Expense expense) {
-    LogService.log(expense.description!);
+    LogService.log(expense.description ?? '');
   }
 
   @override
@@ -58,21 +74,26 @@ class _GroupScreenState extends State<GroupScreen> {
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
-                    children: expenses!
-                        .map<Widget>(
-                          (e) => ExpenseItem(expense: e, onTap: onTap),
-                        )
-                        .intersperse(
-                          const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 6),
-                            child: Divider(
-                              height: 1,
-                              indent: 24,
-                              endIndent: 24,
+                    children: [
+                      PrimaryButton(
+                        text: 'teste',
+                        onPressed: initGroup,
+                      ),
+                      ...expenses!
+                          .map<Widget>(
+                            (e) => ExpenseItem(expense: e, onTap: onTap),
+                          )
+                          .intersperse(
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 6),
+                              child: Divider(
+                                height: 1,
+                                indent: 24,
+                                endIndent: 24,
+                              ),
                             ),
-                          ),
-                        )
-                        .toList(),
+                          )
+                    ],
                   ).withPadding(const EdgeInsets.all(24)),
                 ),
               )

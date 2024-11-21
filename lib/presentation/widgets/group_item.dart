@@ -2,7 +2,7 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:splitz/data/models/splitwise/get_groups/get_groups_response.dart';
+import 'package:splitz/data/models/splitwise/common/group.dart';
 import 'package:splitz/extensions/widgets.dart';
 
 const _cardHeight = 100.0;
@@ -15,7 +15,7 @@ class GroupItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String avatarUrl = group.avatar!.xxlarge!;
+    final String avatarUrl = group.avatar?.xxlarge ?? '';
     return InkWell(
       onTap: () => onTap(group),
       borderRadius: BorderRadius.all(
@@ -43,7 +43,7 @@ class GroupItem extends StatelessWidget {
             ),
             Flexible(
               child: Text(
-                group.name!,
+                group.name ?? '',
                 softWrap: true,
               ).withPadding(EdgeInsets.all(12.0)),
             ),
