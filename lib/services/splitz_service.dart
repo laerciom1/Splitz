@@ -55,30 +55,30 @@ abstract class SplitzService {
     return filteredExpenses;
   }
 
-  static List<SplitConfig> getSplitConfigsFromMembers(List<Member> members) {
-    final result = <SplitConfig>[];
+  static List<SplitzConfig> getSplitConfigsFromMembers(List<Member> members) {
+    final result = <SplitzConfig>[];
     double sum = 0;
     for (int idx = 0; idx < members.length - 1; idx++) {
       sum += (100 / members.length).round();
-      result.add(SplitConfig(
+      result.add(SplitzConfig(
         id: members[idx].id,
         name: members[idx].firstName,
-        avatarUrl: members[idx].picture?.large,
+        avatarUrl: members[idx].picture.large,
         slice: (100 / members.length).round(),
       ));
     }
-    result.add(SplitConfig(
+    result.add(SplitzConfig(
       id: members.last.id,
       name: members.last.firstName,
-      avatarUrl: members.last.picture?.large,
+      avatarUrl: members.last.picture.large,
       slice: (100 - sum).round(),
     ));
     return result;
   }
 
-  static List<SplitConfig> mergeSplitConfigs(
-    List<SplitConfig> a,
-    List<SplitConfig> b,
+  static List<SplitzConfig> mergeSplitConfigs(
+    List<SplitzConfig> a,
+    List<SplitzConfig> b,
   ) {
     if (a.isEmpty) return b;
     if (b.isEmpty) return a;
@@ -110,5 +110,18 @@ abstract class SplitzService {
             (a.updatedAt ?? DateTime.now()),
           ));
     return groups;
+  }
+
+  static Future<List<SplitzCategory>> getAvailableCategories() async {
+    final response = await SplitwiseRepository.getAvailableCategories();
+    if (response == null || response.categories == null) return [];
+    final result = <SplitzCategory>[];
+    for (var c in response.categories!) {
+      result.add(SplitzCategory.fromCategory(c));
+      result.addAll(
+        (c.subcategories ?? []).map((c) => SplitzCategory.fromCategory(c)),
+      );
+    }
+    return result.unique((e) => e.imageUrl);
   }
 }

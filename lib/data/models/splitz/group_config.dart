@@ -1,124 +1,146 @@
 import 'dart:convert';
 
+import 'package:splitz/data/models/splitwise/common/category.dart';
+
 class GroupConfig {
-    List<Category>? categories;
-    List<SplitConfig>? splitConfig;
+  List<SplitzCategory> categories;
+  List<SplitzConfig> splitConfig;
 
-    GroupConfig({
-        this.categories,
-        this.splitConfig,
-    });
+  GroupConfig({
+    required this.categories,
+    required this.splitConfig,
+  });
 
-    GroupConfig copyWith({
-        List<Category>? categories,
-        List<SplitConfig>? splitConfig,
-    }) => 
-        GroupConfig(
-            categories: categories ?? this.categories,
-            splitConfig: splitConfig ?? this.splitConfig,
-        );
+  GroupConfig copyWith({
+    List<SplitzCategory>? categories,
+    List<SplitzConfig>? splitConfig,
+  }) =>
+      GroupConfig(
+        categories: categories ?? this.categories,
+        splitConfig: splitConfig ?? this.splitConfig,
+      );
 
-    factory GroupConfig.fromJson(String str) => GroupConfig.fromMap(json.decode(str));
+  factory GroupConfig.fromJson(String str) =>
+      GroupConfig.fromMap(json.decode(str));
 
-    String toJson() => json.encode(toMap());
+  String toJson() => json.encode(toMap());
 
-    factory GroupConfig.fromMap(Map<String, dynamic> json) => GroupConfig(
-        categories: json["categories"] == null ? [] : List<Category>.from(json["categories"]!.map((x) => Category.fromMap(x))),
-        splitConfig: json["split_config"] == null ? [] : List<SplitConfig>.from(json["split_config"]!.map((x) => SplitConfig.fromMap(x))),
-    );
+  factory GroupConfig.fromMap(Map<String, dynamic> json) => GroupConfig(
+        categories: json["categories"] == null
+            ? []
+            : List<SplitzCategory>.from(
+                json["categories"]!.map((x) => SplitzCategory.fromMap(x))),
+        splitConfig: json["split_config"] == null
+            ? []
+            : List<SplitzConfig>.from(
+                json["split_config"]!.map((x) => SplitzConfig.fromMap(x))),
+      );
 
-    Map<String, dynamic> toMap() => {
-        "categories": categories == null ? [] : List<dynamic>.from(categories!.map((x) => x.toMap())),
-        "split_config": splitConfig == null ? [] : List<dynamic>.from(splitConfig!.map((x) => x.toMap())),
-    };
+  Map<String, dynamic> toMap() => {
+        "categories": List<dynamic>.from(categories.map((x) => x.toMap())),
+        "split_config": List<dynamic>.from(splitConfig.map((x) => x.toMap())),
+      };
 }
 
-class Category {
-    String? suffix;
-    String? imageUrl;
-    int? id;
-    List<SplitConfig>? splitConfig;
+class SplitzCategory {
+  String suffix;
+  String imageUrl;
+  int id;
+  List<SplitzConfig>? splitConfig;
 
-    Category({
-        this.suffix,
-        this.imageUrl,
-        this.id,
-        this.splitConfig,
-    });
+  SplitzCategory({
+    required this.suffix,
+    required this.imageUrl,
+    required this.id,
+    this.splitConfig,
+  });
 
-    Category copyWith({
-        String? suffix,
-        String? imageUrl,
-        int? id,
-        List<SplitConfig>? splitConfig,
-    }) => 
-        Category(
-            suffix: suffix ?? this.suffix,
-            imageUrl: imageUrl ?? this.imageUrl,
-            id: id ?? this.id,
-            splitConfig: splitConfig ?? this.splitConfig,
-        );
+  SplitzCategory copyWith({
+    String? suffix,
+    String? imageUrl,
+    int? id,
+    List<SplitzConfig>? splitConfig,
+  }) =>
+      SplitzCategory(
+        suffix: suffix ?? this.suffix,
+        imageUrl: imageUrl ?? this.imageUrl,
+        id: id ?? this.id,
+        splitConfig: splitConfig ?? this.splitConfig,
+      );
 
-    factory Category.fromJson(String str) => Category.fromMap(json.decode(str));
+  factory SplitzCategory.fromJson(String str) =>
+      SplitzCategory.fromMap(json.decode(str));
 
-    String toJson() => json.encode(toMap());
+  String toJson() => json.encode(toMap());
 
-    factory Category.fromMap(Map<String, dynamic> json) => Category(
+  factory SplitzCategory.fromMap(Map<String, dynamic> json) => SplitzCategory(
         suffix: json["suffix"],
         imageUrl: json["imageUrl"],
         id: json["id"],
-        splitConfig: json["split_config"] == null ? [] : List<SplitConfig>.from(json["split_config"]!.map((x) => SplitConfig.fromMap(x))),
-    );
+        splitConfig: json["split_config"] == null
+            ? []
+            : List<SplitzConfig>.from(
+                json["split_config"]!.map((x) => SplitzConfig.fromMap(x))),
+      );
 
-    Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toMap() => {
         "suffix": suffix,
         "imageUrl": imageUrl,
         "id": id,
-        "split_config": splitConfig == null ? [] : List<dynamic>.from(splitConfig!.map((x) => x.toMap())),
-    };
+        "split_config": splitConfig == null
+            ? null
+            : List<dynamic>.from(splitConfig!.map((x) => x.toMap())),
+      };
+
+  factory SplitzCategory.fromCategory(Category c) => SplitzCategory(
+        suffix: '',
+        imageUrl: c.iconTypes!.square!.large!,
+        id: c.id!,
+      );
 }
 
-class SplitConfig {
-    int? id;
-    String? name;
-    String? avatarUrl;
-    int? slice;
+class SplitzConfig {
+  int id;
+  String name;
+  String avatarUrl;
+  int slice;
 
-    SplitConfig({
-        this.id,
-        this.name,
-        this.avatarUrl,
-        this.slice,
-    });
+  SplitzConfig({
+    required this.id,
+    required this.name,
+    required this.avatarUrl,
+    required this.slice,
+  });
 
-    SplitConfig copyWith({
-        int? id,
-        String? name,
-        String? avatarUrl,
-        int? slice,
-    }) => 
-        SplitConfig(
-            id: id ?? this.id,
-            name: name ?? this.name,
-            avatarUrl: avatarUrl ?? this.avatarUrl,
-            slice: slice ?? this.slice,
-        );
+  SplitzConfig copyWith({
+    int? id,
+    String? name,
+    String? avatarUrl,
+    int? slice,
+  }) =>
+      SplitzConfig(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        avatarUrl: avatarUrl ?? this.avatarUrl,
+        slice: slice ?? this.slice,
+      );
 
-    factory SplitConfig.fromJson(String str) => SplitConfig.fromMap(json.decode(str));
+  factory SplitzConfig.fromJson(String str) =>
+      SplitzConfig.fromMap(json.decode(str));
 
-    String toJson() => json.encode(toMap());
+  String toJson() => json.encode(toMap());
 
-    factory SplitConfig.fromMap(Map<String, dynamic> json) => SplitConfig(
+  factory SplitzConfig.fromMap(Map<String, dynamic> json) => SplitzConfig(
         id: json["id"],
         name: json["name"],
         avatarUrl: json["avatarUrl"],
         slice: json["slice"],
-    );
+      );
 
-    Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toMap() => {
         "id": id,
         "name": name,
         "avatarUrl": avatarUrl,
         "slice": slice,
-    };
+      };
 }

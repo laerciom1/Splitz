@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:splitz/data/entities/expense_entity.dart';
 import 'package:splitz/data/models/splitwise/get_expenses/get_expenses_response.dart';
 import 'package:splitz/data/models/splitz/group_config.dart';
 import 'package:splitz/extensions/list.dart';
@@ -9,7 +10,6 @@ import 'package:splitz/presentation/widgets/button_primary.dart';
 import 'package:splitz/presentation/widgets/expense_item.dart';
 import 'package:splitz/presentation/widgets/loading.dart';
 import 'package:splitz/presentation/widgets/snackbar.dart';
-import 'package:splitz/services/log_service.dart';
 import 'package:splitz/services/splitz_service.dart';
 
 class GroupScreen extends StatefulWidget {
@@ -60,10 +60,6 @@ class _GroupScreenState extends State<GroupScreen> {
     }
   }
 
-  void onTap(Expense expense) {
-    LogService.log(expense.description ?? '');
-  }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -73,7 +69,6 @@ class _GroupScreenState extends State<GroupScreen> {
                 onRefresh: () => getExpenses(refreshing: true),
                 child: SingleChildScrollView(
                   child: Column(
-                    mainAxisSize: MainAxisSize.max,
                     children: [
                       PrimaryButton(
                         text: 'teste',
@@ -81,7 +76,11 @@ class _GroupScreenState extends State<GroupScreen> {
                       ),
                       ...expenses!
                           .map<Widget>(
-                            (e) => ExpenseItem(expense: e, onTap: onTap),
+                            (e) => ExpenseItem(
+                              expense: ExpenseEntity.fromExpenseResponse(e),
+                              categoryPicUrl:
+                                  'https://s3.amazonaws.com/splitwise/uploads/category/icon/square/utilities/cleaning.png',
+                            ),
                           )
                           .intersperse(
                             const Padding(

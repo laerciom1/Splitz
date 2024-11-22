@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:splitz/data/models/splitwise/get_categories/get_categories_response.dart';
 import 'package:splitz/data/models/splitwise/get_expenses/get_expenses_response.dart';
 import 'package:splitz/data/models/splitwise/get_group/get_group_response.dart';
 import 'package:splitz/data/models/splitwise/get_groups/get_groups_response.dart';
@@ -57,6 +58,20 @@ abstract class SplitwiseRepository {
       final dio = await _dioClient;
       final response = await dio.get('/get_groups');
       final result = GetGroupsResponse.fromMap(
+        response.data as Map<String, dynamic>,
+      );
+      return result;
+    } catch (e, s) {
+      LogService.log('Splitwise.test', error: e, stackTrace: s);
+      return null;
+    }
+  }
+
+  static Future<GetCategoriesResponse?> getAvailableCategories() async {
+    try {
+      final dio = await _dioClient;
+      final response = await dio.get('/get_categories');
+      final result = GetCategoriesResponse.fromMap(
         response.data as Map<String, dynamic>,
       );
       return result;
