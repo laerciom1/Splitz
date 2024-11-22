@@ -3,7 +3,6 @@ import 'package:splitz/data/entities/expense_entity.dart';
 import 'package:splitz/data/models/splitwise/get_expenses/get_expenses_response.dart';
 import 'package:splitz/data/models/splitz/group_config.dart';
 import 'package:splitz/extensions/list.dart';
-import 'package:splitz/extensions/widgets.dart';
 import 'package:splitz/navigator.dart';
 import 'package:splitz/presentation/screens/group_config.dart';
 import 'package:splitz/presentation/widgets/button_primary.dart';
@@ -68,32 +67,35 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             ? RefreshIndicator(
                 onRefresh: () => getExpenses(refreshing: true),
                 child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      PrimaryButton(
-                        text: 'teste',
-                        onPressed: initGroup,
-                      ),
-                      ...expenses!
-                          .map<Widget>(
-                            (e) => ExpenseItem(
-                              expense: ExpenseEntity.fromExpenseResponse(e),
-                              categoryPicUrl:
-                                  'https://s3.amazonaws.com/splitwise/uploads/category/icon/square/utilities/cleaning.png',
-                            ),
-                          )
-                          .intersperse(
-                            const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 6),
-                              child: Divider(
-                                height: 1,
-                                indent: 24,
-                                endIndent: 24,
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      children: [
+                        PrimaryButton(
+                          text: 'teste',
+                          onPressed: initGroup,
+                        ),
+                        ...expenses!
+                            .map<Widget>(
+                              (e) => ExpenseItem(
+                                expense: ExpenseEntity.fromExpenseResponse(e),
+                                categoryPicUrl:
+                                    'https://s3.amazonaws.com/splitwise/uploads/category/icon/square/utilities/cleaning.png',
                               ),
-                            ),
-                          )
-                    ],
-                  ).withPadding(const EdgeInsets.all(24)),
+                            )
+                            .intersperse(
+                              const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 6),
+                                child: Divider(
+                                  height: 1,
+                                  indent: 24,
+                                  endIndent: 24,
+                                ),
+                              ),
+                            )
+                      ],
+                    ),
+                  ),
                 ),
               )
             : isRefreshing

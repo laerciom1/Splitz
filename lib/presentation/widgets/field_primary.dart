@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:splitz/extensions/widgets.dart';
 
 class PrimaryField extends StatelessWidget {
   const PrimaryField({
@@ -22,14 +21,17 @@ class PrimaryField extends StatelessWidget {
           color: Theme.of(context).colorScheme.primary,
         ),
       ),
-      child: TextField(
-        focusNode: focusNode,
-        onTapOutside: (_) => focusNode.unfocus(),
-        decoration: const InputDecoration(border: InputBorder.none),
-        textInputAction: TextInputAction.next,
-        autocorrect: false,
-        onChanged: onChanged,
-      ).withPadding(const EdgeInsets.symmetric(horizontal: 12.0)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+        child: TextField(
+          focusNode: focusNode,
+          onTapOutside: (_) => focusNode.unfocus(),
+          decoration: const InputDecoration(border: InputBorder.none),
+          textInputAction: TextInputAction.next,
+          autocorrect: false,
+          onChanged: onChanged,
+        ),
+      ),
     );
   }
 }

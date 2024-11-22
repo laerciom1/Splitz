@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:splitz/data/models/splitz/group_config.dart';
 import 'package:splitz/extensions/list.dart';
-import 'package:splitz/extensions/widgets.dart';
 import 'package:splitz/navigator.dart';
 import 'package:splitz/presentation/widgets/category_selector.dart';
 import 'package:splitz/presentation/widgets/expense_example.dart';
@@ -127,47 +126,45 @@ class _CategoryConfigScreenState extends State<CategoryConfigScreen>
       child: Scaffold(
         body: Stack(
           children: [
-            SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  const Text('Select an image for this category (mandatory):'),
-                  CategorySelector(
-                    categories: _availableCategories,
-                    onSelect: _selectImage,
-                    selectedCategory: _category,
-                  ),
-                  const Text('Type a suffix for this category (mandatory):'),
-                  PrimaryField(
-                    onChanged: _onChangeSuffix,
-                    focusNode: _suffixFocusNode,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      const Text('Use custom division for this category'),
-                      Checkbox(
-                        value: _shoulUseCustomSlices,
-                        onChanged: (_) => _toggleUseCustomSlices(),
+            Padding(
+              padding: const EdgeInsets.only(left: 12, right: 12, bottom: 24),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const SizedBox(height: ExpenseExample.exampleHeight),
+                    const Text(
+                        'Select an image for this category (mandatory):'),
+                    CategorySelector(
+                      categories: _availableCategories,
+                      onSelect: _selectImage,
+                      selectedCategory: _category,
+                    ),
+                    const Text('Type a suffix for this category (mandatory):'),
+                    PrimaryField(
+                      onChanged: _onChangeSuffix,
+                      focusNode: _suffixFocusNode,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        const Text('Use custom division for this category'),
+                        Checkbox(
+                          value: _shoulUseCustomSlices,
+                          onChanged: (_) => _toggleUseCustomSlices(),
+                        ),
+                      ],
+                    ),
+                    if (_shoulUseCustomSlices)
+                      SliceEditor(
+                        splitzConfigs: _splitzConfigs,
+                        focusNodes: _focusNodes,
+                        controllers: _controllers,
+                        onEditConfigs: _onEditConfig,
                       ),
-                    ],
-                  ),
-                  if (_shoulUseCustomSlices)
-                    SliceEditor(
-                      splitzConfigs: _splitzConfigs,
-                      focusNodes: _focusNodes,
-                      controllers: _controllers,
-                      onEditConfigs: _onEditConfig,
-                    )
-                ].intersperse(const SizedBox(height: 12)).toList(),
-              ),
-            ).withPadding(
-              const EdgeInsets.only(
-                top: 12 + ExpenseExample.exampleHeight,
-                left: 12,
-                right: 12,
-                bottom: 24,
+                  ].intersperse(const SizedBox(height: 12)).toList(),
+                ),
               ),
             ),
             ExpenseExample(

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:splitz/data/models/splitz/group_config.dart';
 import 'package:splitz/extensions/list.dart';
 import 'package:splitz/extensions/strings.dart';
-import 'package:splitz/extensions/widgets.dart';
 import 'package:splitz/presentation/theme/slice_colors.dart';
 import 'package:splitz/presentation/widgets/circle_avatar.dart';
 import 'package:splitz/presentation/widgets/field_percentage.dart';
@@ -88,23 +87,26 @@ class SliceEditor extends StatelessWidget {
     final sum = ranges.fold(0.0, (accu, curr) => accu + curr);
     return Column(
       children: [
-        ...splitzConfigs.asMap().entries.map((e) {
+        ...splitzConfigs.asMap().entries.map<Widget>((e) {
           final config = e.value;
-          return SizedBox(
-            height: _userCardHeight,
-            width: double.infinity,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SplitzCircleAvatar(
-                  radius: _userCardHeight,
-                  avatarUrl: config.avatarUrl,
-                ),
-                const SizedBox(width: 12),
-                Focus(child: getUserInfo(e, context)),
-              ],
+          return Padding(
+            padding: const EdgeInsets.only(left: 24),
+            child: SizedBox(
+              height: _userCardHeight,
+              width: double.infinity,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SplitzCircleAvatar(
+                    radius: _userCardHeight,
+                    avatarUrl: config.avatarUrl,
+                  ),
+                  const SizedBox(width: 12),
+                  Focus(child: getUserInfo(e, context)),
+                ],
+              ),
             ),
-          ).withPadding(const EdgeInsets.only(left: 24));
+          );
         }).intersperse(const SizedBox(height: 12)),
         if (sum == 100.0)
           SliceSlider(
@@ -112,8 +114,9 @@ class SliceEditor extends StatelessWidget {
             initRangeValues: getRanges(),
           ),
         if (sum != 100.0)
-          const Text('The sum of the users\' parts must be 100%').withPadding(
-            const EdgeInsets.only(top: 24),
+          const Padding(
+            padding: EdgeInsets.only(top: 24),
+            child: Text('The sum of the users\' parts must be 100%'),
           ),
       ],
     );

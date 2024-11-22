@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:splitz/extensions/widgets.dart';
 import 'package:splitz/presentation/screens/groups_list.dart';
 import 'package:splitz/presentation/widgets/button_primary.dart';
 import 'package:splitz/presentation/widgets/snackbar.dart';
@@ -63,13 +62,18 @@ class _SplitwiseLoginScreenState extends State<SplitwiseLoginScreen> {
         body: shouldLoadPage
             ? WebViewWidget(controller: controller)
             : Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    PrimaryButton(
-                        text: 'Login to Splitwise', onPressed: doLogin)
-                  ],
-                ).withPadding(const EdgeInsets.symmetric(horizontal: 24)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      PrimaryButton(
+                        text: 'Login to Splitwise',
+                        onPressed: doLogin,
+                      )
+                    ],
+                  ),
+                ),
               ),
       ),
     );

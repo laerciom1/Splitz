@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:splitz/data/models/splitz/group_config.dart';
-import 'package:splitz/extensions/widgets.dart';
 import 'package:splitz/presentation/widgets/category_image.dart';
 
 class CategorySelector extends StatelessWidget {
@@ -29,20 +28,21 @@ class CategorySelector extends StatelessWidget {
       ),
       child: SingleChildScrollView(
         child: Center(
-          child: Wrap(
-            spacing: 2.0,
-            runSpacing: 2.0,
-            children: categories
-                .map(
-                  (c) => CategoryImage(
-                    category: c,
-                    onSelect: onSelect,
-                    isSelected: c.imageUrl == selectedCategory.imageUrl,
-                  ),
-                )
-                .toList(),
-          ).withPadding(
-            const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+            child: Wrap(
+              spacing: 2.0,
+              runSpacing: 2.0,
+              children: categories
+                  .map(
+                    (c) => CategoryImage(
+                      category: c,
+                      onSelect: onSelect,
+                      isSelected: c.imageUrl == selectedCategory.imageUrl,
+                    ),
+                  )
+                  .toList(),
+            ),
           ),
         ),
       ),

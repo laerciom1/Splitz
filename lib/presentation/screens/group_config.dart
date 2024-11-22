@@ -2,7 +2,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:splitz/data/models/splitz/group_config.dart';
-import 'package:splitz/extensions/widgets.dart';
 import 'package:splitz/navigator.dart';
 import 'package:splitz/presentation/screens/category_config.dart';
 import 'package:splitz/presentation/widgets/loading.dart';
@@ -137,9 +136,12 @@ class _GroupConfigScreenState extends State<GroupConfigScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                              'Default division of expenses among participants:')
-                          .withPadding(const EdgeInsets.all(24)),
+                      const Padding(
+                        padding: EdgeInsets.all(24),
+                        child: Text(
+                          'Default division of expenses among participants:',
+                        ),
+                      ),
                       SliceEditor(
                         splitzConfigs: _config!.splitConfig,
                         focusNodes: _focusNodes,

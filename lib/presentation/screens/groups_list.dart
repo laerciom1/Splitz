@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:splitz/data/models/splitwise/common/group.dart';
 import 'package:splitz/extensions/list.dart';
-import 'package:splitz/extensions/widgets.dart';
 import 'package:splitz/navigator.dart';
 import 'package:splitz/presentation/screens/expenses.dart';
 import 'package:splitz/presentation/widgets/group_item.dart';
@@ -57,24 +56,27 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
             ? RefreshIndicator(
                 onRefresh: () => getGroups(refreshing: true),
                 child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: groups!
-                        .map<Widget>(
-                          (e) => GroupItem(group: e, onTap: onSelectGroup),
-                        )
-                        .intersperse(
-                          const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 12),
-                            child: Divider(
-                              height: 1,
-                              indent: 24,
-                              endIndent: 24,
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: groups!
+                          .map<Widget>(
+                            (e) => GroupItem(group: e, onTap: onSelectGroup),
+                          )
+                          .intersperse(
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                              child: Divider(
+                                height: 1,
+                                indent: 24,
+                                endIndent: 24,
+                              ),
                             ),
-                          ),
-                        )
-                        .toList(),
-                  ).withPadding(const EdgeInsets.all(24)),
+                          )
+                          .toList(),
+                    ),
+                  ),
                 ),
               )
             : isRefreshing

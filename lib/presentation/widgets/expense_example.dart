@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:splitz/data/entities/expense_entity.dart';
 import 'package:splitz/data/models/splitz/group_config.dart';
-import 'package:splitz/extensions/widgets.dart';
 import 'package:splitz/presentation/widgets/button_primary.dart';
 import 'package:splitz/presentation/widgets/expense_item.dart';
 
@@ -43,8 +42,10 @@ class ExpenseExample extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('Example of an expense of this category:')
-              .withPadding(const EdgeInsets.only(top: 12, left: 12)),
+          const Padding(
+            padding: EdgeInsets.only(top: 12, left: 12),
+            child: Text('Example of an expense of this category:'),
+          ),
           ExpenseItem(
             expense: ExpenseEntity(
               id: 0,
@@ -69,16 +70,20 @@ class ExpenseExample extends StatelessWidget {
             ),
             categoryPicUrl: category.imageUrl,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              PrimaryButton(
-                text: 'Save',
-                onPressed: onSave,
-                enabled: category.imageUrl.isNotEmpty && category.suffix.isNotEmpty,
-              ),
-            ],
-          ).withPadding(const EdgeInsets.symmetric(horizontal: 12)),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                PrimaryButton(
+                  text: 'Save',
+                  onPressed: onSave,
+                  enabled: category.imageUrl.isNotEmpty &&
+                      category.suffix.isNotEmpty,
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

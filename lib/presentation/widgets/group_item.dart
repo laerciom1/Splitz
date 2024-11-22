@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:splitz/data/models/splitwise/common/group.dart';
-import 'package:splitz/extensions/widgets.dart';
 
 const _cardHeight = 100.0;
 
@@ -35,15 +34,20 @@ class GroupItem extends StatelessWidget {
               clipBehavior: Clip.hardEdge,
               child: CachedNetworkImage(
                 imageUrl: avatarUrl,
-                placeholder: (_, __) => const CircularProgressIndicator()
-                    .withPadding(const EdgeInsets.all((1 / 4) * _cardHeight)),
+                placeholder: (_, __) => const Padding(
+                  padding: EdgeInsets.all((1 / 4) * _cardHeight),
+                  child: CircularProgressIndicator(),
+                ),
               ),
             ),
             Flexible(
-              child: Text(
-                group.name ?? '',
-                softWrap: true,
-              ).withPadding(const EdgeInsets.all(12.0)),
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Text(
+                  group.name ?? '',
+                  softWrap: true,
+                ),
+              ),
             ),
           ],
         ),
