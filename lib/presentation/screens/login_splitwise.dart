@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:flutter/material.dart';
 import 'package:splitz/extensions/widgets.dart';
 import 'package:splitz/presentation/screens/groups_list.dart';

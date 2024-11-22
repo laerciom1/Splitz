@@ -3,7 +3,7 @@ import 'package:splitz/data/models/splitwise/common/group.dart';
 import 'package:splitz/extensions/list.dart';
 import 'package:splitz/extensions/widgets.dart';
 import 'package:splitz/navigator.dart';
-import 'package:splitz/presentation/screens/group.dart';
+import 'package:splitz/presentation/screens/expenses.dart';
 import 'package:splitz/presentation/widgets/group_item.dart';
 import 'package:splitz/presentation/widgets/loading.dart';
 import 'package:splitz/presentation/widgets/snackbar.dart';
@@ -46,7 +46,7 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
 
   Future<void> onSelectGroup(Group group) async {
     await SplitzService.selectGroup('${group.id}');
-    AppNavigator.push(GroupScreen(groupId: '${group.id}'));
+    AppNavigator.push(ExpensesScreen(groupId: '${group.id}'));
   }
 
   @override

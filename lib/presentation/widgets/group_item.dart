@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:splitz/data/models/splitwise/common/group.dart';
@@ -18,7 +16,7 @@ class GroupItem extends StatelessWidget {
     final String avatarUrl = group.avatar?.xxlarge ?? '';
     return InkWell(
       onTap: () => onTap(group),
-      borderRadius: BorderRadius.all(
+      borderRadius: const BorderRadius.all(
         Radius.circular((1 / 10) * _cardHeight),
       ),
       child: SizedBox(
@@ -29,7 +27,7 @@ class GroupItem extends StatelessWidget {
             Container(
               height: _cardHeight,
               width: _cardHeight,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 borderRadius: BorderRadius.all(
                   Radius.circular((1 / 10) * _cardHeight),
                 ),
@@ -37,15 +35,15 @@ class GroupItem extends StatelessWidget {
               clipBehavior: Clip.hardEdge,
               child: CachedNetworkImage(
                 imageUrl: avatarUrl,
-                placeholder: (_, __) => CircularProgressIndicator()
-                    .withPadding(EdgeInsets.all((1 / 4) * _cardHeight)),
+                placeholder: (_, __) => const CircularProgressIndicator()
+                    .withPadding(const EdgeInsets.all((1 / 4) * _cardHeight)),
               ),
             ),
             Flexible(
               child: Text(
                 group.name ?? '',
                 softWrap: true,
-              ).withPadding(EdgeInsets.all(12.0)),
+              ).withPadding(const EdgeInsets.all(12.0)),
             ),
           ],
         ),

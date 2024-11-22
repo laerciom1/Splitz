@@ -13,48 +13,47 @@ const _badgeHeight = 8.0;
 
 class SliceEditor extends StatelessWidget {
   const SliceEditor({
-    required this.config,
-    required this.onEditConfig,
+    required this.splitzConfigs,
+    required this.focusNodes,
+    required this.controllers,
+    required this.onEditConfigs,
     super.key,
   });
 
-  final GroupConfig config;
-  final void Function(GroupConfig) onEditConfig;
+  final List<SplitzConfig> splitzConfigs;
+  final List<FocusNode> focusNodes;
+  final List<TextEditingController> controllers;
+  final void Function(List<SplitzConfig>) onEditConfigs;
 
   List<double> getRanges() =>
-      config.splitConfig.map((e) => e.slice.toDouble()).toList();
+      splitzConfigs.map((e) => e.slice.toDouble()).toList();
 
-  void setRange(SplitzConfig c, int newSlice) => onEditConfig(
-        config.copyWith(
-          splitConfig: config.splitConfig.asMap().entries.map((e) {
-            if (e.value != c) return e.value;
-            return e.value.copyWith(slice: newSlice);
-          }).toList(),
-        ),
+  void setRange(SplitzConfig c, int newSlice) => onEditConfigs(
+        splitzConfigs.asMap().entries.map((e) {
+          if (e.value != c) return e.value;
+          return e.value.copyWith(slice: newSlice);
+        }).toList(),
       );
 
-  void setRanges(List<double> newRanges) => onEditConfig(
-        config.copyWith(
-          splitConfig: newRanges
-              .asMap()
-              .entries
-              .map(
-                (e) =>
-                    config.splitConfig[e.key].copyWith(slice: e.value.round()),
-              )
-              .toList(),
-        ),
+  void setRanges(List<double> newRanges) => onEditConfigs(
+        newRanges.asMap().entries.map((e) {
+          return splitzConfigs[e.key].copyWith(slice: e.value.round());
+        }).toList(),
       );
 
   Widget getUserInfo(MapEntry<int, SplitzConfig> e, BuildContext ctx) {
     final inverseSurface = Theme.of(ctx).colorScheme.inverseSurface;
+    final index = e.key;
+    final config = e.value;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         PercentageField(
-          text: e.value.slice.toString(),
+          text: config.slice.toString(),
           textColor: inverseSurface,
-          backgroundColor: sliceColors[e.key],
+          backgroundColor: sliceColors[index],
+          focusNode: focusNodes[index],
+          controller: controllers[index],
           onChanged: (newValue) => setRange(
             e.value,
             newValue.isNotNullNorEmpty ? int.parse(newValue) : 0,
@@ -66,7 +65,7 @@ class SliceEditor extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              e.value.name,
+              config.name,
               style: const TextStyle(fontSize: 16),
             ),
             Container(
@@ -74,7 +73,7 @@ class SliceEditor extends StatelessWidget {
               height: _badgeHeight,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(_badgeHeight / 2),
-                color: sliceColors[e.key],
+                color: sliceColors[index],
               ),
             )
           ],
@@ -89,27 +88,24 @@ class SliceEditor extends StatelessWidget {
     final sum = ranges.fold(0.0, (accu, curr) => accu + curr);
     return Column(
       children: [
-        ...config.splitConfig
-            .asMap()
-            .entries
-            .map(
-              (e) => SizedBox(
-                height: _userCardHeight,
-                width: double.infinity,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SplitzCircleAvatar(
-                      radius: _userCardHeight,
-                      avatarUrl: e.value.avatarUrl,
-                    ),
-                    const SizedBox(width: 12),
-                    getUserInfo(e, context),
-                  ],
+        ...splitzConfigs.asMap().entries.map((e) {
+          final config = e.value;
+          return SizedBox(
+            height: _userCardHeight,
+            width: double.infinity,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SplitzCircleAvatar(
+                  radius: _userCardHeight,
+                  avatarUrl: config.avatarUrl,
                 ),
-              ).withPadding(const EdgeInsets.only(left: 24)),
-            )
-            .intersperse(const SizedBox(height: 12)),
+                const SizedBox(width: 12),
+                Focus(child: getUserInfo(e, context)),
+              ],
+            ),
+          ).withPadding(const EdgeInsets.only(left: 24));
+        }).intersperse(const SizedBox(height: 12)),
         if (sum == 100.0)
           SliceSlider(
             onRangesChanged: setRanges,

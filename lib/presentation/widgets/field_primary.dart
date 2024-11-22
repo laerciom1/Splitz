@@ -3,11 +3,13 @@ import 'package:splitz/extensions/widgets.dart';
 
 class PrimaryField extends StatelessWidget {
   const PrimaryField({
-    this.onChanged,
+    required this.focusNode,
+    required this.onChanged,
     super.key,
   });
 
-  final void Function(String)? onChanged;
+  final FocusNode focusNode;
+  final void Function(String) onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +23,10 @@ class PrimaryField extends StatelessWidget {
         ),
       ),
       child: TextField(
+        focusNode: focusNode,
+        onTapOutside: (_) => focusNode.unfocus(),
         decoration: const InputDecoration(border: InputBorder.none),
-        textInputAction: TextInputAction.done,
+        textInputAction: TextInputAction.next,
         autocorrect: false,
         onChanged: onChanged,
       ).withPadding(const EdgeInsets.symmetric(horizontal: 12.0)),

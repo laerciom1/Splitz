@@ -12,16 +12,16 @@ import 'package:splitz/presentation/widgets/loading.dart';
 import 'package:splitz/presentation/widgets/snackbar.dart';
 import 'package:splitz/services/splitz_service.dart';
 
-class GroupScreen extends StatefulWidget {
-  const GroupScreen({required this.groupId, super.key});
+class ExpensesScreen extends StatefulWidget {
+  const ExpensesScreen({required this.groupId, super.key});
 
   final String groupId;
 
   @override
-  State<GroupScreen> createState() => _GroupScreenState();
+  State<ExpensesScreen> createState() => _ExpensesScreenState();
 }
 
-class _GroupScreenState extends State<GroupScreen> {
+class _ExpensesScreenState extends State<ExpensesScreen> {
   List<Expense>? expenses;
   GroupConfig? config;
   bool isRefreshing = false;

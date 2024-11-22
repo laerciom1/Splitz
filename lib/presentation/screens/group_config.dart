@@ -1,6 +1,6 @@
-// ignore_for_file: prefer_const_constructors
-
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:splitz/data/models/splitz/group_config.dart';
 import 'package:splitz/extensions/widgets.dart';
 import 'package:splitz/navigator.dart';
@@ -24,84 +24,137 @@ class GroupConfigScreen extends StatefulWidget {
   State<GroupConfigScreen> createState() => _GroupConfigScreenState();
 }
 
-class _GroupConfigScreenState extends State<GroupConfigScreen> {
-  late GroupConfig? config;
+class _GroupConfigScreenState extends State<GroupConfigScreen>
+    with WidgetsBindingObserver {
+  late GroupConfig? _config;
+  late final List<FocusNode> _focusNodes;
+  late final List<TextEditingController> _controllers;
+  FocusNode? _lastFocusedNode;
 
   @override
   void initState() {
     super.initState();
-    config = widget.config;
-    syncGroup();
+    WidgetsBinding.instance.addObserver(this);
+    _config = widget.config;
+    _syncGroup();
   }
 
-  Future<void> syncGroup({bool forceSync = false}) async {
-    if (config == null || forceSync) {
-      final groupInfo = await SplitzService.getGroupInfo(widget.id);
-      if (groupInfo == null) {
-        showToast(
-          'Something went wrong retrieving your group. Drag down to refresh.',
-        );
-      } else {
-        final splitConfigsFromMembers =
-            SplitzService.getSplitConfigsFromMembers(
-          groupInfo.group?.members ?? [],
-        );
-        /* The order here is important. SplitConfigs from the widget MUST be the
-           first param, because they have priority
-        */
-        final splitConfigs = SplitzService.mergeSplitConfigs(
-          widget.config?.splitConfig ?? [],
-          splitConfigsFromMembers,
-        );
-        setState(() {
-          config = GroupConfig(
-            categories: config?.categories ?? [],
-            splitConfig: splitConfigs,
-          );
+  @override
+  void dispose() {
+    for (final node in _focusNodes) {
+      node.dispose();
+    }
+    for (final controller in _controllers) {
+      controller.dispose();
+    }
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      if (_lastFocusedNode != null) {
+        Future.delayed(Duration.zero, () {
+          _lastFocusedNode!.requestFocus();
+          SystemChannels.textInput.invokeMethod('TextInput.show');
         });
       }
     }
   }
 
-  void addCategory() async {
-    final groupConfig = await AppNavigator.push<GroupConfig?>(
-      CategoryConfigScreen(category: null, groupConfig: config!),
-    );
-    if (groupConfig == null) return;
+  void _initializeFocusAndControllers(List<SplitzConfig> splitConfig) {
+    _focusNodes = List.generate(splitConfig.length,
+        (_) => FocusNode()..addListener(_trackFocusChanges));
+    _controllers = splitConfig
+        .map((config) => TextEditingController(text: config.slice.toString()))
+        .toList();
+  }
+
+  void _trackFocusChanges() {
+    final focusedNode = _focusNodes.firstWhereOrNull((node) => node.hasFocus);
+    _lastFocusedNode = focusedNode;
+  }
+
+  Future<void> _syncGroup({bool forceSync = false}) async {
+    if (_config != null && !forceSync) {
+      setState(() {
+        _initializeFocusAndControllers(_config!.splitConfig);
+      });
+      return;
+    }
+    final groupInfo = await SplitzService.getGroupInfo(widget.id);
+    if (groupInfo == null) {
+      showToast(
+        'Something went wrong retrieving your group. Drag down to refresh.',
+      );
+    } else {
+      final splitConfigs = SplitzService.mergeSplitConfigs(
+        widget.config?.splitConfig ?? [],
+        SplitzService.getSplitConfigsFromMembers(
+          groupInfo.group?.members ?? [],
+        ),
+      );
+      setState(() {
+        _config = GroupConfig(
+          categories: _config?.categories ?? [],
+          splitConfig: splitConfigs,
+        );
+        _initializeFocusAndControllers(splitConfigs);
+      });
+    }
+  }
+
+  void _onEditConfig(List<SplitzConfig> newConfigs) {
     setState(() {
-      config = groupConfig;
+      _config = _config!.copyWith(splitConfig: newConfigs);
     });
   }
 
-  void onEditConfig(GroupConfig newConfig) {
+  void _addCategory() async {
+    final newCategory = await AppNavigator.push<SplitzCategory?>(
+      CategoryConfigScreen(
+        category: null,
+        splitzConfigs: _config!.splitConfig,
+      ),
+    );
+    if (newCategory == null) return;
     setState(() {
-      config = newConfig;
+      _config = _config!.copyWith(
+        categories: [...(_config!.categories), newCategory],
+      );
     });
   }
 
   @override
-  Widget build(BuildContext ctx) {
+  Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: config != null
+        body: _config != null
             ? RefreshIndicator(
-                onRefresh: () => syncGroup(forceSync: true),
+                onRefresh: () => _syncGroup(forceSync: true),
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Default division of expenses among participants:')
-                          .withPadding(EdgeInsets.all(24)),
-                      SliceEditor(config: config!, onEditConfig: onEditConfig),
+                      const Text(
+                              'Default division of expenses among participants:')
+                          .withPadding(const EdgeInsets.all(24)),
+                      SliceEditor(
+                        splitzConfigs: _config!.splitConfig,
+                        focusNodes: _focusNodes,
+                        controllers: _controllers,
+                        onEditConfigs: _onEditConfig,
+                      ),
                     ],
                   ),
                 ),
               )
             : const Loading(),
         floatingActionButton: FloatingActionButton.extended(
-          label: Text('Add Category'),
+          label: const Text('Add Category'),
           icon: const Icon(Icons.add),
-          onPressed: addCategory,
+          onPressed: _addCategory,
         ),
       ),
     );

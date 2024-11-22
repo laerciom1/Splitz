@@ -72,7 +72,11 @@ class ExpenseExample extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              PrimaryButton(text: 'Save', onPressed: onSave),
+              PrimaryButton(
+                text: 'Save',
+                onPressed: onSave,
+                enabled: category.imageUrl.isNotEmpty && category.suffix.isNotEmpty,
+              ),
             ],
           ).withPadding(const EdgeInsets.symmetric(horizontal: 12)),
         ],

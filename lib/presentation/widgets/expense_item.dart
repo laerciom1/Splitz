@@ -1,6 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
-// import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:splitz/data/entities/expense_entity.dart';
@@ -22,7 +19,7 @@ class ExpenseItem extends StatelessWidget {
   final String? categoryPicUrl;
 
   Widget getInfo(String str) => Text(
-        style: TextStyle(fontSize: 12),
+        style: const TextStyle(fontSize: 12),
         str,
         softWrap: true,
       );
@@ -38,7 +35,7 @@ class ExpenseItem extends StatelessWidget {
           Container(
             height: _cardHeight,
             width: _cardHeight,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               borderRadius: BorderRadius.all(
                 Radius.circular((1 / 10) * _cardHeight),
               ),
@@ -46,9 +43,9 @@ class ExpenseItem extends StatelessWidget {
             clipBehavior: Clip.hardEdge,
             child: categoryPicUrl.isNotNullNorEmpty
                 ? CachedNetworkImage(imageUrl: categoryPicUrl!)
-                : Placeholder(
+                : const Placeholder(
                     child: Padding(
-                      padding: const EdgeInsets.all(4.0),
+                      padding: EdgeInsets.all(4.0),
                       child: Center(
                         child: Text(
                           'No image yet',
@@ -58,7 +55,7 @@ class ExpenseItem extends StatelessWidget {
                     ),
                   ),
           ),
-          SizedBox(width: 12.0, height: 1),
+          const SizedBox(width: 12.0, height: 1),
           Flexible(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -99,6 +96,6 @@ class ExpenseItem extends StatelessWidget {
           ),
         ],
       ),
-    ).withPadding(EdgeInsets.all(12.0));
+    ).withPadding(const EdgeInsets.all(12.0));
   }
 }

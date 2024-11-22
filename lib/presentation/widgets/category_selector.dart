@@ -42,7 +42,7 @@ class CategorySelector extends StatelessWidget {
                 )
                 .toList(),
           ).withPadding(
-            EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+            const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
           ),
         ),
       ),
