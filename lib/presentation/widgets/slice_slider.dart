@@ -156,12 +156,12 @@ class SliceSlider extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       child: MultiThumbSlider(
-        initalSliderValues: values.map((e) => e / 100).toList(),
+        initalSliderValues: [...values.map((e) => e / 100)],
         lockBehaviour: ThumbLockBehaviour.none,
         overdragBehaviour: ThumbOverdragBehaviour.move,
         valuesChanged: (newValues) {
           onRangesChanged?.call(getRangesByValues(
-            newValues.map((e) => e * 100).toList(),
+            [...newValues.map((e) => e * 100)],
           ));
         },
         thumbBuilder: (_, __) => Container(

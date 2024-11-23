@@ -60,21 +60,22 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
                     padding: const EdgeInsets.all(24),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
-                      children: groups!
-                          .map<Widget>(
-                            (e) => GroupItem(group: e, onTap: onSelectGroup),
-                          )
-                          .intersperse(
-                            const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 12),
-                              child: Divider(
-                                height: 1,
-                                indent: 24,
-                                endIndent: 24,
+                      children: [
+                        ...groups!
+                            .map<Widget>(
+                              (e) => GroupItem(group: e, onTap: onSelectGroup),
+                            )
+                            .intersperse(
+                              const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 12),
+                                child: Divider(
+                                  height: 1,
+                                  indent: 24,
+                                  endIndent: 24,
+                                ),
                               ),
-                            ),
-                          )
-                          .toList(),
+                            )
+                      ],
                     ),
                   ),
                 ),

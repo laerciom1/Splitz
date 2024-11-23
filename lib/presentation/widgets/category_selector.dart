@@ -33,15 +33,15 @@ class CategorySelector extends StatelessWidget {
             child: Wrap(
               spacing: 2.0,
               runSpacing: 2.0,
-              children: categories
-                  .map(
-                    (c) => CategoryImage(
-                      category: c,
-                      onSelect: onSelect,
-                      isSelected: c.imageUrl == selectedCategory.imageUrl,
-                    ),
-                  )
-                  .toList(),
+              children: [
+                ...categories.map(
+                  (c) => CategoryImage(
+                    category: c,
+                    onSelect: onSelect,
+                    isSelected: c.imageUrl == selectedCategory.imageUrl,
+                  ),
+                ),
+              ],
             ),
           ),
         ),

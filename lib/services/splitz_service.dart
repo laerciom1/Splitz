@@ -46,12 +46,16 @@ abstract class SplitzService {
     return InitResult(firstScreen: FirstScreen.groupsList);
   }
 
-  static Future<List<Expense>?> getExpenses(String groupId) async {
-    final response = await SplitwiseRepository.getExpenses();
+  static Future<List<Expense>?> getExpenses(
+    String groupId,
+    List<SplitzCategory> categories,
+  ) async {
+    final response = await SplitwiseRepository.getExpenses(groupId);
     if (response == null) return null;
-    final filteredExpenses = (response.expenses ?? [])
-        .where((e) => groupId == '${e.groupId}' && e.deletedAt == null)
-        .toList();
+    final filteredExpenses = [
+      ...(response.expenses ?? [])
+          .where((e) => e.deletedAt == null && e.payment != true),
+    ];
     return filteredExpenses;
   }
 
@@ -112,7 +116,9 @@ abstract class SplitzService {
     return groups;
   }
 
-  static Future<List<SplitzCategory>> getAvailableCategories() async {
+  static Future<List<SplitzCategory>> getAvailableCategories(
+    List<SplitzCategory> actualCategories,
+  ) async {
     final response = await SplitwiseRepository.getAvailableCategories();
     if (response == null || response.categories == null) return [];
     final result = <SplitzCategory>[];
@@ -122,6 +128,34 @@ abstract class SplitzService {
         (c.subcategories ?? []).map((c) => SplitzCategory.fromCategory(c)),
       );
     }
-    return result.unique((e) => e.imageUrl);
+    final actualCategoriesHash = actualCategories
+        .fold({}, (accu, curr) => {...accu, '${curr.id}': curr.imageUrl});
+    return [
+      ...result
+          .unique((e) => e.imageUrl)
+          .where((e) => actualCategoriesHash[e.id] == null)
+    ];
+  }
+
+  static Future<GroupConfig?> saveSplitzConfig(
+    String groupId,
+    GroupConfig config,
+    List<SplitzConfig> splitConfigs,
+  ) async =>
+      await SplitzRepository.updateGroup(
+        groupId,
+        config.copyWith(splitConfig: splitConfigs),
+      );
+
+  static Future<GroupConfig?> saveCategory(
+    String groupId,
+    GroupConfig config,
+    SplitzCategory category,
+  ) async {
+    final categories = [...config.categories, category].unique((e) => e.id);
+    return await SplitzRepository.updateGroup(
+      groupId,
+      config.copyWith(categories: categories),
+    );
   }
 }

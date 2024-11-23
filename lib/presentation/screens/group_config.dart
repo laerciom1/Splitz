@@ -1,13 +1,20 @@
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:splitz/data/models/splitz/group_config.dart';
+import 'package:splitz/extensions/list.dart';
 import 'package:splitz/navigator.dart';
 import 'package:splitz/presentation/screens/category_config.dart';
+import 'package:splitz/presentation/widgets/category_item.dart';
 import 'package:splitz/presentation/widgets/loading.dart';
 import 'package:splitz/presentation/widgets/slice_editor.dart';
 import 'package:splitz/presentation/widgets/snackbar.dart';
 import 'package:splitz/services/splitz_service.dart';
+
+const _waitTime = Duration(seconds: 2);
+const _waitTimeWidth = 24.0;
 
 class GroupConfigScreen extends StatefulWidget {
   const GroupConfigScreen({
@@ -29,6 +36,8 @@ class _GroupConfigScreenState extends State<GroupConfigScreen>
   late final List<FocusNode> _focusNodes;
   late final List<TextEditingController> _controllers;
   FocusNode? _lastFocusedNode;
+  Timer? _timer;
+  bool _showWaitingTime = false;
 
   @override
   void initState() {
@@ -63,11 +72,15 @@ class _GroupConfigScreenState extends State<GroupConfigScreen>
   }
 
   void _initializeFocusAndControllers(List<SplitzConfig> splitConfig) {
-    _focusNodes = List.generate(splitConfig.length,
-        (_) => FocusNode()..addListener(_trackFocusChanges));
-    _controllers = splitConfig
-        .map((config) => TextEditingController(text: config.slice.toString()))
-        .toList();
+    if (_focusNodes.isEmpty) {
+      _focusNodes = List.generate(splitConfig.length,
+          (_) => FocusNode()..addListener(_trackFocusChanges));
+      _controllers = [
+        ...splitConfig.map(
+          (config) => TextEditingController(text: '${config.slice}'),
+        )
+      ];
+    }
   }
 
   void _trackFocusChanges() {
@@ -105,24 +118,41 @@ class _GroupConfigScreenState extends State<GroupConfigScreen>
   }
 
   void _onEditConfig(List<SplitzConfig> newConfigs) {
+    _timer?.cancel();
     setState(() {
       _config = _config!.copyWith(splitConfig: newConfigs);
+      final sum =
+          _config!.splitConfig.fold(0, (accu, curr) => accu += curr.slice);
+      if (sum == 100) {
+        _showWaitingTime = true;
+        _timer = Timer(_waitTime, () async {
+          await SplitzService.saveSplitzConfig(widget.id, _config!, newConfigs);
+          // TODO: Handle errors
+          setState(() {
+            _showWaitingTime = false;
+          });
+        });
+      }
     });
   }
 
   void _addCategory() async {
     final newCategory = await AppNavigator.push<SplitzCategory?>(
-      CategoryConfigScreen(
-        category: null,
-        splitzConfigs: _config!.splitConfig,
-      ),
+      CategoryConfigScreen(category: null, groupConfig: _config!),
     );
     if (newCategory == null) return;
-    setState(() {
-      _config = _config!.copyWith(
-        categories: [...(_config!.categories), newCategory],
-      );
-    });
+    final newConfig =
+        await SplitzService.saveCategory(widget.id, _config!, newCategory);
+    // TODO: Handle errors
+    if (newConfig != null) {
+      setState(() {
+        _config = newConfig;
+      });
+    }
+  }
+
+  void _finishEditing() {
+    AppNavigator.pop(_config!);
   }
 
   @override
@@ -142,21 +172,74 @@ class _GroupConfigScreenState extends State<GroupConfigScreen>
                           'Default division of expenses among participants:',
                         ),
                       ),
-                      SliceEditor(
-                        splitzConfigs: _config!.splitConfig,
-                        focusNodes: _focusNodes,
-                        controllers: _controllers,
-                        onEditConfigs: _onEditConfig,
+                      Stack(
+                        alignment: AlignmentDirectional.topEnd,
+                        children: [
+                          SliceEditor(
+                            splitzConfigs: _config!.splitConfig,
+                            focusNodes: _focusNodes,
+                            controllers: _controllers,
+                            onEditConfigs: _onEditConfig,
+                          ),
+                          if (_showWaitingTime)
+                            const Padding(
+                              padding: EdgeInsets.only(right: 24),
+                              child: SizedBox(
+                                height: _waitTimeWidth,
+                                width: _waitTimeWidth,
+                                child: Padding(
+                                  padding: EdgeInsets.all(4),
+                                  child: CircularProgressIndicator(),
+                                ),
+                              ),
+                            )
+                        ],
                       ),
+                      const Divider(
+                        indent: 36,
+                        endIndent: 36,
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.all(24),
+                        child: Text(
+                          'Categories:',
+                        ),
+                      ),
+                      ..._config!.categories.map<Widget>(
+                        (e) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            child: CategoryItem(
+                              category: e,
+                              splitConfigs:
+                                  e.splitConfig ?? _config!.splitConfig,
+                            ),
+                          );
+                        },
+                      ).intersperse(const SizedBox(height: 12)),
+                      const SizedBox(height: 120)
                     ],
                   ),
                 ),
               )
             : const Loading(),
-        floatingActionButton: FloatingActionButton.extended(
-          label: const Text('Add Category'),
-          icon: const Icon(Icons.add),
-          onPressed: _addCategory,
+        floatingActionButton: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FloatingActionButton.extended(
+              heroTag: null,
+              label: const Text('Add Category'),
+              icon: const Icon(Icons.add),
+              onPressed: _addCategory,
+            ),
+            const SizedBox(height: 12),
+            FloatingActionButton.extended(
+              heroTag: null,
+              label: const Text('Finish editing'),
+              icon: const Icon(Icons.check),
+              onPressed: _finishEditing,
+            ),
+          ],
         ),
       ),
     );

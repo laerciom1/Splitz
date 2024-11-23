@@ -25,16 +25,24 @@ abstract class SplitwiseRepository {
     return _dio!;
   }
 
-  static Future<GetExpensesResponse?> getExpenses() async {
+  static Future<GetExpensesResponse?> getExpenses(String groupId) async {
     try {
+      final now = DateTime.now();
+      final firstDayOfLastMonth = DateTime(now.year, now.month - 1, 1);
       final dio = await _dioClient;
-      final response = await dio.get('/get_expenses');
+      final response = await dio.get(
+        '/get_expenses?group_id=$groupId&dated_after=${firstDayOfLastMonth.toString()}&limit=100',
+      );
       final result = GetExpensesResponse.fromMap(
         response.data as Map<String, dynamic>,
       );
       return result;
     } catch (e, s) {
-      LogService.log('Splitwise.test', error: e, stackTrace: s);
+      LogService.log(
+        'SplitwiseRepository.getExpenses',
+        error: e,
+        stackTrace: s,
+      );
       return null;
     }
   }
@@ -48,7 +56,11 @@ abstract class SplitwiseRepository {
       );
       return result;
     } catch (e, s) {
-      LogService.log('Splitwise.test', error: e, stackTrace: s);
+      LogService.log(
+        'SplitwiseRepository.getGroupInfo',
+        error: e,
+        stackTrace: s,
+      );
       return null;
     }
   }
@@ -62,7 +74,7 @@ abstract class SplitwiseRepository {
       );
       return result;
     } catch (e, s) {
-      LogService.log('Splitwise.test', error: e, stackTrace: s);
+      LogService.log('SplitwiseRepository.getGroups', error: e, stackTrace: s);
       return null;
     }
   }
@@ -76,7 +88,11 @@ abstract class SplitwiseRepository {
       );
       return result;
     } catch (e, s) {
-      LogService.log('Splitwise.test', error: e, stackTrace: s);
+      LogService.log(
+        'SplitwiseRepository.getAvailableCategories',
+        error: e,
+        stackTrace: s,
+      );
       return null;
     }
   }

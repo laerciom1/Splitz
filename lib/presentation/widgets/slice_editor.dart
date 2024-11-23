@@ -5,10 +5,10 @@ import 'package:splitz/extensions/strings.dart';
 import 'package:splitz/presentation/theme/slice_colors.dart';
 import 'package:splitz/presentation/widgets/circle_avatar.dart';
 import 'package:splitz/presentation/widgets/field_percentage.dart';
+import 'package:splitz/presentation/widgets/slice_badge.dart';
 import 'package:splitz/presentation/widgets/slice_slider.dart';
 
 const _userCardHeight = 48.0;
-const _badgeHeight = 8.0;
 
 class SliceEditor extends StatelessWidget {
   const SliceEditor({
@@ -24,21 +24,20 @@ class SliceEditor extends StatelessWidget {
   final List<TextEditingController> controllers;
   final void Function(List<SplitzConfig>) onEditConfigs;
 
-  List<double> getRanges() =>
-      splitzConfigs.map((e) => e.slice.toDouble()).toList();
+  List<double> getRanges() => [...splitzConfigs.map((e) => e.slice.toDouble())];
 
-  void setRange(SplitzConfig c, int newSlice) => onEditConfigs(
-        splitzConfigs.asMap().entries.map((e) {
+  void setRange(SplitzConfig c, int newSlice) => onEditConfigs([
+        ...splitzConfigs.asMap().entries.map((e) {
           if (e.value != c) return e.value;
           return e.value.copyWith(slice: newSlice);
-        }).toList(),
-      );
+        })
+      ]);
 
-  void setRanges(List<double> newRanges) => onEditConfigs(
-        newRanges.asMap().entries.map((e) {
+  void setRanges(List<double> newRanges) => onEditConfigs([
+        ...newRanges.asMap().entries.map((e) {
           return splitzConfigs[e.key].copyWith(slice: e.value.round());
-        }).toList(),
-      );
+        })
+      ]);
 
   Widget getUserInfo(MapEntry<int, SplitzConfig> e, BuildContext ctx) {
     final inverseSurface = Theme.of(ctx).colorScheme.inverseSurface;
@@ -46,6 +45,7 @@ class SliceEditor extends StatelessWidget {
     final config = e.value;
     return Row(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         PercentageField(
           text: config.slice.toString(),
@@ -58,23 +58,15 @@ class SliceEditor extends StatelessWidget {
             newValue.isNotNullNorEmpty ? int.parse(newValue) : 0,
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 16),
         Column(
-          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               config.name,
               style: const TextStyle(fontSize: 16),
             ),
-            Container(
-              width: _badgeHeight * 2,
-              height: _badgeHeight,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(_badgeHeight / 2),
-                color: sliceColors[index],
-              ),
-            )
+            SliceBadge(color: sliceColors[index]),
           ],
         ),
       ],

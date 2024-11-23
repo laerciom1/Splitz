@@ -51,13 +51,13 @@ class ExpenseExample extends StatelessWidget {
               id: 0,
               cost: _defaultCost,
               description:
-                  '${category.suffix.isEmpty ? '' : '${category.suffix} '}Expense description',
+                  '${category.prefix.isEmpty ? '' : '${category.prefix} '}Expense description',
               date: DateTime.now(),
               currencyCode: 'BRL',
               categoryId: 0,
               groupId: 0,
-              users: configs.map(
-                (e) {
+              users: [
+                ...configs.map((e) {
                   final owedShare =
                       (e.slice / 100) * double.parse(_defaultCost);
                   return UserExpenseEntity(
@@ -65,8 +65,8 @@ class ExpenseExample extends StatelessWidget {
                     userId: e.id,
                     owedShare: owedShare.toString(),
                   );
-                },
-              ).toList(),
+                })
+              ],
             ),
             categoryPicUrl: category.imageUrl,
           ),
@@ -79,7 +79,7 @@ class ExpenseExample extends StatelessWidget {
                   text: 'Save',
                   onPressed: onSave,
                   enabled: category.imageUrl.isNotEmpty &&
-                      category.suffix.isNotEmpty,
+                      category.prefix.isNotEmpty,
                 ),
               ],
             ),

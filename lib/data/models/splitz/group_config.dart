@@ -25,15 +25,15 @@ class GroupConfig {
 
   String toJson() => json.encode(toMap());
 
-  factory GroupConfig.fromMap(Map<String, dynamic> json) => GroupConfig(
+  factory GroupConfig.fromMap(Map<dynamic, dynamic> json) => GroupConfig(
         categories: json["categories"] == null
             ? []
-            : List<SplitzCategory>.from(
-                json["categories"]!.map((x) => SplitzCategory.fromMap(x))),
+            : List<SplitzCategory>.from((json["categories"]! as List)
+                .map((x) => SplitzCategory.fromMap(x))),
         splitConfig: json["split_config"] == null
             ? []
-            : List<SplitzConfig>.from(
-                json["split_config"]!.map((x) => SplitzConfig.fromMap(x))),
+            : List<SplitzConfig>.from((json["split_config"]! as List)
+                .map((x) => SplitzConfig.fromMap(x))),
       );
 
   Map<String, dynamic> toMap() => {
@@ -43,26 +43,26 @@ class GroupConfig {
 }
 
 class SplitzCategory {
-  String suffix;
+  String prefix;
   String imageUrl;
   int id;
   List<SplitzConfig>? splitConfig;
 
   SplitzCategory({
-    required this.suffix,
+    required this.prefix,
     required this.imageUrl,
     required this.id,
     this.splitConfig,
   });
 
   SplitzCategory copyWith({
-    String? suffix,
+    String? prefix,
     String? imageUrl,
     int? id,
     List<SplitzConfig>? splitConfig,
   }) =>
       SplitzCategory(
-        suffix: suffix ?? this.suffix,
+        prefix: prefix ?? this.prefix,
         imageUrl: imageUrl ?? this.imageUrl,
         id: id ?? this.id,
         splitConfig: splitConfig ?? this.splitConfig,
@@ -73,18 +73,18 @@ class SplitzCategory {
 
   String toJson() => json.encode(toMap());
 
-  factory SplitzCategory.fromMap(Map<String, dynamic> json) => SplitzCategory(
-        suffix: json["suffix"],
+  factory SplitzCategory.fromMap(Map<dynamic, dynamic> json) => SplitzCategory(
+        prefix: json["prefix"],
         imageUrl: json["imageUrl"],
         id: json["id"],
         splitConfig: json["split_config"] == null
-            ? []
+            ? null
             : List<SplitzConfig>.from(
                 json["split_config"]!.map((x) => SplitzConfig.fromMap(x))),
       );
 
   Map<String, dynamic> toMap() => {
-        "suffix": suffix,
+        "prefix": prefix,
         "imageUrl": imageUrl,
         "id": id,
         "split_config": splitConfig == null
@@ -93,7 +93,7 @@ class SplitzCategory {
       };
 
   factory SplitzCategory.fromCategory(Category c) => SplitzCategory(
-        suffix: '',
+        prefix: '',
         imageUrl: c.iconTypes!.square!.large!,
         id: c.id!,
       );
@@ -130,7 +130,7 @@ class SplitzConfig {
 
   String toJson() => json.encode(toMap());
 
-  factory SplitzConfig.fromMap(Map<String, dynamic> json) => SplitzConfig(
+  factory SplitzConfig.fromMap(Map<dynamic, dynamic> json) => SplitzConfig(
         id: json["id"],
         name: json["name"],
         avatarUrl: json["avatarUrl"],

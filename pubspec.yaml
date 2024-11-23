@@ -24,6 +24,7 @@ dependencies:
   multi_thumb_slider: ^1.0.0
   another_xlider: ^3.0.2
   collection: ^1.18.0
+  flutter_speed_dial: ^7.0.0
 
 dev_dependencies:
   flutter_test:

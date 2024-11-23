@@ -13,12 +13,12 @@ import 'package:splitz/services/splitz_service.dart';
 class CategoryConfigScreen extends StatefulWidget {
   const CategoryConfigScreen({
     required this.category,
-    required this.splitzConfigs,
+    required this.groupConfig,
     super.key,
   });
 
   final SplitzCategory? category;
-  final List<SplitzConfig> splitzConfigs;
+  final GroupConfig groupConfig;
 
   @override
   State<CategoryConfigScreen> createState() => _CategoryConfigScreenState();
@@ -27,21 +27,24 @@ class CategoryConfigScreen extends StatefulWidget {
 class _CategoryConfigScreenState extends State<CategoryConfigScreen>
     with WidgetsBindingObserver {
   late SplitzCategory _category;
+  late GroupConfig _groupConfig;
   late List<SplitzConfig> _splitzConfigs;
-  late final List<FocusNode> _focusNodes;
-  late final FocusNode _suffixFocusNode;
-  late final List<TextEditingController> _controllers;
-  FocusNode? _lastFocusedNode;
   List<SplitzCategory> _availableCategories = [];
   bool _shoulUseCustomSlices = false;
+
+  late final List<FocusNode> _focusNodes;
+  late final FocusNode _preffixFocusNode;
+  late final List<TextEditingController> _controllers;
+  FocusNode? _lastFocusedNode;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _category =
-        widget.category ?? SplitzCategory(suffix: '', imageUrl: '', id: 0);
-    _splitzConfigs = widget.splitzConfigs;
+        widget.category ?? SplitzCategory(prefix: '', imageUrl: '', id: 0);
+    _groupConfig = widget.groupConfig;
+    _splitzConfigs = _groupConfig.splitConfig;
     _initScreen();
   }
 
@@ -71,23 +74,26 @@ class _CategoryConfigScreenState extends State<CategoryConfigScreen>
 
   Future<void> _initScreen() async {
     _initializeFocusAndControllers(_splitzConfigs);
-    final results = await SplitzService.getAvailableCategories();
+    final results =
+        await SplitzService.getAvailableCategories(_groupConfig.categories);
     setState(() {
       _availableCategories = results;
     });
   }
 
   void _initializeFocusAndControllers(List<SplitzConfig> splitConfig) {
-    _suffixFocusNode = FocusNode()..addListener(_trackFocusChanges);
+    _preffixFocusNode = FocusNode()..addListener(_trackFocusChanges);
     _focusNodes = List.generate(splitConfig.length,
         (_) => FocusNode()..addListener(_trackFocusChanges));
-    _controllers = splitConfig
-        .map((config) => TextEditingController(text: config.slice.toString()))
-        .toList();
+    _controllers = [
+      ...splitConfig.map(
+        (config) => TextEditingController(text: config.slice.toString()),
+      )
+    ];
   }
 
   void _trackFocusChanges() {
-    final focusedNode = [..._focusNodes, _suffixFocusNode]
+    final focusedNode = [..._focusNodes, _preffixFocusNode]
         .firstWhereOrNull((node) => node.hasFocus);
     _lastFocusedNode = focusedNode;
   }
@@ -96,20 +102,20 @@ class _CategoryConfigScreenState extends State<CategoryConfigScreen>
         _category = _category.copyWith(imageUrl: c.imageUrl, id: c.id);
       });
 
-  void _onChangeSuffix(String s) => setState(() {
-        _category = _category.copyWith(suffix: s);
+  void _onChangePrefix(String s) => setState(() {
+        _category = _category.copyWith(prefix: s);
       });
-
-  void _onEditConfig(List<SplitzConfig> newConfigs) {
-    setState(() {
-      _splitzConfigs = newConfigs;
-    });
-  }
 
   void _toggleUseCustomSlices() {
     setState(() {
       _shoulUseCustomSlices = !_shoulUseCustomSlices;
       if (!_shoulUseCustomSlices) {}
+    });
+  }
+
+  void _onEditConfig(List<SplitzConfig> newConfigs) {
+    setState(() {
+      _splitzConfigs = newConfigs;
     });
   }
 
@@ -141,10 +147,10 @@ class _CategoryConfigScreenState extends State<CategoryConfigScreen>
                       onSelect: _selectImage,
                       selectedCategory: _category,
                     ),
-                    const Text('Type a suffix for this category (mandatory):'),
+                    const Text('Type a preffix for this category (mandatory):'),
                     PrimaryField(
-                      onChanged: _onChangeSuffix,
-                      focusNode: _suffixFocusNode,
+                      onChanged: _onChangePrefix,
+                      focusNode: _preffixFocusNode,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,

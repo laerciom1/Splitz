@@ -42,9 +42,9 @@ class Expense {
   String description;
   DateTime date;
   String currencyCode;
-  int categoryId;
   int groupId;
   List<UserElement> users;
+  int? categoryId;
   String? details;
   String? repeatInterval;
   dynamic friendshipId;
@@ -73,9 +73,9 @@ class Expense {
     required this.description,
     required this.date,
     required this.currencyCode,
-    required this.categoryId,
     required this.groupId,
     required this.users,
+    this.categoryId,
     this.createdAt,
     this.details,
     this.repeatInterval,

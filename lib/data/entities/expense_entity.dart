@@ -6,9 +6,10 @@ class ExpenseEntity {
   String description;
   DateTime date;
   String currencyCode;
-  int categoryId;
   int groupId;
   List<UserExpenseEntity> users;
+  String? imageUrl;
+  int? categoryId;
 
   ExpenseEntity({
     required this.id,
@@ -16,9 +17,10 @@ class ExpenseEntity {
     required this.description,
     required this.date,
     required this.currencyCode,
-    required this.categoryId,
     required this.groupId,
     required this.users,
+    this.imageUrl,
+    this.categoryId,
   });
 
   factory ExpenseEntity.fromExpenseResponse(Expense e) => ExpenseEntity(
@@ -29,9 +31,11 @@ class ExpenseEntity {
         currencyCode: e.currencyCode,
         categoryId: e.categoryId,
         groupId: e.groupId,
-        users: e.users
-            .map((e) => UserExpenseEntity.fromUserElementResponse(e))
-            .toList(),
+        users: [
+          ...e.users.map(
+            (e) => UserExpenseEntity.fromUserElementResponse(e),
+          )
+        ],
       );
 }
 

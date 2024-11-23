@@ -8,14 +8,28 @@ abstract class SplitzRepository {
     try {
       final snapshot = await _db.ref('/groups/$groupId').get();
       if (snapshot.value != null) {
-        final result = GroupConfig.fromMap(
-          snapshot.value as Map<String, dynamic>,
-        );
+        final json = snapshot.value as Map<dynamic, dynamic>;
+        // final json = Map<String, dynamic>.from(snapshot.value as Map);
+        final result = GroupConfig.fromMap(json);
         return result;
       }
       return null;
     } catch (e, s) {
-      LogService.log('Splitz.test', error: e, stackTrace: s);
+      LogService.log('Splitz.getGroupConfig', error: e, stackTrace: s);
+      return null;
+    }
+  }
+
+  static Future<GroupConfig?> updateGroup(
+    String groupId,
+    GroupConfig config,
+  ) async {
+    try {
+      final ref = _db.ref('/groups/$groupId');
+      await ref.set(config.toMap());
+      return config;
+    } catch (e, s) {
+      LogService.log('Splitz.updateGroupe', error: e, stackTrace: s);
       return null;
     }
   }
