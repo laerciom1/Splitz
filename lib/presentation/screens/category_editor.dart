@@ -185,27 +185,12 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: ExpenseItem(
-              expense: ExpenseEntity(
-                id: 0,
+              expense: ExpenseEntity.fromSplitzConfig(
                 cost: _defaultCost,
                 description:
                     '${_currentCategory.prefix.isEmpty ? '' : '${_currentCategory.prefix} '}Expense description',
-                date: DateTime.now(),
-                currencyCode: 'BRL',
-                categoryId: 0,
-                groupId: 0,
                 imageUrl: _currentCategory.imageUrl,
-                users: [
-                  ..._customSplitzConfigs.map((e) {
-                    final owedShare =
-                        (e.slice / 100) * double.parse(_defaultCost);
-                    return UserExpenseEntity(
-                      firstName: e.name,
-                      userId: e.id,
-                      owedShare: owedShare.toString(),
-                    );
-                  })
-                ],
+                splitzConfigs: _customSplitzConfigs,
               ),
             ),
           ),
@@ -233,7 +218,7 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
           children: <Widget>[
             const Padding(
               padding: EdgeInsets.all(24.0),
-              child: Text('Select an image for this category (mandatory):'),
+              child: Text('Select an image for this category:'),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -245,7 +230,7 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
             ),
             const Padding(
               padding: EdgeInsets.all(24.0),
-              child: Text('Type a preffix for this category (mandatory):'),
+              child: Text('Type a preffix for this category:'),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12.0),

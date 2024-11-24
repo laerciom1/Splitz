@@ -1,15 +1,20 @@
+import 'dart:async';
+
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:splitz/data/entities/expense_entity.dart';
 import 'package:splitz/data/models/splitz/group_config.dart';
 import 'package:splitz/extensions/list.dart';
 import 'package:splitz/extensions/strings.dart';
 import 'package:splitz/navigator.dart';
+import 'package:splitz/presentation/screens/expense_editor.dart';
 import 'package:splitz/presentation/screens/group_editor.dart';
 import 'package:splitz/presentation/templates/base_screen.dart';
 import 'package:splitz/presentation/widgets/fab_add_split.dart';
 import 'package:splitz/presentation/widgets/expense_item.dart';
 import 'package:splitz/presentation/widgets/feedback_message.dart';
 import 'package:splitz/presentation/widgets/loading.dart';
+import 'package:splitz/presentation/widgets/snackbar.dart';
 import 'package:splitz/services/splitz_service.dart';
 
 class ExpensesListScreen extends StatefulWidget {
@@ -35,31 +40,49 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
     initScreen();
   }
 
-  void setFeedback(String message) {
-    setState(() {
-      _isLoading = false;
-      _expenses = null;
-      _groupConfig = null;
-      _feedbackMessage = message;
-    });
+  void setFeedback(String message) => setState(() {
+        _isLoading = false;
+        _expenses = null;
+        _groupConfig = null;
+        _feedbackMessage = message;
+      });
+
+  void setLoading() => setState(() {
+        _isLoading = true;
+        _expenses = null;
+        _groupConfig = null;
+        _feedbackMessage = '';
+      });
+
+  void setInitData(List<ExpenseEntity> expenses, GroupConfig groupConfig) =>
+      setState(() {
+        _isLoading = false;
+        _expenses = expenses;
+        _groupConfig = groupConfig;
+        _feedbackMessage = '';
+      });
+
+  int findIndex(ExpenseEntity expense) {
+    final idx = _expenses!.indexWhere((e) => e == expense);
+    if (idx == -1) {
+      showToast("Something went wrong locating your expense");
+    }
+    return idx;
   }
 
-  void setLoading() {
-    setState(() {
-      _isLoading = true;
-      _expenses = null;
-      _groupConfig = null;
-      _feedbackMessage = '';
-    });
+  void updateExpenses(List<ExpenseEntity> expenses) => setState(() {
+        _expenses = expenses;
+      });
+
+  void updateExpense(int idx, ExpenseEntity expense) {
+    final newList = [..._expenses!];
+    newList[idx] = expense;
+    updateExpenses(newList);
   }
 
-  void setData(List<ExpenseEntity> newExpenses, GroupConfig newGroupConfig) {
-    setState(() {
-      _isLoading = false;
-      _expenses = newExpenses;
-      _groupConfig = newGroupConfig;
-      _feedbackMessage = '';
-    });
+  void deleteExpense(int idx) {
+    final newList = [..._expenses!]..removeAt(idx);
+    updateExpenses(newList);
   }
 
   Future<void> initScreen() async {
@@ -79,15 +102,15 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
     return await getExpenses(remoteGroupConfig);
   }
 
-  Future<void> getExpenses(GroupConfig newGroupConfig) async {
-    _lastFunc = () => getExpenses(newGroupConfig);
+  Future<void> getExpenses(GroupConfig groupConfig) async {
+    _lastFunc = () => getExpenses(groupConfig);
     setLoading();
     try {
-      final newExpenses = await SplitzService.getExpenses(
+      final expenses = await SplitzService.getExpenses(
         widget.groupId,
-        newGroupConfig.categories,
+        groupConfig.categories,
       );
-      setData(newExpenses, newGroupConfig);
+      setInitData(expenses, groupConfig);
     } catch (e, s) {
       const message = 'Something went wrong retrieving your expenses.\n'
           'Drag down to refresh.';
@@ -95,7 +118,133 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
     }
   }
 
-  void onNewExpense(SplitzCategory category) async {}
+  Future<void> onCreate(SplitzCategory category) async {
+    final expense = await AppNavigator.push<ExpenseEntity?>(
+      ExpenseEditorScreen(
+        category: category,
+        groupConfig: _groupConfig!,
+        groupId: widget.groupId,
+      ),
+    );
+    if (expense == null) return;
+    updateExpenses(
+      [expense.copyWith(state: ExpenseEntityState.loading), ..._expenses!],
+    );
+    await onRetryCreate(expense, 0);
+  }
+
+  Future<void> onRetryCreate(ExpenseEntity expense, int idx) async {
+    try {
+      final id = await SplitzService.createExpense(expense);
+      updateExpense(
+        idx,
+        expense.copyWith(id: id, state: ExpenseEntityState.listed),
+      );
+    } catch (_) {
+      updateExpense(0, expense.copyWith(state: ExpenseEntityState.createError));
+    }
+  }
+
+  Future<void> onEdit(ExpenseEntity expenseToEdit) async {
+    final idx = findIndex(expenseToEdit);
+    if (idx == -1) return;
+    final category = _groupConfig!.categories.firstWhereOrNull(
+      (e) => expenseToEdit.categoryId == e.id,
+    );
+    if (category == null) {
+      showToast(
+        "You can't edit an expense of a category that doesn't exist on your group preferences anymore",
+      );
+      return;
+    }
+    final expense = await AppNavigator.push<ExpenseEntity?>(
+      ExpenseEditorScreen(
+        category: category,
+        groupConfig: _groupConfig!,
+        groupId: widget.groupId,
+        expense: expenseToEdit,
+      ),
+    );
+    if (expense == null) return;
+    await onRetryEdit(expenseToEdit, idx, expense);
+  }
+
+  Future<void> onRetryEdit(
+    ExpenseEntity expenseToEdit,
+    int idx, [
+    ExpenseEntity? newVersion,
+  ]) async {
+    final finalExpense = newVersion != null
+        ? expenseToEdit.copyWithBackup(
+            state: ExpenseEntityState.loading,
+            newVersion: newVersion,
+          )
+        : expenseToEdit.copyWith(state: ExpenseEntityState.loading);
+    try {
+      updateExpense(idx, finalExpense);
+      final id = await SplitzService.updateExpense(finalExpense);
+      updateExpense(
+        idx,
+        finalExpense.copyWith(id: id, state: ExpenseEntityState.listed),
+      );
+    } catch (_) {
+      updateExpense(
+        idx,
+        finalExpense.copyWith(state: ExpenseEntityState.editError),
+      );
+    }
+  }
+
+  Future<bool> onDelete(ExpenseEntity expense) async {
+    try {
+      final idx = findIndex(expense);
+      if (idx == -1) return false;
+      if (expense.state == ExpenseEntityState.listed) {
+        await SplitzService.deleteExpense(expense);
+      }
+      deleteExpense(idx);
+      return true;
+    } catch (_) {
+      showToast(
+        'Something went wrong deleting the expense. You can retry later',
+      );
+      return false;
+    }
+  }
+
+  Future<bool> onCancelEdit(ExpenseEntity expense) async {
+    final idx = findIndex(expense);
+    if (idx == -1) return false;
+    if (expense.backup == null) {
+      showToast("This expense doesn't have an associated backup");
+      updateExpense(
+        idx,
+        expense.copyWith(state: ExpenseEntityState.listed),
+      );
+      return false;
+    }
+    updateExpense(
+      idx,
+      expense.backup!.copyWith(state: ExpenseEntityState.listed),
+    );
+    return false;
+  }
+
+  Future<bool> onRetry(ExpenseEntity expense) async {
+    final idx = findIndex(expense);
+    if (idx == -1) return false;
+    updateExpense(
+      idx,
+      expense.copyWith(state: ExpenseEntityState.loading),
+    );
+    if (expense.state == ExpenseEntityState.createError) {
+      await onRetryCreate(expense, idx);
+    }
+    if (expense.state == ExpenseEntityState.editError) {
+      await onRetryEdit(expense, idx);
+    }
+    return false;
+  }
 
   void editGroupPreferences() =>
       AppNavigator.replaceAll([GroupEditorScreen(groupId: widget.groupId)]);
@@ -115,21 +264,19 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
   Widget getExpensesWidget() => Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const Text('Use swipe and click to interact with expenses'),
+            const SizedBox(height: 24),
             ..._expenses!
-                .map<Widget>(
-                  (e) => ExpenseItem(expense: e),
-                )
-                .intersperse(
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 6),
-                    child: Divider(
-                      height: 1,
-                      indent: 24,
-                      endIndent: 24,
-                    ),
-                  ),
-                )
+                .map<Widget>((e) => ExpenseItem(
+                      expense: e,
+                      onRetry: onRetry,
+                      onCancel: onCancelEdit,
+                      onDelete: onDelete,
+                      onSelect: onEdit,
+                    ))
+                .intersperse(const SizedBox(height: 12))
           ],
         ),
       );
@@ -140,7 +287,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
     }
     return AddSplitFAB(
       categories: _groupConfig!.categories,
-      onSelectCategory: onNewExpense,
+      onSelectCategory: onCreate,
       onEditGroupPreferences: editGroupPreferences,
     );
   }

@@ -1,8 +1,14 @@
 import 'package:dio/dio.dart';
+import 'package:splitz/data/entities/expense_entity.dart';
+import 'package:splitz/data/models/splitwise/create_expense/create_expense_request.dart';
+import 'package:splitz/data/models/splitwise/create_expense/create_expense_response.dart';
+import 'package:splitz/data/models/splitwise/delete_expense/delete_expense.dart';
 import 'package:splitz/data/models/splitwise/get_categories/get_categories_response.dart';
 import 'package:splitz/data/models/splitwise/get_expenses/get_expenses_response.dart';
 import 'package:splitz/data/models/splitwise/get_group/get_group_response.dart';
 import 'package:splitz/data/models/splitwise/get_groups/get_groups_response.dart';
+import 'package:splitz/data/models/splitwise/update_expense/update_expense_request.dart';
+import 'package:splitz/data/models/splitwise/update_expense/update_expense_response.dart';
 import 'package:splitz/services/auth_service.dart';
 import 'package:splitz/services/log_service.dart';
 
@@ -87,6 +93,67 @@ abstract class SplitwiseRepository {
         response.data as Map<String, dynamic>,
       );
       return result;
+    } catch (e, s) {
+      LogService.log(
+        'SplitwiseRepository.getAvailableCategories',
+        error: e,
+        stackTrace: s,
+      );
+      rethrow;
+    }
+  }
+
+  static Future<int> createExpense(ExpenseEntity expense) async {
+    try {
+      final dio = await _dioClient;
+      final request = CreateExpenseRequest.createBody(expense);
+      final response = await dio.post('/create_expense', data: request);
+      final result = CreateExpenseResponse.fromMap(
+        response.data as Map<String, dynamic>,
+      );
+      return result.expenses[0].id;
+    } catch (e, s) {
+      LogService.log(
+        'SplitwiseRepository.getAvailableCategories',
+        error: e,
+        stackTrace: s,
+      );
+      rethrow;
+    }
+  }
+
+  static Future<void> deleteExpense(ExpenseEntity expense) async {
+    try {
+      final dio = await _dioClient;
+      final response = await dio.post('/delete_expense/${expense.id!}');
+      final result = DeleteExpenseResponse.fromMap(
+        response.data as Map<String, dynamic>,
+      );
+      if (result.success != true) {
+        throw Exception("success isn't true on deleteExpense result");
+      }
+    } catch (e, s) {
+      LogService.log(
+        'SplitwiseRepository.getAvailableCategories',
+        error: e,
+        stackTrace: s,
+      );
+      rethrow;
+    }
+  }
+
+  static Future<int> updateExpense(ExpenseEntity expense) async {
+    try {
+      final dio = await _dioClient;
+      final request = UpdateExpenseRequest.createBody(expense);
+      final response = await dio.post(
+        '/update_expense/${expense.id!}',
+        data: request,
+      );
+      final result = UpdateExpenseResponse.fromMap(
+        response.data as Map<String, dynamic>,
+      );
+      return result.expenses[0].id;
     } catch (e, s) {
       LogService.log(
         'SplitwiseRepository.getAvailableCategories',

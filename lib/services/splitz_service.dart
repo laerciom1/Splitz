@@ -151,4 +151,13 @@ abstract class SplitzService {
     GroupConfig config,
   ) async =>
       await SplitzRepository.updateGroup(groupId, config);
+
+  static Future<int> createExpense(ExpenseEntity expense) async =>
+      await SplitwiseRepository.createExpense(expense);
+
+  static Future<void> deleteExpense(ExpenseEntity expense) async =>
+      await SplitwiseRepository.deleteExpense(expense);
+
+  static Future<int> updateExpense(ExpenseEntity expense) async =>
+      await SplitwiseRepository.updateExpense(expense);
 }

@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class PrimaryField extends StatelessWidget {
   const PrimaryField({
     required this.focusNode,
     required this.onChanged,
+    this.controller,
+    this.inputFormatters,
+    this.keyboardType,
     super.key,
   });
 
   final FocusNode focusNode;
+  final TextEditingController? controller;
   final void Function(String) onChanged;
+  final List<TextInputFormatter>? inputFormatters;
+  final TextInputType? keyboardType;
 
   @override
   Widget build(BuildContext context) {
@@ -24,12 +31,15 @@ class PrimaryField extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12.0),
         child: TextField(
+          inputFormatters: inputFormatters,
           focusNode: focusNode,
+          controller: controller,
           onTapOutside: (_) => focusNode.unfocus(),
           decoration: const InputDecoration(border: InputBorder.none),
           textInputAction: TextInputAction.next,
           autocorrect: false,
           onChanged: onChanged,
+          keyboardType: keyboardType,
         ),
       ),
     );

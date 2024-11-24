@@ -25,7 +25,7 @@ class SliceSlider extends StatelessWidget {
   final List<double>? initRangeValues;
   final int? rangesQty;
 
-  List<double> getInitValues() {
+  List<double> getThumbsPositions() {
     if (rangesQty != null) {
       final defaultSlice = 100 / rangesQty!;
       return List.generate(rangesQty! - 1, (idx) => defaultSlice * idx + 1);
@@ -175,11 +175,11 @@ class SliceSlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final values = getInitValues();
+    final values = getThumbsPositions();
     if (values.length > 2) {
       return getMoreThan3RangesSlider(context, values);
     } else if (values.length > 1) {
-      get3RangesSlider(context, values);
+      return get3RangesSlider(context, values);
     }
     return get2RangesSlider(context, values);
   }

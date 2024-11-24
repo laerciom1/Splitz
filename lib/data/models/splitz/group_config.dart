@@ -1,6 +1,9 @@
-import 'dart:convert';
-
+import 'package:collection/collection.dart';
+import 'package:splitz/data/entities/expense_entity.dart';
 import 'package:splitz/data/models/splitwise/common/category.dart';
+import 'package:splitz/extensions/strings.dart';
+
+const _zero = 0.0;
 
 class GroupConfig {
   List<SplitzCategory> categories;
@@ -20,10 +23,25 @@ class GroupConfig {
         splitConfig: splitConfig ?? this.splitConfig,
       );
 
-  factory GroupConfig.fromJson(String str) =>
-      GroupConfig.fromMap(json.decode(str));
-
-  String toJson() => json.encode(toMap());
+  GroupConfig withPayer(List<UserExpenseEntity> users) {
+    final payerId = users
+        .firstWhereOrNull(
+          (e) =>
+              e.paidShare.isNotNullNorEmpty &&
+              double.parse(e.paidShare!) != _zero,
+        )
+        ?.userId;
+    var splitConfig = this.splitConfig;
+    if (payerId != null) {
+      splitConfig = splitConfig
+          .map((e) => e.id == payerId ? e.copyWith(payer: true) : e)
+          .toList();
+    }
+    return GroupConfig(
+      categories: categories,
+      splitConfig: splitConfig,
+    );
+  }
 
   factory GroupConfig.fromMap(Map<dynamic, dynamic> json) => GroupConfig(
         categories: json["categories"] == null
@@ -68,11 +86,6 @@ class SplitzCategory {
         splitConfig: splitConfig ?? this.splitConfig,
       );
 
-  factory SplitzCategory.fromJson(String str) =>
-      SplitzCategory.fromMap(json.decode(str));
-
-  String toJson() => json.encode(toMap());
-
   factory SplitzCategory.fromMap(Map<dynamic, dynamic> json) => SplitzCategory(
         prefix: json["prefix"],
         imageUrl: json["imageUrl"],
@@ -104,12 +117,14 @@ class SplitzConfig {
   String name;
   String avatarUrl;
   int slice;
+  bool? payer;
 
   SplitzConfig({
     required this.id,
     required this.name,
     required this.avatarUrl,
     required this.slice,
+    this.payer,
   });
 
   SplitzConfig copyWith({
@@ -117,18 +132,15 @@ class SplitzConfig {
     String? name,
     String? avatarUrl,
     int? slice,
+    bool? payer,
   }) =>
       SplitzConfig(
         id: id ?? this.id,
         name: name ?? this.name,
         avatarUrl: avatarUrl ?? this.avatarUrl,
         slice: slice ?? this.slice,
+        payer: payer ?? this.payer,
       );
-
-  factory SplitzConfig.fromJson(String str) =>
-      SplitzConfig.fromMap(json.decode(str));
-
-  String toJson() => json.encode(toMap());
 
   factory SplitzConfig.fromMap(Map<dynamic, dynamic> json) => SplitzConfig(
         id: json["id"],

@@ -1,55 +1,192 @@
 import 'package:splitz/data/models/splitwise/get_expenses/get_expenses_response.dart';
+import 'package:splitz/data/models/splitz/group_config.dart';
+import 'package:collection/collection.dart';
+
+enum ExpenseEntityState { example, listed, loading, createError, editError }
+
+const _zero = '0.0';
 
 class ExpenseEntity {
-  int id;
+  ExpenseEntityState state;
   String cost;
   String description;
   DateTime date;
-  String currencyCode;
   int groupId;
-  List<UserExpenseEntity> users;
   int categoryId;
   String imageUrl;
+  List<UserExpenseEntity> users;
+  String currencyCode;
+  int? id;
+  int? payerId;
+  ExpenseEntity? backup;
 
   ExpenseEntity({
-    required this.id,
+    required this.state,
     required this.cost,
     required this.description,
     required this.date,
-    required this.currencyCode,
     required this.groupId,
-    required this.users,
     required this.categoryId,
     required this.imageUrl,
+    required this.users,
+    this.currencyCode = 'BRL',
+    this.id,
+    this.payerId,
+    this.backup,
   });
 
-  factory ExpenseEntity.fromExpenseResponse(Expense e, String imageUrl) =>
+  ExpenseEntity copyWith({
+    ExpenseEntityState? state,
+    String? description,
+    DateTime? date,
+    int? groupId,
+    int? categoryId,
+    String? imageUrl,
+    String? currencyCode,
+    int? id,
+    int? payerId,
+    ExpenseEntity? backup,
+  }) =>
       ExpenseEntity(
-        id: e.id,
-        cost: e.cost,
-        description: e.description,
-        date: e.date,
-        currencyCode: e.currencyCode,
-        groupId: e.groupId,
-        categoryId: e.category.id,
-        imageUrl: imageUrl,
-        users: [
-          ...e.users.map(
-            (e) => UserExpenseEntity.fromUserElementResponse(e),
-          )
-        ],
+        state: state ?? this.state,
+        cost: cost,
+        description: description ?? this.description,
+        date: date ?? this.date,
+        groupId: groupId ?? this.groupId,
+        categoryId: categoryId ?? this.categoryId,
+        imageUrl: imageUrl ?? this.imageUrl,
+        users: users,
+        currencyCode: currencyCode ?? this.currencyCode,
+        id: id ?? this.id,
+        payerId: payerId ?? this.payerId,
+        backup: backup ?? this.backup,
       );
+
+  static List<UserExpenseEntity> getUsers(
+    String cost,
+    List<SplitzConfig> splitzConfigs,
+  ) =>
+      [
+        ...splitzConfigs.map((e) {
+          final owedShare = (e.slice / 100) * double.parse(cost);
+          return UserExpenseEntity(
+            firstName: e.name,
+            userId: e.id,
+            owedShare: owedShare.toString(),
+            paidShare: e.payer == true ? cost : _zero,
+          );
+        })
+      ];
+
+  ExpenseEntity copyWithShares({
+    String? cost,
+    required List<SplitzConfig> splitzConfigs,
+  }) {
+    final costToUse = cost ?? this.cost;
+    final users = getUsers(costToUse, splitzConfigs);
+    final payerId = users.firstWhereOrNull((e) => e.paidShare != _zero)?.userId;
+
+    return ExpenseEntity(
+      state: state,
+      cost: costToUse,
+      description: description,
+      date: date,
+      groupId: groupId,
+      categoryId: categoryId,
+      imageUrl: imageUrl,
+      users: users,
+      currencyCode: currencyCode,
+      id: id,
+      payerId: payerId,
+      backup: backup,
+    );
+  }
+
+  ExpenseEntity copyWithBackup({
+    required ExpenseEntity newVersion,
+    ExpenseEntityState? state,
+  }) {
+    final backup = copyWith();
+    return ExpenseEntity(
+      state: state ?? newVersion.state,
+      cost: newVersion.cost,
+      description: newVersion.description,
+      date: newVersion.date,
+      groupId: newVersion.groupId,
+      categoryId: newVersion.categoryId,
+      imageUrl: newVersion.imageUrl,
+      users: newVersion.users,
+      currencyCode: newVersion.currencyCode,
+      id: newVersion.id,
+      payerId: newVersion.payerId,
+      backup: backup,
+    );
+  }
+
+  factory ExpenseEntity.fromExpenseResponse(Expense e, String imageUrl) {
+    final users = <UserExpenseEntity>[];
+    int? payerId;
+    for (final user in e.users) {
+      if (double.parse(user.paidShare) > 0) {
+        payerId = user.userId;
+      }
+      users.add(UserExpenseEntity.fromUserElementResponse(user));
+    }
+    return ExpenseEntity(
+      state: ExpenseEntityState.listed,
+      cost: e.cost,
+      description: e.description,
+      date: e.date,
+      groupId: e.groupId,
+      categoryId: e.category.id,
+      imageUrl: imageUrl,
+      users: users,
+      currencyCode: e.currencyCode,
+      id: e.id,
+      payerId: payerId,
+      backup: null,
+    );
+  }
+
+  factory ExpenseEntity.fromSplitzConfig({
+    required cost,
+    String description = '',
+    DateTime? date,
+    int groupId = 0,
+    int categoryId = 0,
+    String imageUrl = '',
+    String currencyCode = 'BRL',
+    required List<SplitzConfig> splitzConfigs,
+    ExpenseEntity? newVersion,
+  }) {
+    final payerId = splitzConfigs.firstWhereOrNull((e) => e.payer == true)?.id;
+    return ExpenseEntity(
+      state: ExpenseEntityState.example,
+      cost: cost,
+      description: description,
+      date: date ?? DateTime.now(),
+      groupId: groupId,
+      categoryId: categoryId,
+      imageUrl: imageUrl,
+      users: getUsers(cost, splitzConfigs),
+      currencyCode: currencyCode,
+      payerId: payerId,
+      backup: newVersion,
+    );
+  }
 }
 
 class UserExpenseEntity {
   String firstName;
   int userId;
   String owedShare;
+  String? paidShare;
 
   UserExpenseEntity({
     required this.firstName,
     required this.userId,
     required this.owedShare,
+    this.paidShare,
   });
 
   factory UserExpenseEntity.fromUserElementResponse(UserElement e) =>
@@ -57,5 +194,6 @@ class UserExpenseEntity {
         firstName: e.user.firstName,
         userId: e.userId,
         owedShare: e.owedShare,
+        paidShare: e.paidShare,
       );
 }

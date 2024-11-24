@@ -151,14 +151,14 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
     }
   }
 
-  void updateSplitzGroupGroup(
-    GroupConfig newGroupConfig, [
+  void updateSplitzGroupConfig(
+    GroupConfig groupConfig, [
     bool shouldTrigger = true,
   ]) {
     _timer?.cancel();
     final oldGroupConfig = _groupConfig!.copyWith();
     setGroupConfig(
-      groupConfig: newGroupConfig,
+      groupConfig: groupConfig,
       showWaitingTimer: shouldTrigger,
     );
     if (shouldTrigger) {
@@ -166,7 +166,7 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
         try {
           await SplitzService.updateSplitzGroupConfig(
             widget.groupId,
-            newGroupConfig,
+            groupConfig,
           );
           setState(() {
             _showWaitingTimer = false;
@@ -180,20 +180,20 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
 
   void onNewSplitzConfigs(List<SplitzConfig> configs) {
     final sum = configs.fold(0, (accu, curr) => accu + curr.slice);
-    final newGroupConfig = _groupConfig!.copyWith(splitConfig: configs);
-    updateSplitzGroupGroup(newGroupConfig, sum == 100);
+    final groupConfig = _groupConfig!.copyWith(splitConfig: configs);
+    updateSplitzGroupConfig(groupConfig, sum == 100);
   }
 
   void addCategory() async {
-    final newCategory = await AppNavigator.push<SplitzCategory?>(
+    final category = await AppNavigator.push<SplitzCategory?>(
       CategoryEditorScreen(category: null, groupConfig: _groupConfig!),
     );
-    if (newCategory == null) return;
-    final newGroupConfig = _groupConfig!.copyWith(
+    if (category == null) return;
+    final groupConfig = _groupConfig!.copyWith(
       categories:
-          [..._groupConfig!.categories, newCategory].unique((e) => e.id),
+          [..._groupConfig!.categories, category].unique((e) => e.id),
     );
-    updateSplitzGroupGroup(newGroupConfig);
+    updateSplitzGroupConfig(groupConfig);
   }
 
   void finishEditing() =>

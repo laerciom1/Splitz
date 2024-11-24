@@ -8,7 +8,8 @@ import 'package:splitz/presentation/widgets/field_percentage.dart';
 import 'package:splitz/presentation/widgets/slice_badge.dart';
 import 'package:splitz/presentation/widgets/slice_slider.dart';
 
-const _userCardHeight = 48.0;
+const _padding = 8.0;
+const _userCardHeight = 48.0 + (2 * _padding);
 
 class SliceEditor extends StatelessWidget {
   const SliceEditor({
@@ -16,6 +17,7 @@ class SliceEditor extends StatelessWidget {
     required this.focusNodes,
     required this.controllers,
     required this.onEditConfigs,
+    this.enablePayerSelection = false,
     super.key,
   });
 
@@ -23,6 +25,7 @@ class SliceEditor extends StatelessWidget {
   final List<FocusNode> focusNodes;
   final List<TextEditingController> controllers;
   final void Function(List<SplitzConfig>) onEditConfigs;
+  final bool enablePayerSelection;
 
   List<double> getRanges() => [...splitzConfigs.map((e) => e.slice.toDouble())];
 
@@ -36,6 +39,13 @@ class SliceEditor extends StatelessWidget {
   void setRanges(List<double> newRanges) => onEditConfigs([
         ...newRanges.asMap().entries.map((e) {
           return splitzConfigs[e.key].copyWith(slice: e.value.round());
+        })
+      ]);
+
+  void setSelection(SplitzConfig c) => onEditConfigs([
+        ...splitzConfigs.asMap().entries.map((e) {
+          if (e.value != c) return e.value.copyWith(payer: false);
+          return e.value.copyWith(payer: !(e.value.payer ?? false));
         })
       ]);
 
@@ -81,23 +91,36 @@ class SliceEditor extends StatelessWidget {
       children: [
         ...splitzConfigs.asMap().entries.map<Widget>((e) {
           final config = e.value;
-          return SizedBox(
-            height: _userCardHeight,
-            width: double.infinity,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SplitzCircleAvatar(
-                  radius: _userCardHeight,
-                  avatarUrl: config.avatarUrl,
-                ),
-                const SizedBox(width: 12),
-                Focus(child: getUserInfo(e, context)),
-              ],
+          return InkWell(
+            onTap: () => setSelection(config),
+            child: Container(
+              padding: const EdgeInsets.all(_padding),
+              decoration: enablePayerSelection && config.payer == true
+                  ? BoxDecoration(
+                      borderRadius: BorderRadius.circular(_padding * 2),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.primary,
+                        strokeAlign: BorderSide.strokeAlignOutside,
+                      ),
+                    )
+                  : null,
+              height: _userCardHeight,
+              width: double.infinity,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SplitzCircleAvatar(
+                    radius: _userCardHeight,
+                    avatarUrl: config.avatarUrl,
+                  ),
+                  const SizedBox(width: 12),
+                  Focus(child: getUserInfo(e, context)),
+                ],
+              ),
             ),
           );
-        }).intersperse(const SizedBox(height: 24)),
-        const SizedBox(height: 24),
+        }).intersperse(const SizedBox(height: 4)),
+        const SizedBox(height: 8),
         if (sum == 100.0)
           SliceSlider(
             onRangesChanged: setRanges,
