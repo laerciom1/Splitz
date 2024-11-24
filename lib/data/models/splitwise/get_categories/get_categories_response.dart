@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:splitz/data/models/splitwise/common/category.dart';
 
 class GetCategoriesResponse {
-  List<Category>? categories;
+  List<Category> categories;
 
   GetCategoriesResponse({
-    this.categories,
+    required this.categories,
   });
 
   GetCategoriesResponse copyWith({
@@ -30,8 +30,6 @@ class GetCategoriesResponse {
       );
 
   Map<String, dynamic> toMap() => {
-        "categories": categories == null
-            ? []
-            : List<dynamic>.from(categories!.map((x) => x.toMap())),
+        "categories": List<dynamic>.from(categories.map((x) => x.toMap())),
       };
 }

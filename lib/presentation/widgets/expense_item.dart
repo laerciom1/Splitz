@@ -10,12 +10,10 @@ const _cardHeight = 80.0;
 class ExpenseItem extends StatelessWidget {
   const ExpenseItem({
     required this.expense,
-    required this.categoryPicUrl,
     super.key,
   });
 
   final ExpenseEntity expense;
-  final String? categoryPicUrl;
 
   Widget getInfo(String str) => Text(
         style: const TextStyle(fontSize: 12),
@@ -25,78 +23,75 @@ class ExpenseItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: SizedBox(
-        height: _cardHeight,
-        width: double.infinity,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              height: _cardHeight,
-              width: _cardHeight,
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(
-                  Radius.circular((1 / 10) * _cardHeight),
-                ),
+    return SizedBox(
+      height: _cardHeight,
+      width: double.infinity,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            height: _cardHeight,
+            width: _cardHeight,
+            decoration: const BoxDecoration(
+              borderRadius: BorderRadius.all(
+                Radius.circular((1 / 10) * _cardHeight),
               ),
-              clipBehavior: Clip.hardEdge,
-              child: categoryPicUrl.isNotNullNorEmpty
-                  ? CachedNetworkImage(imageUrl: categoryPicUrl!)
-                  : const Placeholder(
-                      child: Padding(
-                        padding: EdgeInsets.all(4.0),
-                        child: Center(
-                          child: Text(
-                            'No image yet',
-                            textAlign: TextAlign.center,
-                          ),
+            ),
+            clipBehavior: Clip.hardEdge,
+            child: expense.imageUrl.isNotNullNorEmpty
+                ? CachedNetworkImage(imageUrl: expense.imageUrl)
+                : const Placeholder(
+                    child: Padding(
+                      padding: EdgeInsets.all(4.0),
+                      child: Center(
+                        child: Text(
+                          'No image yet',
+                          textAlign: TextAlign.center,
                         ),
                       ),
                     ),
-            ),
-            const SizedBox(width: 12.0, height: 1),
-            Flexible(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        expense.description,
-                        softWrap: true,
-                      ),
-                    ],
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      getInfo(expense.date.toDateFormat('dd/MM/yyyy')),
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          getInfo(
-                            'Total: ${double.parse(expense.cost).toBRL()}',
+          ),
+          const SizedBox(width: 12.0, height: 1),
+          Flexible(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      expense.description,
+                      softWrap: true,
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    getInfo(expense.date.toDateFormat('dd/MM/yyyy')),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        getInfo(
+                          'Total: ${double.parse(expense.cost).toBRL()}',
+                        ),
+                        ...expense.users.map(
+                          (e) => getInfo(
+                            '${e.firstName}: ${double.parse(e.owedShare).toBRL()}',
                           ),
-                          ...expense.users.map(
-                            (e) => getInfo(
-                              '${e.firstName}: ${double.parse(e.owedShare).toBRL()}',
-                            ),
-                          )
-                        ],
-                      ),
-                    ],
-                  )
-                ],
-              ),
+                        )
+                      ],
+                    ),
+                  ],
+                )
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

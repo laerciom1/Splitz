@@ -8,8 +8,8 @@ class ExpenseEntity {
   String currencyCode;
   int groupId;
   List<UserExpenseEntity> users;
-  String? imageUrl;
-  int? categoryId;
+  int categoryId;
+  String imageUrl;
 
   ExpenseEntity({
     required this.id,
@@ -19,18 +19,20 @@ class ExpenseEntity {
     required this.currencyCode,
     required this.groupId,
     required this.users,
-    this.imageUrl,
-    this.categoryId,
+    required this.categoryId,
+    required this.imageUrl,
   });
 
-  factory ExpenseEntity.fromExpenseResponse(Expense e) => ExpenseEntity(
+  factory ExpenseEntity.fromExpenseResponse(Expense e, String imageUrl) =>
+      ExpenseEntity(
         id: e.id,
         cost: e.cost,
         description: e.description,
         date: e.date,
         currencyCode: e.currencyCode,
-        categoryId: e.categoryId,
         groupId: e.groupId,
+        categoryId: e.category.id,
+        imageUrl: imageUrl,
         users: [
           ...e.users.map(
             (e) => UserExpenseEntity.fromUserElementResponse(e),

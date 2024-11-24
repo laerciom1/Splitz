@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:splitz/data/entities/init_result.dart';
 import 'package:splitz/firebase_options.dart';
-import 'package:splitz/presentation/screens/expenses.dart';
+import 'package:splitz/presentation/screens/expenses_list.dart';
 import 'package:splitz/presentation/screens/groups_list.dart';
 import 'package:splitz/presentation/screens/login_splitwise.dart';
 import 'package:splitz/presentation/screens/login_splitz.dart';
@@ -53,9 +53,7 @@ class _MainAppState extends State<MainApp> {
       case FirstScreen.groupsList:
         return const GroupsListScreen();
       case FirstScreen.group:
-        return ExpensesScreen(
-          groupId: initResult!.args as String,
-        );
+        return ExpensesListScreen(groupId: initResult!.args as String);
     }
   }
 

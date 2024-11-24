@@ -1,14 +1,14 @@
 import 'dart:convert';
 
 class Category {
-  int? id;
+  int id;
   String? name;
   String? icon;
   IconTypes? iconTypes;
   List<Category>? subcategories;
 
   Category({
-    this.id,
+    required this.id,
     this.name,
     this.icon,
     this.iconTypes,

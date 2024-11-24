@@ -95,7 +95,7 @@ class SplitzCategory {
   factory SplitzCategory.fromCategory(Category c) => SplitzCategory(
         prefix: '',
         imageUrl: c.iconTypes!.square!.large!,
-        id: c.id!,
+        id: c.id,
       );
 }
 

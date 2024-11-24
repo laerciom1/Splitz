@@ -1,31 +1,31 @@
 import 'dart:convert';
 
 class Group {
+  String name;
+  Avatar avatar;
+  CoverPhoto coverPhoto;
   int? id;
-  String? name;
   String? groupType;
   DateTime? updatedAt;
   bool? simplifyByDefault;
   List<Member>? members;
   List<Debt>? originalDebts;
   List<Debt>? simplifiedDebts;
-  Avatar? avatar;
   bool? customAvatar;
-  CoverPhoto? coverPhoto;
   String? inviteLink;
 
   Group({
+    required this.name,
+    required this.avatar,
+    required this.coverPhoto,
     this.id,
-    this.name,
     this.groupType,
     this.updatedAt,
     this.simplifyByDefault,
     this.members,
     this.originalDebts,
     this.simplifiedDebts,
-    this.avatar,
     this.customAvatar,
-    this.coverPhoto,
     this.inviteLink,
   });
 
@@ -63,8 +63,9 @@ class Group {
   String toJson() => json.encode(toMap());
 
   factory Group.fromMap(Map<String, dynamic> json) => Group(
-        id: json["id"],
         name: json["name"],
+        avatar: Avatar.fromMap(json["avatar"]),
+        id: json["id"],
         groupType: json["group_type"],
         updatedAt: json["updated_at"] == null
             ? null
@@ -81,17 +82,16 @@ class Group {
             ? []
             : List<Debt>.from(
                 json["simplified_debts"]!.map((x) => Debt.fromMap(x))),
-        avatar: json["avatar"] == null ? null : Avatar.fromMap(json["avatar"]),
         customAvatar: json["custom_avatar"],
-        coverPhoto: json["cover_photo"] == null
-            ? null
-            : CoverPhoto.fromMap(json["cover_photo"]),
+        coverPhoto: CoverPhoto.fromMap(json["cover_photo"]),
         inviteLink: json["invite_link"],
       );
 
   Map<String, dynamic> toMap() => {
-        "id": id,
         "name": name,
+        "avatar": avatar.toMap(),
+        "cover_photo": coverPhoto.toMap(),
+        "id": id,
         "group_type": groupType,
         "updated_at": updatedAt?.toIso8601String(),
         "simplify_by_default": simplifyByDefault,
@@ -104,27 +104,25 @@ class Group {
         "simplified_debts": simplifiedDebts == null
             ? []
             : List<dynamic>.from(simplifiedDebts!.map((x) => x.toMap())),
-        "avatar": avatar?.toMap(),
         "custom_avatar": customAvatar,
-        "cover_photo": coverPhoto?.toMap(),
         "invite_link": inviteLink,
       };
 }
 
 class Avatar {
+  String medium;
   String? original;
   String? xxlarge;
   String? xlarge;
   String? large;
-  String? medium;
   String? small;
 
   Avatar({
+    required this.medium,
     this.original,
     this.xxlarge,
     this.xlarge,
     this.large,
-    this.medium,
     this.small,
   });
 
@@ -169,11 +167,11 @@ class Avatar {
 }
 
 class CoverPhoto {
-  String? xxlarge;
+  String xxlarge;
   String? xlarge;
 
   CoverPhoto({
-    this.xxlarge,
+    required this.xxlarge,
     this.xlarge,
   });
 

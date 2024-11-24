@@ -16,6 +16,7 @@ void showToast(
   scaffold.showSnackBar(
     SnackBar(
       content: Text(message),
+      behavior: SnackBarBehavior.fixed,
       action: action,
     ),
   );

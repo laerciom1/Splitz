@@ -25,7 +25,7 @@ abstract class SplitwiseRepository {
     return _dio!;
   }
 
-  static Future<GetExpensesResponse?> getExpenses(String groupId) async {
+  static Future<GetExpensesResponse> getExpenses(String groupId) async {
     try {
       final now = DateTime.now();
       final firstDayOfLastMonth = DateTime(now.year, now.month - 1, 1);
@@ -43,11 +43,11 @@ abstract class SplitwiseRepository {
         error: e,
         stackTrace: s,
       );
-      return null;
+      rethrow;
     }
   }
 
-  static Future<GetGroupResponse?> getGroupInfo(String groupId) async {
+  static Future<GetGroupResponse> getGroupInfo(String groupId) async {
     try {
       final dio = await _dioClient;
       final response = await dio.get('/get_group/$groupId');
@@ -61,7 +61,7 @@ abstract class SplitwiseRepository {
         error: e,
         stackTrace: s,
       );
-      return null;
+      rethrow;
     }
   }
 
@@ -79,7 +79,7 @@ abstract class SplitwiseRepository {
     }
   }
 
-  static Future<GetCategoriesResponse?> getAvailableCategories() async {
+  static Future<GetCategoriesResponse> getAvailableCategories() async {
     try {
       final dio = await _dioClient;
       final response = await dio.get('/get_categories');
@@ -93,7 +93,7 @@ abstract class SplitwiseRepository {
         error: e,
         stackTrace: s,
       );
-      return null;
+      rethrow;
     }
   }
 }

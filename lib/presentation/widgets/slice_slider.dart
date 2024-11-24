@@ -64,34 +64,31 @@ class SliceSlider extends StatelessWidget {
     final handler = FlutterSliderHandler(
       child: getThumb(context),
     );
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: FlutterSlider(
-        values: [values[0]],
-        min: 0.0,
-        max: 100.0,
-        handler: handler,
-        handlerWidth: _sliderHeight * 2,
-        handlerHeight: _sliderHeight * 2,
-        step: const FlutterSliderStep(step: 1),
-        tooltip: FlutterSliderTooltip(disabled: true),
-        handlerAnimation: const FlutterSliderHandlerAnimation(scale: 1.0),
-        onDragging: (handlerIndex, lowerValue, upperValue) {
-          onRangesChanged?.call(getRangesByValues([lowerValue]));
-        },
-        trackBar: FlutterSliderTrackBar(
-          activeTrackBarHeight: _sliderHeight,
-          inactiveTrackBarHeight: _sliderHeight,
-          inactiveTrackBar: BoxDecoration(
-            borderRadius:
-                const BorderRadius.all(Radius.circular(_sliderHeight)),
-            color: sliceColors[1],
-          ),
-          activeTrackBar: BoxDecoration(
-            borderRadius:
-                const BorderRadius.all(Radius.circular(_sliderHeight)),
-            color: sliceColors[0],
-          ),
+    return FlutterSlider(
+      values: [values[0]],
+      min: 0.0,
+      max: 100.0,
+      handler: handler,
+      handlerWidth: _sliderHeight * 2,
+      handlerHeight: _sliderHeight * 2,
+      step: const FlutterSliderStep(step: 1),
+      tooltip: FlutterSliderTooltip(disabled: true),
+      handlerAnimation: const FlutterSliderHandlerAnimation(scale: 1.0),
+      onDragging: (handlerIndex, lowerValue, upperValue) {
+        onRangesChanged?.call(getRangesByValues([lowerValue]));
+      },
+      trackBar: FlutterSliderTrackBar(
+        activeTrackBarHeight: _sliderHeight,
+        inactiveTrackBarHeight: _sliderHeight,
+        inactiveTrackBar: BoxDecoration(
+          borderRadius:
+              const BorderRadius.all(Radius.circular(_sliderHeight)),
+          color: sliceColors[1],
+        ),
+        activeTrackBar: BoxDecoration(
+          borderRadius:
+              const BorderRadius.all(Radius.circular(_sliderHeight)),
+          color: sliceColors[0],
         ),
       ),
     );
@@ -109,34 +106,31 @@ class SliceSlider extends StatelessWidget {
     ];
     final midValue = ((values[0] / 100) + (values[1] / 100)) / 2;
     final stops = <double>[0.0, midValue, midValue + .001, 1.0];
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: FlutterSlider(
-        rangeSlider: true,
-        values: [values[0], values[1]],
-        min: 0.0,
-        max: 100.0,
-        handler: handler,
-        rightHandler: handler,
-        handlerWidth: _sliderHeight * 2,
-        handlerHeight: _sliderHeight * 2,
-        step: const FlutterSliderStep(step: 1),
-        tooltip: FlutterSliderTooltip(disabled: true),
-        handlerAnimation: const FlutterSliderHandlerAnimation(scale: 1.0),
-        onDragging: (handlerIndex, lowerValue, upperValue) {
-          onRangesChanged?.call(getRangesByValues([lowerValue, upperValue]));
-        },
-        trackBar: FlutterSliderTrackBar(
-          activeTrackBarHeight: _sliderHeight,
-          inactiveTrackBarHeight: _sliderHeight,
-          inactiveTrackBar: BoxDecoration(
-            borderRadius:
-                const BorderRadius.all(Radius.circular(_sliderHeight)),
-            gradient: LinearGradient(colors: colors, stops: stops),
-            color: Colors.black,
-          ),
-          activeTrackBar: BoxDecoration(color: sliceColors[1]),
+    return FlutterSlider(
+      rangeSlider: true,
+      values: [values[0], values[1]],
+      min: 0.0,
+      max: 100.0,
+      handler: handler,
+      rightHandler: handler,
+      handlerWidth: _sliderHeight * 2,
+      handlerHeight: _sliderHeight * 2,
+      step: const FlutterSliderStep(step: 1),
+      tooltip: FlutterSliderTooltip(disabled: true),
+      handlerAnimation: const FlutterSliderHandlerAnimation(scale: 1.0),
+      onDragging: (handlerIndex, lowerValue, upperValue) {
+        onRangesChanged?.call(getRangesByValues([lowerValue, upperValue]));
+      },
+      trackBar: FlutterSliderTrackBar(
+        activeTrackBarHeight: _sliderHeight,
+        inactiveTrackBarHeight: _sliderHeight,
+        inactiveTrackBar: BoxDecoration(
+          borderRadius:
+              const BorderRadius.all(Radius.circular(_sliderHeight)),
+          gradient: LinearGradient(colors: colors, stops: stops),
+          color: Colors.black,
         ),
+        activeTrackBar: BoxDecoration(color: sliceColors[1]),
       ),
     );
   }
@@ -153,30 +147,27 @@ class SliceSlider extends StatelessWidget {
     colors.addAll([sliceColors[values.length], sliceColors[values.length]]);
     stops.insert(0, 0.0);
     stops.add(1.0);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-      child: MultiThumbSlider(
-        initalSliderValues: [...values.map((e) => e / 100)],
-        lockBehaviour: ThumbLockBehaviour.none,
-        overdragBehaviour: ThumbOverdragBehaviour.move,
-        valuesChanged: (newValues) {
-          onRangesChanged?.call(getRangesByValues(
-            [...newValues.map((e) => e * 100)],
-          ));
-        },
-        thumbBuilder: (_, __) => Container(
-          width: _sliderHeight * 2,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary,
-            shape: BoxShape.circle,
-          ),
+    return MultiThumbSlider(
+      initalSliderValues: [...values.map((e) => e / 100)],
+      lockBehaviour: ThumbLockBehaviour.none,
+      overdragBehaviour: ThumbOverdragBehaviour.move,
+      valuesChanged: (newValues) {
+        onRangesChanged?.call(getRangesByValues(
+          [...newValues.map((e) => e * 100)],
+        ));
+      },
+      thumbBuilder: (_, __) => Container(
+        width: _sliderHeight * 2,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primary,
+          shape: BoxShape.circle,
         ),
-        background: Container(
-          height: _sliderHeight,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(_sliderHeight),
-            gradient: LinearGradient(colors: colors, stops: stops),
-          ),
+      ),
+      background: Container(
+        height: _sliderHeight,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(_sliderHeight),
+          gradient: LinearGradient(colors: colors, stops: stops),
         ),
       ),
     );

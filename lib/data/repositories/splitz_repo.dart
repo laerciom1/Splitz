@@ -20,7 +20,7 @@ abstract class SplitzRepository {
     }
   }
 
-  static Future<GroupConfig?> updateGroup(
+  static Future<GroupConfig> updateGroup(
     String groupId,
     GroupConfig config,
   ) async {
@@ -30,7 +30,7 @@ abstract class SplitzRepository {
       return config;
     } catch (e, s) {
       LogService.log('Splitz.updateGroupe', error: e, stackTrace: s);
-      return null;
+      rethrow;
     }
   }
 }

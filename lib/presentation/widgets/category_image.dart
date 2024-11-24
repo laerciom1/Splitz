@@ -21,6 +21,7 @@ class CategoryImage extends StatelessWidget {
       child: Container(
         height: 60,
         width: 60,
+        clipBehavior: Clip.hardEdge,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(6),
           border: isSelected

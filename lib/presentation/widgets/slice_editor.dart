@@ -81,35 +81,30 @@ class SliceEditor extends StatelessWidget {
       children: [
         ...splitzConfigs.asMap().entries.map<Widget>((e) {
           final config = e.value;
-          return Padding(
-            padding: const EdgeInsets.only(left: 24),
-            child: SizedBox(
-              height: _userCardHeight,
-              width: double.infinity,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SplitzCircleAvatar(
-                    radius: _userCardHeight,
-                    avatarUrl: config.avatarUrl,
-                  ),
-                  const SizedBox(width: 12),
-                  Focus(child: getUserInfo(e, context)),
-                ],
-              ),
+          return SizedBox(
+            height: _userCardHeight,
+            width: double.infinity,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SplitzCircleAvatar(
+                  radius: _userCardHeight,
+                  avatarUrl: config.avatarUrl,
+                ),
+                const SizedBox(width: 12),
+                Focus(child: getUserInfo(e, context)),
+              ],
             ),
           );
-        }).intersperse(const SizedBox(height: 12)),
+        }).intersperse(const SizedBox(height: 24)),
+        const SizedBox(height: 24),
         if (sum == 100.0)
           SliceSlider(
             onRangesChanged: setRanges,
             initRangeValues: getRanges(),
           ),
         if (sum != 100.0)
-          const Padding(
-            padding: EdgeInsets.only(top: 24),
-            child: Text('The sum of the users\' parts must be 100%'),
-          ),
+          const Text('The sum of the users\' parts must be 100%'),
       ],
     );
   }

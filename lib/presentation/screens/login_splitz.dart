@@ -13,22 +13,15 @@ class SplitzLoginScreen extends StatelessWidget {
     if (result == false) {
       showToast('Login with Google has failed');
     } else {
-      AppNavigator.push(const SplitwiseLoginScreen());
+      AppNavigator.replaceAll([const SplitwiseLoginScreen()]);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              PrimaryButton(onPressed: doLogin, text: 'Login with Google'),
-            ],
-          ),
-        ),
+    return Scaffold(
+      body: Center(
+        child: PrimaryButton(onPressed: doLogin, text: 'Login with Google'),
       ),
     );
   }

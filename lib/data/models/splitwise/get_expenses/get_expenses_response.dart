@@ -44,7 +44,7 @@ class Expense {
   String currencyCode;
   int groupId;
   List<UserElement> users;
-  int? categoryId;
+  Category category;
   String? details;
   String? repeatInterval;
   dynamic friendshipId;
@@ -63,7 +63,6 @@ class Expense {
   TedBy? updatedBy;
   DateTime? deletedAt;
   TedBy? deletedBy;
-  Category? category;
   Receipt? receipt;
   List<dynamic>? comments;
 
@@ -75,7 +74,7 @@ class Expense {
     required this.currencyCode,
     required this.groupId,
     required this.users,
-    this.categoryId,
+    required this.category,
     this.createdAt,
     this.details,
     this.repeatInterval,
@@ -94,7 +93,6 @@ class Expense {
     this.updatedBy,
     this.deletedAt,
     this.deletedBy,
-    this.category,
     this.receipt,
     this.comments,
   });
@@ -137,7 +135,6 @@ class Expense {
         date: date ?? this.date,
         repeatInterval: repeatInterval ?? this.repeatInterval,
         currencyCode: currencyCode ?? this.currencyCode,
-        categoryId: categoryId ?? this.categoryId,
         id: id ?? this.id,
         groupId: groupId ?? this.groupId,
         friendshipId: friendshipId ?? this.friendshipId,
@@ -173,12 +170,12 @@ class Expense {
         description: json["description"],
         date: DateTime.parse(json["date"]),
         currencyCode: json["currency_code"],
-        categoryId: json["category_id"],
         groupId: json["group_id"],
         users: json["users"] == null
             ? []
             : List<UserElement>.from(
                 json["users"]!.map((x) => UserElement.fromMap(x))),
+        category: Category.fromMap(json["category"]),
         details: json["details"],
         repeatInterval: json["repeat_interval"],
         friendshipId: json["friendship_id"],
@@ -214,9 +211,6 @@ class Expense {
         deletedBy: json["deleted_by"] == null
             ? null
             : TedBy.fromMap(json["deleted_by"]),
-        category: json["category"] == null
-            ? null
-            : Category.fromMap(json["category"]),
         receipt:
             json["receipt"] == null ? null : Receipt.fromMap(json["receipt"]),
         comments: json["comments"] == null
@@ -230,9 +224,9 @@ class Expense {
         "description": description,
         "date": date.toIso8601String(),
         "currency_code": currencyCode,
-        "category_id": categoryId,
         "group_id": groupId,
         "users": List<dynamic>.from(users.map((x) => x.toMap())),
+        "category": category.toMap(),
         "details": details,
         "repeat_interval": repeatInterval,
         "friendship_id": friendshipId,
@@ -253,7 +247,6 @@ class Expense {
         "updated_by": updatedBy?.toMap(),
         "deleted_at": deletedAt?.toIso8601String(),
         "deleted_by": deletedBy?.toMap(),
-        "category": category?.toMap(),
         "receipt": receipt?.toMap(),
         "comments":
             comments == null ? [] : List<dynamic>.from(comments!.map((x) => x)),

@@ -14,10 +14,6 @@ class SplitwiseLoginScreen extends StatefulWidget {
 }
 
 class _SplitwiseLoginScreenState extends State<SplitwiseLoginScreen> {
-  final emailController = TextEditingController();
-
-  final passwordController = TextEditingController();
-
   bool shouldLoadPage = false;
   late WebViewController controller;
 
@@ -27,26 +23,14 @@ class _SplitwiseLoginScreenState extends State<SplitwiseLoginScreen> {
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
-        NavigationDelegate(
-          onNavigationRequest: (NavigationRequest request) =>
-              AuthService.onNavigationRequest(
-            request,
-            onResult,
-          ),
-        ),
+        NavigationDelegate(onNavigationRequest: onNavigationRequest),
       );
   }
 
-  void onResult(bool success) {
-    if (success) {
-      AppNavigator.push(const GroupsListScreen());
-    } else {
-      showToast('Login to Splitwise has failed');
-      setState(() {
-        shouldLoadPage = false;
-      });
-    }
-  }
+  Future<NavigationDecision> onNavigationRequest(
+    NavigationRequest request,
+  ) async =>
+      await AuthService.onNavigationRequest(request, onResult);
 
   Future<void> doLogin() async {
     setState(() {
@@ -55,27 +39,26 @@ class _SplitwiseLoginScreenState extends State<SplitwiseLoginScreen> {
     });
   }
 
+  void onResult(bool success) {
+    if (success) {
+      AppNavigator.replaceAll([const GroupsListScreen()]);
+    } else {
+      showToast('Login to Splitwise has failed');
+      setState(() {
+        shouldLoadPage = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: shouldLoadPage
-            ? WebViewWidget(controller: controller)
-            : Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      PrimaryButton(
-                        text: 'Login to Splitwise',
-                        onPressed: doLogin,
-                      )
-                    ],
-                  ),
-                ),
-              ),
-      ),
+    return Scaffold(
+      body: shouldLoadPage
+          ? WebViewWidget(controller: controller)
+          : Center(
+              child:
+                  PrimaryButton(onPressed: doLogin, text: 'Login to Splitwise'),
+            ),
     );
   }
 }
