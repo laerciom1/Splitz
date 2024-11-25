@@ -109,6 +109,7 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
   @override
   Widget build(BuildContext context) {
     return BaseScreen(
+      onPop: (_, __) async {},
       onRefresh: initScreen,
       child: getBody(),
     );

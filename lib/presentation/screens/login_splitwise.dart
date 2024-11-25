@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:splitz/presentation/screens/groups_list.dart';
+import 'package:splitz/presentation/screens/login_splitz.dart';
+import 'package:splitz/presentation/templates/base_screen.dart';
 import 'package:splitz/presentation/widgets/button_primary.dart';
 import 'package:splitz/presentation/widgets/snackbar.dart';
 import 'package:splitz/services/auth_service.dart';
@@ -55,14 +57,25 @@ class _SplitwiseLoginScreenState extends State<SplitwiseLoginScreen> {
     }
   }
 
+  Future<void> cancelLogin() async {
+    await SplitzService.signOut();
+    AppNavigator.replaceAll([const SplitzLoginScreen()]);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: shouldLoadPage
+    return BaseScreen(
+      onPop: (_, __) async {},
+      appBar: false,
+      child: shouldLoadPage
           ? WebViewWidget(controller: controller)
           : Center(
-              child:
+              child: Column(
+                children: [
                   PrimaryButton(onPressed: doLogin, text: 'Login to Splitwise'),
+                  PrimaryButton(onPressed: cancelLogin, text: 'Cancel'),
+                ],
+              ),
             ),
     );
   }

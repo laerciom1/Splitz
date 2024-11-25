@@ -7,6 +7,7 @@ import 'package:splitz/extensions/strings.dart';
 import 'package:splitz/navigator.dart';
 import 'package:splitz/presentation/screens/expense_editor.dart';
 import 'package:splitz/presentation/screens/group_editor.dart';
+import 'package:splitz/presentation/screens/groups_list.dart';
 import 'package:splitz/presentation/templates/base_screen.dart';
 import 'package:splitz/presentation/widgets/fab_add_split.dart';
 import 'package:splitz/presentation/widgets/expense_item.dart';
@@ -14,6 +15,8 @@ import 'package:splitz/presentation/widgets/feedback_message.dart';
 import 'package:splitz/presentation/widgets/loading.dart';
 import 'package:splitz/presentation/widgets/snackbar.dart';
 import 'package:splitz/services/splitz_service.dart';
+
+final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
 class ExpensesListScreen extends StatefulWidget {
   const ExpensesListScreen({required this.groupId, super.key});
@@ -291,6 +294,14 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
   @override
   Widget build(BuildContext context) {
     return BaseScreen(
+      onPop: (_, __) async {
+        if (_scaffoldKey.currentState?.isDrawerOpen ?? false) {
+          _scaffoldKey.currentState?.openEndDrawer();
+        } else {
+          AppNavigator.replaceAll([const GroupsListScreen()]);
+        }
+      },
+      scaffoldKey: _scaffoldKey,
       onRefresh: _lastFunc,
       floatingActionButton: getFAB(),
       child: getBody(),

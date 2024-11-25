@@ -301,6 +301,7 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
   @override
   Widget build(BuildContext context) {
     return BaseScreen(
+      onPop: (_, __) async => finishEditing(),
       onRefresh: initScreen,
       floatingActionButton: getFAB(),
       topWidget: getHeader(context),
