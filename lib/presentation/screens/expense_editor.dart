@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:splitz/data/entities/expense_entity.dart';
 import 'package:splitz/data/models/splitz/group_config.dart';
+import 'package:splitz/extensions/strings.dart';
 import 'package:splitz/navigator.dart';
 import 'package:splitz/presentation/templates/base_screen.dart';
 import 'package:splitz/presentation/widgets/button_primary.dart';
@@ -11,6 +12,7 @@ import 'package:splitz/presentation/widgets/expense_item.dart';
 import 'package:splitz/presentation/widgets/field_primary.dart';
 import 'package:splitz/presentation/widgets/slice_editor.dart';
 import 'package:splitz/presentation/widgets/splitz_divider.dart';
+import 'package:splitz/services/splitz_service.dart';
 
 const _initCost = '0.00';
 
@@ -34,8 +36,8 @@ class ExpenseEditorScreen extends StatefulWidget {
 
 class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
     with WidgetsBindingObserver {
-  late List<SplitzConfig> _splitzConfigs;
-  late ExpenseEntity _expense;
+  List<SplitzConfig>? _splitzConfigs;
+  ExpenseEntity? _expense;
 
   late final List<TextEditingController> _controllers;
   late final TextEditingController _descriptionController;
@@ -50,27 +52,40 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    if (widget.expense != null) {
-      _splitzConfigs =
-          widget.groupConfig.withPayer(widget.expense!.users).splitConfig;
-    } else {
-      _splitzConfigs = [...widget.groupConfig.splitConfig];
+    initScreen();
+  }
+
+  Future<void> initScreen() async {
+    String? currentUserId;
+    if (widget.expense == null) {
+      currentUserId = await SplitzService.getCurrentSplitwiseUser();
     }
-    _expense = widget.expense ??
-        ExpenseEntity.fromSplitzConfig(
+    setState(() {
+      if (widget.expense == null) {
+        _splitzConfigs = widget.groupConfig
+            .withPayer(currentUserId: currentUserId!)
+            .splitConfig;
+        _expense = ExpenseEntity.fromSplitzConfig(
           cost: _initCost,
           description: '${widget.category.prefix} ',
           groupId: int.parse(widget.groupId),
           categoryId: widget.category.id,
           imageUrl: widget.category.imageUrl,
-          splitzConfigs: _splitzConfigs,
+          splitzConfigs: _splitzConfigs!,
         );
+      } else {
+        _expense = widget.expense!;
+        _splitzConfigs = widget.groupConfig
+            .withPayer(users: widget.expense!.users)
+            .splitConfig;
+      }
 
-    initializeFocusAndControllers(_splitzConfigs);
+      initializeFocusAndControllers(_splitzConfigs!);
+    });
   }
 
   String getInitialDescription() =>
-      _expense.description.split('${widget.category.prefix} ')[1];
+      _expense!.description.split('${widget.category.prefix} ')[1];
 
   void initializeFocusAndControllers(List<SplitzConfig> splitConfig) {
     if (!_controllersWasInitialized) {
@@ -81,7 +96,7 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
           (_) => FocusNode()..addListener(trackFocusChanges));
       _descriptionController =
           TextEditingController(text: getInitialDescription());
-      _costController = TextEditingController(text: _expense.cost);
+      _costController = TextEditingController(text: _expense!.cost);
       _controllers = [
         ...splitConfig.map(
           (config) => TextEditingController(text: config.slice.toString()),
@@ -126,18 +141,18 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
 
   void onChangeDescription(String s) => setState(() {
         _expense =
-            _expense.copyWith(description: '${widget.category.prefix} $s');
+            _expense!.copyWith(description: '${widget.category.prefix} $s');
       });
 
   void onChangeCost(String s) => setState(() {
-        _expense = _expense.copyWithShares(
+        _expense = _expense!.copyWithShares(
           cost: s,
-          splitzConfigs: _splitzConfigs,
+          splitzConfigs: _splitzConfigs!,
         );
       });
 
   void onNewSplitzConfigs(List<SplitzConfig> configs) => setState(() {
-        _expense = _expense.copyWithShares(
+        _expense = _expense!.copyWithShares(
           splitzConfigs: configs,
         );
         _splitzConfigs = configs;
@@ -148,16 +163,23 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
   Widget getExpenseEditorHeader(BuildContext ctx) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.all(24),
-            child: Text('Expense resume:'),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: ExpenseItem(expense: _expense),
-          ),
-          const SizedBox(height: 24),
-          SplitzDivider(color: Theme.of(ctx).colorScheme.primary)
+          if (_expense == null)
+            const Padding(
+              padding: EdgeInsets.all(24),
+              child: CircularProgressIndicator(),
+            ),
+          if (_expense != null) ...[
+            const Padding(
+              padding: EdgeInsets.all(24),
+              child: Text('Expense resume:'),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: ExpenseItem(expense: _expense!),
+            ),
+            const SizedBox(height: 24),
+            SplitzDivider(color: Theme.of(ctx).colorScheme.primary)
+          ]
         ],
       );
 
@@ -166,61 +188,64 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Padding(
-              padding: EdgeInsets.all(24.0),
-              child: Text('Type a description:'),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: PrimaryField(
-                onChanged: onChangeDescription,
-                focusNode: _descriptionFocusNode,
-                controller: _descriptionController,
+            if (_expense != null) ...[
+              const Padding(
+                padding: EdgeInsets.all(24.0),
+                child: Text('Type a description:'),
               ),
-            ),
-            const Padding(
-              padding: EdgeInsets.all(24.0),
-              child: Text('Type a cost:'),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: PrimaryField(
-                onChanged: onChangeCost,
-                focusNode: _costFocusNode,
-                controller: _costController,
-                keyboardType: const TextInputType.numberWithOptions(
-                  signed: true,
-                  decimal: true,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: PrimaryField(
+                  onChanged: onChangeDescription,
+                  focusNode: _descriptionFocusNode,
+                  controller: _descriptionController,
                 ),
-                inputFormatters: [
-                  CurrencyTextInputFormatter.currency(
-                    symbol: '',
-                    enableNegative: false,
-                    turnOffGrouping: true,
+              ),
+              const Padding(
+                padding: EdgeInsets.all(24.0),
+                child: Text('Type a cost:'),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: PrimaryField(
+                  onChanged: onChangeCost,
+                  focusNode: _costFocusNode,
+                  controller: _costController,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    signed: true,
+                    decimal: true,
                   ),
-                  TextInputFormatter.withFunction(
-                    (_, newValue) => TextEditingValue(
-                      text:
-                          newValue.text.isNotEmpty ? newValue.text : _initCost,
+                  inputFormatters: [
+                    CurrencyTextInputFormatter.currency(
+                      symbol: '',
+                      enableNegative: false,
+                      turnOffGrouping: true,
                     ),
-                  )
-                ],
+                    TextInputFormatter.withFunction(
+                      (_, newValue) => TextEditingValue(
+                        text: newValue.text.isNotEmpty
+                            ? newValue.text
+                            : _initCost,
+                      ),
+                    )
+                  ],
+                ),
               ),
-            ),
-            const Padding(
-              padding: EdgeInsets.all(24.0),
-              child: Text('Select who paid this time:'),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: SliceEditor(
-                splitzConfigs: _splitzConfigs,
-                focusNodes: _focusNodes,
-                controllers: _controllers,
-                onEditConfigs: onNewSplitzConfigs,
-                enablePayerSelection: true,
+              const Padding(
+                padding: EdgeInsets.all(24.0),
+                child: Text('Select who paid this time:'),
               ),
-            ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: SliceEditor(
+                  splitzConfigs: _splitzConfigs!,
+                  focusNodes: _focusNodes,
+                  controllers: _controllers,
+                  onEditConfigs: onNewSplitzConfigs,
+                  enablePayerSelection: true,
+                ),
+              ),
+            ]
           ],
         ),
       );
@@ -235,9 +260,9 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
               child: PrimaryButton(
                 text: 'Save',
                 onPressed: save,
-                enabled: _expense.description.isNotEmpty &&
-                    _expense.cost != _initCost &&
-                    _expense.payerId != null,
+                enabled: (_expense?.description).isNotNullNorEmpty &&
+                    _expense?.cost != _initCost &&
+                    _expense?.payerId != null,
               ),
             ),
           ),

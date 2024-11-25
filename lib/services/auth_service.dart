@@ -83,7 +83,7 @@ abstract class AuthService {
 
   static Future<NavigationDecision> onNavigationRequest(
     NavigationRequest request,
-    void Function(bool success) onResult,
+    Future<void> Function(bool success) onResult,
   ) async {
     try {
       if (request.url.contains(_redirectUrl.toString())) {

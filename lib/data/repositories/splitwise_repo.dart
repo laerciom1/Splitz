@@ -4,6 +4,7 @@ import 'package:splitz/data/models/splitwise/create_expense/create_expense_reque
 import 'package:splitz/data/models/splitwise/create_expense/create_expense_response.dart';
 import 'package:splitz/data/models/splitwise/delete_expense/delete_expense.dart';
 import 'package:splitz/data/models/splitwise/get_categories/get_categories_response.dart';
+import 'package:splitz/data/models/splitwise/get_current_user/get_current_user_response.dart';
 import 'package:splitz/data/models/splitwise/get_expenses/get_expenses_response.dart';
 import 'package:splitz/data/models/splitwise/get_group/get_group_response.dart';
 import 'package:splitz/data/models/splitwise/get_groups/get_groups_response.dart';
@@ -31,21 +32,35 @@ abstract class SplitwiseRepository {
     return _dio!;
   }
 
-  static Future<GetExpensesResponse> getExpenses(String groupId) async {
+  static Future<GetCurrentUserResponse> getCurrentUser() async {
     try {
-      final now = DateTime.now();
-      final firstDayOfLastMonth = DateTime(now.year, now.month - 1, 1);
       final dio = await _dioClient;
-      final response = await dio.get(
-        '/get_expenses?group_id=$groupId&dated_after=${firstDayOfLastMonth.toString()}&limit=100',
-      );
-      final result = GetExpensesResponse.fromMap(
+      final response = await dio.get('/get_current_user');
+      final result = GetCurrentUserResponse.fromMap(
         response.data as Map<String, dynamic>,
       );
       return result;
     } catch (e, s) {
       LogService.log(
-        'SplitwiseRepository.getExpenses',
+        'SplitwiseRepository.getCurrentUser',
+        error: e,
+        stackTrace: s,
+      );
+      rethrow;
+    }
+  }
+
+  static Future<GetGroupsResponse> getGroups() async {
+    try {
+      final dio = await _dioClient;
+      final response = await dio.get('/get_groups');
+      final result = GetGroupsResponse.fromMap(
+        response.data as Map<String, dynamic>,
+      );
+      return result;
+    } catch (e, s) {
+      LogService.log(
+        'SplitwiseRepository.getGroups',
         error: e,
         stackTrace: s,
       );
@@ -71,17 +86,25 @@ abstract class SplitwiseRepository {
     }
   }
 
-  static Future<GetGroupsResponse?> getGroups() async {
+  static Future<GetExpensesResponse> getExpenses(String groupId) async {
     try {
+      final now = DateTime.now();
+      final firstDayOfLastMonth = DateTime(now.year, now.month - 1, 1);
       final dio = await _dioClient;
-      final response = await dio.get('/get_groups');
-      final result = GetGroupsResponse.fromMap(
+      final response = await dio.get(
+        '/get_expenses?group_id=$groupId&dated_after=${firstDayOfLastMonth.toString()}&limit=100',
+      );
+      final result = GetExpensesResponse.fromMap(
         response.data as Map<String, dynamic>,
       );
       return result;
     } catch (e, s) {
-      LogService.log('SplitwiseRepository.getGroups', error: e, stackTrace: s);
-      return null;
+      LogService.log(
+        'SplitwiseRepository.getExpenses',
+        error: e,
+        stackTrace: s,
+      );
+      rethrow;
     }
   }
 
@@ -114,7 +137,7 @@ abstract class SplitwiseRepository {
       return result.expenses[0].id;
     } catch (e, s) {
       LogService.log(
-        'SplitwiseRepository.getAvailableCategories',
+        'SplitwiseRepository.createExpense',
         error: e,
         stackTrace: s,
       );
@@ -134,7 +157,7 @@ abstract class SplitwiseRepository {
       }
     } catch (e, s) {
       LogService.log(
-        'SplitwiseRepository.getAvailableCategories',
+        'SplitwiseRepository.deleteExpense',
         error: e,
         stackTrace: s,
       );
@@ -156,7 +179,7 @@ abstract class SplitwiseRepository {
       return result.expenses[0].id;
     } catch (e, s) {
       LogService.log(
-        'SplitwiseRepository.getAvailableCategories',
+        'SplitwiseRepository.updateExpense',
         error: e,
         stackTrace: s,
       );

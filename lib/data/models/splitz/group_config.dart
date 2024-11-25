@@ -23,20 +23,21 @@ class GroupConfig {
         splitConfig: splitConfig ?? this.splitConfig,
       );
 
-  GroupConfig withPayer(List<UserExpenseEntity> users) {
-    final payerId = users
-        .firstWhereOrNull(
-          (e) =>
-              e.paidShare.isNotNullNorEmpty &&
-              double.parse(e.paidShare!) != _zero,
-        )
-        ?.userId;
-    var splitConfig = this.splitConfig;
-    if (payerId != null) {
-      splitConfig = splitConfig
-          .map((e) => e.id == payerId ? e.copyWith(payer: true) : e)
-          .toList();
+  GroupConfig withPayer({
+    List<UserExpenseEntity>? users,
+    String? currentUserId,
+  }) {
+    int payerId = -1;
+    if (currentUserId != null) payerId = int.parse(currentUserId);
+    if (users != null) {
+      final payerUser = users.firstWhereOrNull((e) =>
+          e.paidShare.isNotNullNorEmpty && double.parse(e.paidShare!) != _zero);
+      payerId = payerUser?.userId ?? payerId;
     }
+    var splitConfig = this.splitConfig;
+    splitConfig = splitConfig
+        .map((e) => e.id == payerId ? e.copyWith(payer: true) : e)
+        .toList();
     return GroupConfig(
       categories: categories,
       splitConfig: splitConfig,

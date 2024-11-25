@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:splitz/navigator.dart';
 import 'package:splitz/presentation/screens/groups_list.dart';
+import 'package:splitz/presentation/screens/login_splitz.dart';
 import 'package:splitz/presentation/widgets/drawer_header.dart';
 import 'package:splitz/presentation/widgets/drawer_option.dart';
+import 'package:splitz/services/splitz_service.dart';
 
 class SplitzDrawer extends Drawer {
   SplitzDrawer({super.key})
@@ -22,7 +24,10 @@ class SplitzDrawer extends Drawer {
                   child: SplitzDrawerTile(
                     label: 'Logout',
                     leading: const Icon(Icons.logout),
-                    onTap: () {},
+                    onTap: () {
+                      SplitzService.signOut();
+                      AppNavigator.replaceAll([const SplitzLoginScreen()]);
+                    },
                   ),
                 ),
               ),

@@ -2,8 +2,9 @@ import 'dart:convert';
 
 class AppPreferences {
   String? selectedGroup;
+  String? currentUserId;
 
-  AppPreferences({this.selectedGroup});
+  AppPreferences({this.selectedGroup, this.currentUserId});
 
   factory AppPreferences.fromJson(String str) =>
       AppPreferences.fromMap(json.decode(str));

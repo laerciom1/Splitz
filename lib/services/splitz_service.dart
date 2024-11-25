@@ -14,19 +14,27 @@ import 'package:splitz/data/repositories/storage_repo.dart';
 const _storageKey = 'SPLITZ_SERVICE_STORAGE_KEY';
 
 abstract class SplitzService {
-  static AppPreferences? _appPreferences;
+  static AppPreferences? _inMemoryAppPreferences;
+
+  static Future<AppPreferences> get _appPreferences async {
+    if (_inMemoryAppPreferences != null) return _inMemoryAppPreferences!;
+    final appPrefs = await StorageService.read(_storageKey);
+    if (appPrefs != null) {
+      _inMemoryAppPreferences = AppPreferences.fromJson(appPrefs);
+    } else {
+      _inMemoryAppPreferences = AppPreferences();
+      await saveAppPrefs(_inMemoryAppPreferences!);
+    }
+    return _inMemoryAppPreferences!;
+  }
+
+  static Future<void> saveAppPrefs(AppPreferences appPrefs) async =>
+      StorageService.save(_storageKey, appPrefs.toJson());
+
+  static Future<void> clearAppPrefs() async =>
+      StorageService.clear(_storageKey);
 
   static Future<InitResult> init() async {
-    if (_appPreferences == null) {
-      final appPrefs = await StorageService.read(_storageKey);
-      if (appPrefs != null) {
-        _appPreferences = AppPreferences.fromJson(appPrefs);
-      } else {
-        _appPreferences = AppPreferences();
-        await StorageService.save(_storageKey, _appPreferences!.toJson());
-      }
-    }
-
     final isSignedInToSplitz = AuthService.isSignedInToSplitz;
     if (!isSignedInToSplitz) {
       return InitResult(firstScreen: FirstScreen.splitzLogin);
@@ -37,19 +45,38 @@ abstract class SplitzService {
       return InitResult(firstScreen: FirstScreen.splitwiseLogin);
     }
 
-    if (_appPreferences!.selectedGroup.isNotNullNorEmpty) {
+    final appPrefs = await _appPreferences;
+    if (appPrefs.selectedGroup.isNotNullNorEmpty) {
       return InitResult(
         firstScreen: FirstScreen.group,
-        args: _appPreferences!.selectedGroup,
+        args: appPrefs.selectedGroup,
       );
     }
 
     return InitResult(firstScreen: FirstScreen.groupsList);
   }
 
+  static Future<void> getAndSaveCurrentSplitwiseUser() async {
+    final response = await SplitwiseRepository.getCurrentUser();
+    final appPrefs = await _appPreferences;
+    appPrefs.currentUserId = '${response.user.id}';
+    await saveAppPrefs(appPrefs);
+  }
+
+  static Future<String> getCurrentSplitwiseUser() async {
+    final appPrefs = await _appPreferences;
+    if (appPrefs.currentUserId.isNotNullNorEmpty) {
+      return appPrefs.currentUserId!;
+    }
+    final response = await SplitwiseRepository.getCurrentUser();
+    appPrefs.currentUserId = '${response.user.id}';
+    await saveAppPrefs(appPrefs);
+    return appPrefs.currentUserId!;
+  }
+
   static Future<List<Group>> getGroups() async {
     final response = await SplitwiseRepository.getGroups();
-    if (response == null || response.groups == null) return [];
+    if (response.groups.isNullOrEmpty) return [];
     final groups = response.groups!.where((e) => e.id != 0).toList()
       ..sort((a, b) => (b.updatedAt ?? DateTime.now()).compareTo(
             (a.updatedAt ?? DateTime.now()),
@@ -58,8 +85,9 @@ abstract class SplitzService {
   }
 
   static Future<void> selectGroup(String group) async {
-    _appPreferences!.selectedGroup = group;
-    await StorageService.save(_storageKey, _appPreferences!.toJson());
+    final appPrefs = await _appPreferences;
+    appPrefs.selectedGroup = group;
+    await saveAppPrefs(appPrefs);
   }
 
   static Future<GroupConfig?> getGroupConfig(String groupId) async =>
@@ -160,4 +188,9 @@ abstract class SplitzService {
 
   static Future<int> updateExpense(ExpenseEntity expense) async =>
       await SplitwiseRepository.updateExpense(expense);
+
+  static Future<void> signOut() async {
+    AuthService.signOut();
+    await clearAppPrefs();
+  }
 }

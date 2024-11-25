@@ -4,6 +4,7 @@ import 'package:splitz/presentation/widgets/button_primary.dart';
 import 'package:splitz/presentation/widgets/snackbar.dart';
 import 'package:splitz/services/auth_service.dart';
 import 'package:splitz/navigator.dart';
+import 'package:splitz/services/splitz_service.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class SplitwiseLoginScreen extends StatefulWidget {
@@ -35,14 +36,18 @@ class _SplitwiseLoginScreenState extends State<SplitwiseLoginScreen> {
   Future<void> doLogin() async {
     setState(() {
       shouldLoadPage = true;
-      controller.loadRequest(AuthService.getSplitwiseAuthURL());
     });
+    WebViewCookieManager().clearCookies();
+    await controller.clearCache();
+    controller.loadRequest(AuthService.getSplitwiseAuthURL());
   }
 
-  void onResult(bool success) {
-    if (success) {
+  Future<void> onResult(bool success) async {
+    try {
+      if (!success) throw Exception();
+      await SplitzService.getAndSaveCurrentSplitwiseUser();
       AppNavigator.replaceAll([const GroupsListScreen()]);
-    } else {
+    } catch (e) {
       showToast('Login to Splitwise has failed');
       setState(() {
         shouldLoadPage = false;

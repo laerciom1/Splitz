@@ -1,22 +1,24 @@
 # Splitz
-Personal app to split bills
+I made this app for my wife and I. It's basically an interface that helps us keep track of our spending.
+It uses splitwise as a backend for tracking expenses, so you can check your expenses in their app, as well as use the features that splitwise offers in conjunction with splitz.
+This app is a customizable experience for the splitwise services, which aims to make the task of tracking expenses in a standardized way simpler and faster.
+I made it with the best experience for me in mind, I'll add some gifs here in the future (:
 
 ### Next steps:
-- [ ] Expense Editor - Current user pre selected as payer
-- [ ] Expense Editor - Undo (delete/edit)
-- [ ] Handle physical backbutton
+- [ ] Turn GroupConfig -> splitConfig into a map
+- [ ] Handle physical back button
+- [ ] Indicator to selected group 
+- [ ] Indicator to how much is left until 100% when editing percentages manually
+
+### Refactors
+- [ ] Review on model classes
+
+### Features
 - [ ] Export data from the bills of the month
-- [ ] Add logo to SplitzAppBar
 - [ ] Category Editor - Delete/Edit/Reorder Category
-- [ ] Improve Splitz Login Screen
-  - [ ] Improve layout
-  - [ ] Add other options to login
-  - [ ] Use a custom buttom to login with Google option
-- [ ] Improve Splitwise Login Screen
-  - [ ] Improve layout
-  - [ ] Add explanations about the data usage, how login with splitwise works, etc
-- [ ] Add animations
-- [ ] Improve Splash Screen
+- [ ] Dynamic theme
+- [ ] Permission to edit group preferences
+- [ ] Expense Editor - Undo (delete/edit)
 - [ ] Filters:
   - [ ] Category
   - [ ] Date:
@@ -24,6 +26,23 @@ Personal app to split bills
     - [ ] specific month
     - [ ] specific interval
 - [ ] Load more button on Splits list
+- [ ] Improve Splitz Login
+  - [ ] Add other options to login
+
+### Design
+- [ ] Add logo to SplitzAppBar
+- [ ] Improve Splitz Login
+  - [ ] Make a decent screen
+  - [ ] Use a custom buttom to login with Google option
+- [ ] Improve Splitwise Login
+  - [ ] Make a decent start screen
+  - [ ] Add explanations about the data usage, how the login with splitwise works, etc
+- [ ] Improve Splash Screen
+- [ ] Add animations
+
+### Done
+- [x] Logout
+- [x] Expense Editor - Current user pre selected as payer
 - [x] Handling errors
 - [x] Refactor data access strategy
 - [x] Add Category
@@ -33,10 +52,8 @@ Personal app to split bills
 - [x] Splitz Repository (data access)
 - [x] Splitwise Repository
 - [x] Add splash (check isSignedIn and redirect to the correct screen)
+- [x] Custom animation for wait time on edit splitz config on group editor
 
-### Backlog:
-- [ ] Dynamic theme (light/dark)
-- [ ] (?) Encrypt data on Firebase 
-- [ ] Permission to edit group preferences
+### Mandatory to go live (in the long term future, maybe?)
 - [ ] Onboarding flow (tutorial)
-- [ ] Custom animation for wait time on edit splitz config on group editor
+- [ ] Encrypt data on Firebase 

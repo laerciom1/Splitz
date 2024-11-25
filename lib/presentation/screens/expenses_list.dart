@@ -149,7 +149,9 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
     final idx = findIndex(expenseToEdit);
     if (idx == -1) return;
     final category = _groupConfig!.categories.firstWhereOrNull(
-      (e) => expenseToEdit.categoryId == e.id,
+      (e) =>
+          expenseToEdit.categoryId == e.id ||
+          expenseToEdit.imageUrl == e.imageUrl,
     );
     if (category == null) {
       showToast(
