@@ -36,7 +36,7 @@ class ExpenseEditorScreen extends StatefulWidget {
 
 class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
     with WidgetsBindingObserver {
-  List<SplitzConfig>? _splitzConfigs;
+  Map<String, SplitzConfig>? _splitzConfigs;
   ExpenseEntity? _expense;
 
   late final List<TextEditingController> _controllers;
@@ -64,7 +64,7 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
       if (widget.expense == null) {
         _splitzConfigs = widget.groupConfig
             .withPayer(currentUserId: currentUserId!)
-            .splitConfig;
+            .splitzConfigs;
         _expense = ExpenseEntity.fromSplitzConfig(
           cost: _initCost,
           description: '${widget.category.prefix} ',
@@ -77,7 +77,7 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
         _expense = widget.expense!;
         _splitzConfigs = widget.groupConfig
             .withPayer(users: widget.expense!.users)
-            .splitConfig;
+            .splitzConfigs;
       }
 
       initializeFocusAndControllers(_splitzConfigs!);
@@ -87,18 +87,18 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
   String getInitialDescription() =>
       _expense!.description.split('${widget.category.prefix} ')[1];
 
-  void initializeFocusAndControllers(List<SplitzConfig> splitConfig) {
+  void initializeFocusAndControllers(Map<String, SplitzConfig> splitzConfigs) {
     if (!_controllersWasInitialized) {
       _controllersWasInitialized = true;
       _descriptionFocusNode = FocusNode()..addListener(trackFocusChanges);
       _costFocusNode = FocusNode()..addListener(trackFocusChanges);
-      _focusNodes = List.generate(splitConfig.length,
+      _focusNodes = List.generate(splitzConfigs.length,
           (_) => FocusNode()..addListener(trackFocusChanges));
       _descriptionController =
           TextEditingController(text: getInitialDescription());
       _costController = TextEditingController(text: _expense!.cost);
       _controllers = [
-        ...splitConfig.map(
+        ...splitzConfigs.values.map(
           (config) => TextEditingController(text: config.slice.toString()),
         )
       ];
@@ -151,7 +151,7 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
         );
       });
 
-  void onNewSplitzConfigs(List<SplitzConfig> configs) => setState(() {
+  void onNewSplitzConfigs(Map<String, SplitzConfig> configs) => setState(() {
         _expense = _expense!.copyWithShares(
           splitzConfigs: configs,
         );

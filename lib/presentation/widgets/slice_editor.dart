@@ -21,38 +21,45 @@ class SliceEditor extends StatelessWidget {
     super.key,
   });
 
-  final List<SplitzConfig> splitzConfigs;
+  final Map<String, SplitzConfig> splitzConfigs;
   final List<FocusNode> focusNodes;
   final List<TextEditingController> controllers;
-  final void Function(List<SplitzConfig>) onEditConfigs;
+  final void Function(Map<String, SplitzConfig>) onEditConfigs;
   final bool enablePayerSelection;
 
-  List<double> getRanges() => [...splitzConfigs.map((e) => e.slice.toDouble())];
+  List<double> getRanges() =>
+      [...splitzConfigs.values.map((e) => e.slice.toDouble())];
 
-  void setRange(SplitzConfig c, int newSlice) => onEditConfigs([
-        ...splitzConfigs.asMap().entries.map((e) {
-          if (e.value != c) return e.value;
-          return e.value.copyWith(slice: newSlice);
-        })
-      ]);
+  void setRange(SplitzConfig c, int newSlice) {
+    splitzConfigs['${c.id}'] =
+        splitzConfigs['${c.id}']!.copyWith(slice: newSlice);
+    onEditConfigs(splitzConfigs);
+  }
 
-  void setRanges(List<double> newRanges) => onEditConfigs([
-        ...newRanges.asMap().entries.map((e) {
-          return splitzConfigs[e.key].copyWith(slice: e.value.round());
-        })
-      ]);
+  void setRanges(List<double> newRanges) {
+    var keyIterator = splitzConfigs.keys.iterator;
+    var valueIterator = newRanges.iterator;
+    while (keyIterator.moveNext() && valueIterator.moveNext()) {
+      final key = keyIterator.current;
+      final value = valueIterator.current;
+      splitzConfigs[key] = splitzConfigs[key]!.copyWith(slice: value.round());
+    }
+    onEditConfigs(splitzConfigs);
+  }
 
-  void setSelection(SplitzConfig c) => onEditConfigs([
-        ...splitzConfigs.asMap().entries.map((e) {
-          if (e.value != c) return e.value.copyWith(payer: false);
-          return e.value.copyWith(payer: !(e.value.payer ?? false));
-        })
-      ]);
+  void setSelection(SplitzConfig c) {
+    final targeKey = '${c.id}';
+    bool isSelected = splitzConfigs[targeKey]!.payer == true;
+    for (final key in splitzConfigs.keys) {
+      splitzConfigs[key]!.copyWith(
+        payer: targeKey != key ? false : !isSelected,
+      );
+    }
+    onEditConfigs({...splitzConfigs});
+  }
 
-  Widget getUserInfo(MapEntry<int, SplitzConfig> e, BuildContext ctx) {
+  Widget getUserInfo(int index, SplitzConfig config, BuildContext ctx) {
     final inverseSurface = Theme.of(ctx).colorScheme.inverseSurface;
-    final index = e.key;
-    final config = e.value;
     return Row(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,7 +71,7 @@ class SliceEditor extends StatelessWidget {
           focusNode: focusNodes[index],
           controller: controllers[index],
           onChanged: (newValue) => setRange(
-            e.value,
+            config,
             newValue.isNotNullNorEmpty ? int.parse(newValue) : 0,
           ),
         ),
@@ -83,43 +90,48 @@ class SliceEditor extends StatelessWidget {
     );
   }
 
+  List<Widget> getUserTiles(BuildContext context) {
+    int index = 0;
+    return splitzConfigs.values
+        .map<Widget>((config) => InkWell(
+              onTap: () => setSelection(config),
+              child: Container(
+                padding: const EdgeInsets.all(_padding),
+                decoration: enablePayerSelection && config.payer == true
+                    ? BoxDecoration(
+                        borderRadius: BorderRadius.circular(_padding * 2),
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.primary,
+                          strokeAlign: BorderSide.strokeAlignOutside,
+                        ),
+                      )
+                    : null,
+                height: _userCardHeight,
+                width: double.infinity,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SplitzCircleAvatar(
+                      radius: _userCardHeight,
+                      avatarUrl: config.avatarUrl,
+                    ),
+                    const SizedBox(width: 12),
+                    Focus(child: getUserInfo(index++, config, context)),
+                  ],
+                ),
+              ),
+            ))
+        .intersperse(const SizedBox(height: 4))
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     final ranges = getRanges();
     final sum = ranges.fold(0.0, (accu, curr) => accu + curr);
     return Column(
       children: [
-        ...splitzConfigs.asMap().entries.map<Widget>((e) {
-          final config = e.value;
-          return InkWell(
-            onTap: () => setSelection(config),
-            child: Container(
-              padding: const EdgeInsets.all(_padding),
-              decoration: enablePayerSelection && config.payer == true
-                  ? BoxDecoration(
-                      borderRadius: BorderRadius.circular(_padding * 2),
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.primary,
-                        strokeAlign: BorderSide.strokeAlignOutside,
-                      ),
-                    )
-                  : null,
-              height: _userCardHeight,
-              width: double.infinity,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SplitzCircleAvatar(
-                    radius: _userCardHeight,
-                    avatarUrl: config.avatarUrl,
-                  ),
-                  const SizedBox(width: 12),
-                  Focus(child: getUserInfo(e, context)),
-                ],
-              ),
-            ),
-          );
-        }).intersperse(const SizedBox(height: 4)),
+        ...getUserTiles(context),
         const SizedBox(height: 8),
         if (sum == 100.0)
           SliceSlider(

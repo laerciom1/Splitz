@@ -11,12 +11,21 @@ const _cardHeight = 60.0;
 class CategoryItem extends StatelessWidget {
   const CategoryItem({
     required this.category,
-    required this.splitConfigs,
+    required this.splitzConfigs,
     super.key,
   });
 
   final SplitzCategory category;
-  final List<SplitzConfig> splitConfigs;
+  final Map<String, SplitzConfig> splitzConfigs;
+
+  List<Widget> getBadges() {
+    int index = 0;
+    return splitzConfigs.values
+        .map<Widget>((value) =>
+            SliceBadge(color: sliceColors[index++], text: '${value.slice}'))
+        .intersperse(const SizedBox(width: 4))
+        .toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,16 +51,7 @@ class CategoryItem extends StatelessWidget {
                   style: const TextStyle(fontSize: 20),
                 ),
                 Row(
-                  children: <Widget>[
-                    ...splitConfigs.asMap().entries.map((e) {
-                      final index = e.key;
-                      final value = e.value;
-                      return SliceBadge(
-                        color: sliceColors[index],
-                        text: '${value.slice}',
-                      );
-                    })
-                  ].intersperse(const SizedBox(width: 4)).toList(),
+                  children: getBadges(),
                 ),
               ],
             ),

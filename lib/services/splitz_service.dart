@@ -95,63 +95,54 @@ abstract class SplitzService {
 
   static Future<List<ExpenseEntity>> getExpenses(
     String groupId,
-    List<SplitzCategory> categories,
+    Map<String, SplitzCategory> categories,
   ) async {
     final response = await SplitwiseRepository.getExpenses(groupId);
     final filteredExpenses = [
       ...(response.expenses ?? [])
           .where((e) => e.deletedAt == null && e.payment != true),
     ];
-    final idMap = categories.fold(
-      <int, String>{},
-      (accu, curr) => {...accu, curr.id: curr.imageUrl},
-    );
-    final prefixMap = categories.fold(
-      <String, String>{},
-      (accu, curr) => {...accu, curr.prefix: curr.imageUrl},
-    );
     return filteredExpenses.map((e) {
-      final imageUrl =
-          idMap[e.category.id] ?? prefixMap[e.description.split(' ')[0]];
-      return ExpenseEntity.fromExpenseResponse(e, imageUrl!);
+      final prefix = e.description.split(' ')[0];
+      final imageUrl = categories[prefix]!.imageUrl;
+      return ExpenseEntity.fromExpenseResponse(e, imageUrl);
     }).toList();
   }
 
   static Future<GetGroupResponse> getGroupInfo(String groupId) async =>
       await SplitwiseRepository.getGroupInfo(groupId);
 
-  static List<SplitzConfig> getSplitConfigsFromMembers(List<Member> members) {
-    final result = <SplitzConfig>[];
+  static Map<String, SplitzConfig> getSplitzConfigsFromMembers(
+    List<Member> members,
+  ) {
+    final result = <String, SplitzConfig>{};
     double sum = 0;
     for (int idx = 0; idx < members.length - 1; idx++) {
       sum += (100 / members.length).round();
-      result.add(SplitzConfig(
+      result['${members[idx].id}'] = SplitzConfig(
         id: members[idx].id,
         name: members[idx].firstName,
         avatarUrl: members[idx].picture.large,
         slice: (100 / members.length).round(),
-      ));
+      );
     }
-    result.add(SplitzConfig(
+    result['${members.last.id}'] = SplitzConfig(
       id: members.last.id,
       name: members.last.firstName,
       avatarUrl: members.last.picture.large,
       slice: (100 - sum).round(),
-    ));
+    );
     return result;
   }
 
-  static List<SplitzConfig> mergeSplitConfigs(
-    List<SplitzConfig> a,
-    List<SplitzConfig> b,
-  ) {
-    if (a.isEmpty) return b;
-    if (b.isEmpty) return a;
-    return [...a, ...b].unique((config) => config.id);
-  }
+  static Map<String, SplitzConfig> mergeSplitzConfigs(
+    Map<String, SplitzConfig> a,
+    Map<String, SplitzConfig> b,
+  ) =>
+      {...b, ...a};
 
   static Future<List<SplitzCategory>> getAvailableCategories(
-    List<SplitzCategory> actualCategories,
+    Map<String, SplitzCategory> actualCategories,
   ) async {
     final response = await SplitwiseRepository.getAvailableCategories();
     final result = <SplitzCategory>[];
@@ -162,7 +153,7 @@ abstract class SplitzService {
       );
     }
     final actualCategoriesSet = <String>{};
-    for (var e in actualCategories) {
+    for (var e in actualCategories.values) {
       actualCategoriesSet.addAll(['${e.id}', e.imageUrl]);
     }
     return [

@@ -76,7 +76,7 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
       _groupConfig = groupConfig;
       _feedbackMessage = '';
       if (!_controllersWasInitialized) {
-        initializeFocusAndControllers(groupConfig.splitConfig);
+        initializeFocusAndControllers(groupConfig.splitzConfigs);
       }
       if (showWaitingTimer != null) {
         _showWaitingTimer = showWaitingTimer;
@@ -91,16 +91,16 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
           await SplitzService.getGroupConfig(widget.groupId);
       final splitwiseGroupInfo =
           await SplitzService.getGroupInfo(widget.groupId);
-      final splitConfigs = SplitzService.mergeSplitConfigs(
-        splitzGroupConfig?.splitConfig ?? [],
-        SplitzService.getSplitConfigsFromMembers(
+      final splitzConfigs = SplitzService.mergeSplitzConfigs(
+        splitzGroupConfig?.splitzConfigs ?? {},
+        SplitzService.getSplitzConfigsFromMembers(
           splitwiseGroupInfo.group?.members ?? [],
         ),
       );
       setGroupConfig(
         groupConfig: GroupConfig(
-          categories: splitzGroupConfig?.categories ?? [],
-          splitConfig: splitConfigs,
+          splitzCategories: splitzGroupConfig?.splitzCategories ?? {},
+          splitzConfigs: splitzConfigs,
         ),
       );
     } catch (e, s) {
@@ -111,12 +111,12 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
     }
   }
 
-  void initializeFocusAndControllers(List<SplitzConfig> splitConfig) {
+  void initializeFocusAndControllers(Map<String, SplitzConfig> splitzConfigs) {
     _controllersWasInitialized = true;
-    _focusNodes = List.generate(
-        splitConfig.length, (_) => FocusNode()..addListener(trackFocusChanges));
+    _focusNodes = List.generate(splitzConfigs.length,
+        (_) => FocusNode()..addListener(trackFocusChanges));
     _controllers = [
-      ...splitConfig.map(
+      ...splitzConfigs.values.map(
         (config) => TextEditingController(text: '${config.slice}'),
       )
     ];
@@ -178,9 +178,9 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
     }
   }
 
-  void onNewSplitzConfigs(List<SplitzConfig> configs) {
-    final sum = configs.fold(0, (accu, curr) => accu + curr.slice);
-    final groupConfig = _groupConfig!.copyWith(splitConfig: configs);
+  void onNewSplitzConfigs(Map<String, SplitzConfig> configs) {
+    final sum = configs.values.fold(0, (accu, curr) => accu + curr.slice);
+    final groupConfig = _groupConfig!.copyWith(splitzConfigs: configs);
     updateSplitzGroupConfig(groupConfig, sum == 100);
   }
 
@@ -190,8 +190,10 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
     );
     if (category == null) return;
     final groupConfig = _groupConfig!.copyWith(
-      categories:
-          [..._groupConfig!.categories, category].unique((e) => e.id),
+      splitzCategories: {
+        ..._groupConfig!.splitzCategories,
+        category.prefix: category
+      },
     );
     updateSplitzGroupConfig(groupConfig);
   }
@@ -222,7 +224,7 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
               alignment: AlignmentDirectional.topEnd,
               children: [
                 SliceEditor(
-                  splitzConfigs: _groupConfig!.splitConfig,
+                  splitzConfigs: _groupConfig!.splitzConfigs,
                   focusNodes: _focusNodes,
                   controllers: _controllers,
                   onEditConfigs: onNewSplitzConfigs,
@@ -259,27 +261,29 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
     return getGroupEditorBody();
   }
 
-  Widget getGroupEditorBody() => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 24.0),
-              child: Text(
-                'Categories:',
+  Widget getGroupEditorBody() => SizedBox(
+        width: double.infinity,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 24.0),
+                child: Text('Categories:'),
               ),
-            ),
-            ..._groupConfig!.categories.map<Widget>(
-              (e) {
-                return CategoryItem(
-                  category: e,
-                  splitConfigs: e.splitConfig ?? _groupConfig!.splitConfig,
-                );
-              },
-            ).intersperse(const SizedBox(height: 12)),
-            const SizedBox(height: 24)
-          ],
+              ..._groupConfig!.splitzCategories.values.map<Widget>(
+                (e) {
+                  return CategoryItem(
+                    category: e,
+                    splitzConfigs:
+                        e.splitzConfigs ?? _groupConfig!.splitzConfigs,
+                  );
+                },
+              ).intersperse(const SizedBox(height: 12)),
+              const SizedBox(height: 24)
+            ],
+          ),
         ),
       );
 

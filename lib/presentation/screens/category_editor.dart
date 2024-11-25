@@ -35,7 +35,7 @@ class CategoryEditorScreen extends StatefulWidget {
 class _CategoryEditorScreenState extends State<CategoryEditorScreen>
     with WidgetsBindingObserver {
   late SplitzCategory _currentCategory;
-  late List<SplitzConfig> _customSplitzConfigs;
+  late Map<String, SplitzConfig> _customSplitzConfigs;
   List<SplitzCategory>? _availableCategories;
 
   bool _shoulUseCustomSplitzConfig = false;
@@ -52,7 +52,7 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _customSplitzConfigs = [...widget.groupConfig.splitConfig];
+    _customSplitzConfigs = {...widget.groupConfig.splitzConfigs};
     _currentCategory =
         widget.category ?? SplitzCategory(prefix: '', imageUrl: '', id: 0);
     initScreen();
@@ -89,7 +89,7 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
     setLoading();
     try {
       final results = await SplitzService.getAvailableCategories(
-        widget.groupConfig.categories,
+        widget.groupConfig.splitzCategories,
       );
       setAvailableCategories(results);
     } catch (e, s) {
@@ -100,13 +100,13 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
     }
   }
 
-  void initializeFocusAndControllers(List<SplitzConfig> splitConfig) {
+  void initializeFocusAndControllers(Map<String, SplitzConfig> splitzConfigs) {
     _controllersWasInitialized = true;
     _preffixFocusNode = FocusNode()..addListener(trackFocusChanges);
     _focusNodes = List.generate(
-        splitConfig.length, (_) => FocusNode()..addListener(trackFocusChanges));
+        splitzConfigs.length, (_) => FocusNode()..addListener(trackFocusChanges));
     _controllers = [
-      ...splitConfig.map(
+      ...splitzConfigs.values.map(
         (config) => TextEditingController(text: config.slice.toString()),
       )
     ];
@@ -156,13 +156,13 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
         _shoulUseCustomSplitzConfig = !_shoulUseCustomSplitzConfig;
       });
 
-  void onNewSplitzConfigs(List<SplitzConfig> newConfigs) => setState(() {
+  void onNewSplitzConfigs(Map<String, SplitzConfig> newConfigs) => setState(() {
         _customSplitzConfigs = newConfigs;
       });
 
   void save() {
     final category = _currentCategory.copyWith(
-      splitConfig: _shoulUseCustomSplitzConfig ? _customSplitzConfigs : null,
+      splitzConfigs: _shoulUseCustomSplitzConfig ? _customSplitzConfigs : null,
     );
     AppNavigator.pop(category);
   }

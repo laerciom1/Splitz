@@ -1,27 +1,45 @@
+import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:splitz/data/entities/expense_entity.dart';
 import 'package:splitz/data/models/splitwise/common/category.dart';
 import 'package:splitz/extensions/strings.dart';
 
-const _zero = 0.0;
-
 class GroupConfig {
-  List<SplitzCategory> categories;
-  List<SplitzConfig> splitConfig;
+  Map<String, SplitzCategory> splitzCategories;
+  Map<String, SplitzConfig> splitzConfigs;
 
   GroupConfig({
-    required this.categories,
-    required this.splitConfig,
+    required this.splitzCategories,
+    required this.splitzConfigs,
   });
 
   GroupConfig copyWith({
-    List<SplitzCategory>? categories,
-    List<SplitzConfig>? splitConfig,
+    Map<String, SplitzCategory>? splitzCategories,
+    Map<String, SplitzConfig>? splitzConfigs,
   }) =>
       GroupConfig(
-        categories: categories ?? this.categories,
-        splitConfig: splitConfig ?? this.splitConfig,
+        splitzCategories: splitzCategories ?? this.splitzCategories,
+        splitzConfigs: splitzConfigs ?? this.splitzConfigs,
       );
+
+  factory GroupConfig.fromJson(String str) =>
+      GroupConfig.fromMap(json.decode(str));
+
+  String toJson() => json.encode(toMap());
+
+  factory GroupConfig.fromMap(Map<dynamic, dynamic> json) => GroupConfig(
+        splitzCategories: Map.from(json["splitz_categories"]).map((k, v) =>
+            MapEntry<String, SplitzCategory>(k, SplitzCategory.fromMap(v))),
+        splitzConfigs: Map.from(json["splitz_configs"]).map((k, v) =>
+            MapEntry<String, SplitzConfig>(k, SplitzConfig.fromMap(v))),
+      );
+
+  Map<String, dynamic> toMap() => {
+        "splitz_categories": Map.from(splitzCategories)
+            .map((k, v) => MapEntry<String, dynamic>(k, v.toMap())),
+        "splitz_configs": Map.from(splitzConfigs)
+            .map((k, v) => MapEntry<String, dynamic>(k, v.toMap())),
+      };
 
   GroupConfig withPayer({
     List<UserExpenseEntity>? users,
@@ -31,79 +49,64 @@ class GroupConfig {
     if (currentUserId != null) payerId = int.parse(currentUserId);
     if (users != null) {
       final payerUser = users.firstWhereOrNull((e) =>
-          e.paidShare.isNotNullNorEmpty && double.parse(e.paidShare!) != _zero);
+          e.paidShare.isNotNullNorEmpty && double.parse(e.paidShare!) != 0.0);
       payerId = payerUser?.userId ?? payerId;
     }
-    var splitConfig = this.splitConfig;
-    splitConfig = splitConfig
-        .map((e) => e.id == payerId ? e.copyWith(payer: true) : e)
-        .toList();
-    return GroupConfig(
-      categories: categories,
-      splitConfig: splitConfig,
-    );
+    var splitzConfigs = this.splitzConfigs;
+    splitzConfigs['$payerId']!.copyWith(payer: true);
+    return copyWith(splitzConfigs: splitzConfigs);
   }
-
-  factory GroupConfig.fromMap(Map<dynamic, dynamic> json) => GroupConfig(
-        categories: json["categories"] == null
-            ? []
-            : List<SplitzCategory>.from((json["categories"]! as List)
-                .map((x) => SplitzCategory.fromMap(x))),
-        splitConfig: json["split_config"] == null
-            ? []
-            : List<SplitzConfig>.from((json["split_config"]! as List)
-                .map((x) => SplitzConfig.fromMap(x))),
-      );
-
-  Map<String, dynamic> toMap() => {
-        "categories": List<dynamic>.from(categories.map((x) => x.toMap())),
-        "split_config": List<dynamic>.from(splitConfig.map((x) => x.toMap())),
-      };
 }
 
 class SplitzCategory {
   String prefix;
   String imageUrl;
   int id;
-  List<SplitzConfig>? splitConfig;
+  Map<String, SplitzConfig>? splitzConfigs;
 
   SplitzCategory({
     required this.prefix,
     required this.imageUrl,
     required this.id,
-    this.splitConfig,
+    this.splitzConfigs,
   });
 
   SplitzCategory copyWith({
     String? prefix,
     String? imageUrl,
     int? id,
-    List<SplitzConfig>? splitConfig,
+    Map<String, SplitzConfig>? splitzConfigs,
   }) =>
       SplitzCategory(
         prefix: prefix ?? this.prefix,
         imageUrl: imageUrl ?? this.imageUrl,
         id: id ?? this.id,
-        splitConfig: splitConfig ?? this.splitConfig,
+        splitzConfigs: splitzConfigs ?? this.splitzConfigs,
       );
+
+  factory SplitzCategory.fromJson(String str) =>
+      SplitzCategory.fromMap(json.decode(str));
+
+  String toJson() => json.encode(toMap());
 
   factory SplitzCategory.fromMap(Map<dynamic, dynamic> json) => SplitzCategory(
         prefix: json["prefix"],
         imageUrl: json["imageUrl"],
         id: json["id"],
-        splitConfig: json["split_config"] == null
+        splitzConfigs: json["splitz_configs"] == null
             ? null
-            : List<SplitzConfig>.from(
-                json["split_config"]!.map((x) => SplitzConfig.fromMap(x))),
+            : Map.from(json["splitz_configs"]).map((k, v) =>
+                MapEntry<String, SplitzConfig>(k, SplitzConfig.fromMap(v))),
       );
 
   Map<String, dynamic> toMap() => {
         "prefix": prefix,
         "imageUrl": imageUrl,
         "id": id,
-        "split_config": splitConfig == null
+        "splitz_configs": splitzConfigs == null
             ? null
-            : List<dynamic>.from(splitConfig!.map((x) => x.toMap())),
+            : Map.from(splitzConfigs!)
+                .map((k, v) => MapEntry<String, dynamic>(k, v.toMap())),
       };
 
   factory SplitzCategory.fromCategory(Category c) => SplitzCategory(
@@ -143,11 +146,17 @@ class SplitzConfig {
         payer: payer ?? this.payer,
       );
 
+  factory SplitzConfig.fromJson(String str) =>
+      SplitzConfig.fromMap(json.decode(str));
+
+  String toJson() => json.encode(toMap());
+
   factory SplitzConfig.fromMap(Map<dynamic, dynamic> json) => SplitzConfig(
         id: json["id"],
         name: json["name"],
         avatarUrl: json["avatarUrl"],
         slice: json["slice"],
+        payer: json["payer"],
       );
 
   Map<String, dynamic> toMap() => {
@@ -155,5 +164,55 @@ class SplitzConfig {
         "name": name,
         "avatarUrl": avatarUrl,
         "slice": slice,
+        "payer": payer,
       };
 }
+
+/*
+{
+  "splitz_categories": {
+    "MERCADO": {
+      "prefix": "MERCADO",
+      "imageUrl": "url",
+      "id": 1,
+      "splitz_configs": {
+        "123": {
+          "id": 123,
+          "name": "123",
+          "avatarUrl": "3213",
+          "slice": 80,
+          "payer": true
+        },
+        "213": {
+          "id": 213,
+          "name": "123",
+          "avatarUrl": "3213",
+          "slice": 80,
+          "payer": false
+        }
+      }
+    },
+    "LAZER": {
+      "prefix": "LAZER",
+      "imageUrl": "url",
+      "id": 1
+    }
+  },
+  "splitz_configs": {
+    "123": {
+      "id": 123,
+      "name": "123",
+      "avatarUrl": "3213",
+      "slice": 80,
+      "payer": true
+    },
+    "213": {
+      "id": 213,
+      "name": "123",
+      "avatarUrl": "3213",
+      "slice": 80,
+      "payer": false
+    }
+  }
+}
+*/

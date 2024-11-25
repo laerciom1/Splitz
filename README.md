@@ -5,7 +5,6 @@ This app is a customizable experience for the splitwise services, which aims to 
 I made it with the best experience for me in mind, I'll add some gifs here in the future (:
 
 ### Next steps:
-- [ ] Turn GroupConfig -> splitConfig into a map
 - [ ] Handle physical back button
 - [ ] Indicator to selected group 
 - [ ] Indicator to how much is left until 100% when editing percentages manually
@@ -18,6 +17,7 @@ I made it with the best experience for me in mind, I'll add some gifs here in th
 - [ ] Category Editor - Delete/Edit/Reorder Category
 - [ ] Dynamic theme
 - [ ] Permission to edit group preferences
+- [ ] Order categories of a group preferences
 - [ ] Expense Editor - Undo (delete/edit)
 - [ ] Filters:
   - [ ] Category
@@ -41,6 +41,7 @@ I made it with the best experience for me in mind, I'll add some gifs here in th
 - [ ] Add animations
 
 ### Done
+- [x] Turn GroupConfig -> splitConfig into a map
 - [x] Logout
 - [x] Expense Editor - Current user pre selected as payer
 - [x] Handling errors

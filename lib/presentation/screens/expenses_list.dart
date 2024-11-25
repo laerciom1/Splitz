@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:splitz/data/entities/expense_entity.dart';
 import 'package:splitz/data/models/splitz/group_config.dart';
@@ -108,7 +106,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
     try {
       final expenses = await SplitzService.getExpenses(
         widget.groupId,
-        groupConfig.categories,
+        groupConfig.splitzCategories,
       );
       setInitData(expenses, groupConfig);
     } catch (e, s) {
@@ -148,11 +146,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
   Future<void> onEdit(ExpenseEntity expenseToEdit) async {
     final idx = findIndex(expenseToEdit);
     if (idx == -1) return;
-    final category = _groupConfig!.categories.firstWhereOrNull(
-      (e) =>
-          expenseToEdit.categoryId == e.id ||
-          expenseToEdit.imageUrl == e.imageUrl,
-    );
+    final category = _groupConfig!.splitzCategories[expenseToEdit.prefix];
     if (category == null) {
       showToast(
         "You can't edit an expense of a category that doesn't exist on your group preferences anymore",
@@ -288,7 +282,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
       return null;
     }
     return AddSplitFAB(
-      categories: _groupConfig!.categories,
+      categories: _groupConfig!.splitzCategories,
       onSelectCategory: onCreate,
       onEditGroupPreferences: editGroupPreferences,
     );

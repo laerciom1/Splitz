@@ -13,7 +13,7 @@ class AddSplitFAB extends StatelessWidget {
     required this.onEditGroupPreferences,
   });
 
-  final List<SplitzCategory> categories;
+  final Map<String, SplitzCategory> categories;
   final void Function(SplitzCategory) onSelectCategory;
   final void Function() onEditGroupPreferences;
 
@@ -26,7 +26,7 @@ class AddSplitFAB extends StatelessWidget {
       spacing: 4,
       backgroundColor: backgroundColor,
       children: [
-        ...categories.map(
+        ...categories.values.map(
           (category) => FABOption(
             text: category.prefix,
             onPressed: () => onSelectCategory(category),

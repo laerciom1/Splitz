@@ -64,10 +64,10 @@ class ExpenseEntity {
 
   static List<UserExpenseEntity> getUsers(
     String cost,
-    List<SplitzConfig> splitzConfigs,
+    Map<String, SplitzConfig> splitzConfigs,
   ) =>
       [
-        ...splitzConfigs.map((e) {
+        ...splitzConfigs.values.map((e) {
           final owedShare = (e.slice / 100) * double.parse(cost);
           return UserExpenseEntity(
             firstName: e.name,
@@ -80,7 +80,7 @@ class ExpenseEntity {
 
   ExpenseEntity copyWithShares({
     String? cost,
-    required List<SplitzConfig> splitzConfigs,
+    required Map<String, SplitzConfig> splitzConfigs,
   }) {
     final costToUse = cost ?? this.cost;
     final users = getUsers(costToUse, splitzConfigs);
@@ -156,10 +156,10 @@ class ExpenseEntity {
     int categoryId = 0,
     String imageUrl = '',
     String currencyCode = 'BRL',
-    required List<SplitzConfig> splitzConfigs,
+    required Map<String, SplitzConfig> splitzConfigs,
     ExpenseEntity? newVersion,
   }) {
-    final payerId = splitzConfigs.firstWhereOrNull((e) => e.payer == true)?.id;
+    final payerId = splitzConfigs.values.firstWhereOrNull((e) => e.payer == true)?.id;
     return ExpenseEntity(
       state: ExpenseEntityState.example,
       cost: cost,
@@ -174,6 +174,8 @@ class ExpenseEntity {
       backup: newVersion,
     );
   }
+
+  String get prefix => description.split(' ')[0];
 }
 
 class UserExpenseEntity {
