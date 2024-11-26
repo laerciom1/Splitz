@@ -66,11 +66,13 @@ class PercentageField extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.only(left: 8, bottom: 10),
           child: TextField(
+            scrollPadding: const EdgeInsets.only(bottom: 32.0),
             focusNode: focusNode,
             controller: controller..text = text,
             keyboardType: TextInputType.number,
             enableInteractiveSelection: false,
             cursorHeight: 16,
+            cursorColor: textColor,
             maxLength: 2,
             textInputAction: TextInputAction.next,
             style: TextStyle(color: textColor),

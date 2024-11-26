@@ -31,6 +31,7 @@ class PrimaryField extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12.0),
         child: TextField(
+          scrollPadding: const EdgeInsets.only(bottom: 32.0),
           inputFormatters: inputFormatters,
           focusNode: focusNode,
           controller: controller,

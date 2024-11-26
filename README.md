@@ -5,30 +5,34 @@ This app is a customizable experience for the splitwise services, which aims to 
 I made it with the best experience for me in mind, I'll add some gifs here in the future (:
 
 ### Next steps:
-- [ ] Indicator to how much is left until 100% when editing percentages manually
+- [ ] Dynamic theme
+- [ ] Review on model classes
+  - [ ] remove unused code
+  - [ ] create entities
+- [ ] Export data from the bills of the month
 
 ### Refactors
-- [ ] Review on model classes
 
 ### Features
-- [ ] Export data from the bills of the month
-- [ ] Category Editor - Delete/Edit/Reorder Category
-- [ ] Dynamic theme
-- [ ] Permission to edit group preferences
 - [ ] Order categories of a group preferences
+- [ ] Category Editor - Delete/Edit/Reorder Category
+- [ ] Permission to edit group preferences
 - [ ] Expense Editor - Undo (delete/edit)
-- [ ] Edit a group of expenses (limited edition)
 - [ ] Filters:
   - [ ] Category
   - [ ] Date:
     - [ ] before/after some date
     - [ ] specific month
     - [ ] specific interval
+- [ ] Edit a group of expenses (limited edition)
+  - [ ] Edit the category of selected expenses
+  - [ ] Edit split config of selected expenses
 - [ ] Load more button on Splits list
 - [ ] Improve Splitz Login
   - [ ] Add other options to login
 
 ### Design
+- [ ] Improve drawer layour
 - [ ] Add logo to SplitzAppBar
 - [ ] Improve Splitz Login
   - [ ] Make a decent screen
@@ -40,6 +44,7 @@ I made it with the best experience for me in mind, I'll add some gifs here in th
 - [ ] Add animations
 
 ### Done
+- [x] Indicator to how much is left until 100% when editing percentages manually
 - [x] Indicator to selected group
 - [x] Smart loading of data for expenses list screen
 - [x] Handle physical back button

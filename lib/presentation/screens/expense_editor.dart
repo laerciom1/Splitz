@@ -7,9 +7,9 @@ import 'package:splitz/data/models/splitz/group_config.dart';
 import 'package:splitz/extensions/strings.dart';
 import 'package:splitz/navigator.dart';
 import 'package:splitz/presentation/templates/base_screen.dart';
-import 'package:splitz/presentation/widgets/button_primary.dart';
 import 'package:splitz/presentation/widgets/expense_item.dart';
 import 'package:splitz/presentation/widgets/field_primary.dart';
+import 'package:splitz/presentation/widgets/footer_action.dart';
 import 'package:splitz/presentation/widgets/slice_editor.dart';
 import 'package:splitz/presentation/widgets/splitz_divider.dart';
 import 'package:splitz/services/splitz_service.dart';
@@ -250,23 +250,12 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
         ),
       );
 
-  Widget getExpenseEditorBottom(BuildContext ctx) => Column(
-        children: [
-          SplitzDivider(color: Theme.of(ctx).colorScheme.primary),
-          Padding(
-            padding: const EdgeInsets.all(6),
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: PrimaryButton(
-                text: 'Save',
-                onPressed: save,
-                enabled: (_expense?.description).isNotNullNorEmpty &&
-                    _expense?.cost != _initCost &&
-                    _expense?.payerId != null,
-              ),
-            ),
-          ),
-        ],
+  Widget? getExpenseEditorBottom(BuildContext ctx) => ActionFooter(
+        onAction: save,
+        text: 'Save',
+        enabled: (_expense?.description).isNotNullNorEmpty &&
+            _expense?.cost != _initCost &&
+            _expense?.payerId != null,
       );
 
   @override

@@ -51,11 +51,11 @@ class SliceEditor extends StatelessWidget {
     final targeKey = '${c.id}';
     bool isSelected = splitzConfigs[targeKey]!.payer == true;
     for (final key in splitzConfigs.keys) {
-      splitzConfigs[key]!.copyWith(
+      splitzConfigs[key] = splitzConfigs[key]!.copyWith(
         payer: targeKey != key ? false : !isSelected,
       );
     }
-    onEditConfigs({...splitzConfigs});
+    onEditConfigs(splitzConfigs);
   }
 
   Widget getUserInfo(int index, SplitzConfig config, BuildContext ctx) {
@@ -93,34 +93,40 @@ class SliceEditor extends StatelessWidget {
   List<Widget> getUserTiles(BuildContext context) {
     int index = 0;
     return splitzConfigs.values
-        .map<Widget>((config) => InkWell(
-              onTap: () => setSelection(config),
-              child: Container(
-                padding: const EdgeInsets.all(_padding),
-                decoration: enablePayerSelection && config.payer == true
-                    ? BoxDecoration(
-                        borderRadius: BorderRadius.circular(_padding * 2),
-                        border: Border.all(
-                          color: Theme.of(context).colorScheme.primary,
-                          strokeAlign: BorderSide.strokeAlignOutside,
-                        ),
-                      )
-                    : null,
-                height: _userCardHeight,
-                width: double.infinity,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SplitzCircleAvatar(
-                      radius: _userCardHeight,
-                      avatarUrl: config.avatarUrl,
+        .map<Widget>((config) {
+          final child = Container(
+            padding: const EdgeInsets.all(_padding),
+            decoration: enablePayerSelection && config.payer == true
+                ? BoxDecoration(
+                    borderRadius: BorderRadius.circular(_padding * 2),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.primary,
+                      strokeAlign: BorderSide.strokeAlignOutside,
                     ),
-                    const SizedBox(width: 12),
-                    Focus(child: getUserInfo(index++, config, context)),
-                  ],
+                  )
+                : null,
+            height: _userCardHeight,
+            width: double.infinity,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SplitzCircleAvatar(
+                  radius: _userCardHeight,
+                  avatarUrl: config.avatarUrl,
                 ),
-              ),
-            ))
+                const SizedBox(width: 12),
+                getUserInfo(index++, config, context),
+              ],
+            ),
+          );
+          if (!enablePayerSelection) {
+            return FocusableActionDetector(child: child);
+          }
+          return InkWell(
+            onTap: () => setSelection(config),
+            child: child,
+          );
+        })
         .intersperse(const SizedBox(height: 4))
         .toList();
   }
@@ -129,17 +135,32 @@ class SliceEditor extends StatelessWidget {
   Widget build(BuildContext context) {
     final ranges = getRanges();
     final sum = ranges.fold(0.0, (accu, curr) => accu + curr);
+    final left = 100.0 - sum;
+    final hintColor = left < 0 ? Theme.of(context).colorScheme.error : null;
+    final hintLabel = left < 0 ? 'above' : 'remaining';
     return Column(
       children: [
-        ...getUserTiles(context),
-        const SizedBox(height: 8),
         if (sum == 100.0)
           SliceSlider(
             onRangesChanged: setRanges,
             initRangeValues: getRanges(),
           ),
         if (sum != 100.0)
-          const Text('The sum of the users\' parts must be 100%'),
+          Column(
+            children: [
+              Text(
+                '${sum.toInt()}% of 100%',
+                style: const TextStyle(fontSize: 14),
+              ),
+              Text(
+                '${left.toInt().abs()}% $hintLabel',
+                style: TextStyle(fontSize: 12, color: hintColor),
+              ),
+              const SizedBox(height: 12),
+            ],
+          ),
+        ...getUserTiles(context),
+        const SizedBox(height: 24),
       ],
     );
   }

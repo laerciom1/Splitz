@@ -28,10 +28,14 @@ class GroupConfig {
   String toJson() => json.encode(toMap());
 
   factory GroupConfig.fromMap(Map<dynamic, dynamic> json) => GroupConfig(
-        splitzCategories: Map.from(json["splitz_categories"]).map((k, v) =>
-            MapEntry<String, SplitzCategory>(k, SplitzCategory.fromMap(v))),
-        splitzConfigs: Map.from(json["splitz_configs"]).map((k, v) =>
-            MapEntry<String, SplitzConfig>(k, SplitzConfig.fromMap(v))),
+        splitzCategories: json["splitz_categories"] == null
+            ? {}
+            : Map.from(json["splitz_categories"]).map((k, v) =>
+                MapEntry<String, SplitzCategory>(k, SplitzCategory.fromMap(v))),
+        splitzConfigs: json["splitz_configs"] == null
+            ? {}
+            : Map.from(json["splitz_configs"]).map((k, v) =>
+                MapEntry<String, SplitzConfig>(k, SplitzConfig.fromMap(v))),
       );
 
   Map<String, dynamic> toMap() => {
@@ -53,7 +57,7 @@ class GroupConfig {
       payerId = payerUser?.userId ?? payerId;
     }
     var splitzConfigs = this.splitzConfigs;
-    splitzConfigs['$payerId']!.copyWith(payer: true);
+    splitzConfigs['$payerId'] = splitzConfigs['$payerId']!.copyWith(payer: true);
     return copyWith(splitzConfigs: splitzConfigs);
   }
 }

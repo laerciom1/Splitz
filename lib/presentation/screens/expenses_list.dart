@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:splitz/data/entities/expense_entity.dart';
@@ -260,11 +258,11 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
             delegate: ExpensesPageHeader(
               groupInfo: _groupInfo!,
               scaffold: _scaffoldKey,
-              popOverText: 'Use swipe and click to interact with expenses',
+              popOverText: 'Swipe or click to interact with expenses',
             ),
           ),
-        SliverPadding(padding: EdgeInsets.only(top: 80)),
-        if (_isLoading) SliverToBoxAdapter(child: const Loading()),
+        const SliverPadding(padding: EdgeInsets.only(top: 80)),
+        if (_isLoading) const SliverToBoxAdapter(child: Loading()),
         if (_feedbackMessage.isNotEmpty)
           SliverToBoxAdapter(child: FeedbackMessage(message: _feedbackMessage)),
         if (_expenses != null)

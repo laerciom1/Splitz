@@ -12,21 +12,23 @@ class BaseScreen extends StatelessWidget {
     this.floatingActionButton,
     this.safeArea = true,
     this.appBar = true,
-    this.scaffoldKey,
     this.onRefresh,
     this.onPop,
+    this.scaffoldKey,
+    this.scrollController,
     super.key,
   });
 
-  final bool safeArea;
-  final bool appBar;
-  final Future<void> Function()? onRefresh;
-  final Future<void> Function(bool, dynamic)? onPop;
   final Widget child;
   final Widget? topWidget;
   final Widget? bottomWidget;
   final Widget? floatingActionButton;
+  final bool safeArea;
+  final bool appBar;
+  final Future<void> Function()? onRefresh;
+  final Future<void> Function(bool, dynamic)? onPop;
   final GlobalKey<ScaffoldState>? scaffoldKey;
+  final ScrollController? scrollController;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +36,7 @@ class BaseScreen extends StatelessWidget {
     final backgroundColor = Theme.of(context).primaryColor;
     Widget widget = LayoutBuilder(builder: (context, constraints) {
       return SingleChildScrollView(
+        controller: scrollController,
         physics: const AlwaysScrollableScrollPhysics(),
         child: ConstrainedBox(
           constraints: BoxConstraints(minHeight: constraints.maxHeight),

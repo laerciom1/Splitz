@@ -6,11 +6,11 @@ import 'package:splitz/data/models/splitz/group_config.dart';
 import 'package:splitz/extensions/strings.dart';
 import 'package:splitz/navigator.dart';
 import 'package:splitz/presentation/templates/base_screen.dart';
-import 'package:splitz/presentation/widgets/button_primary.dart';
 import 'package:splitz/presentation/widgets/category_selector.dart';
 import 'package:splitz/presentation/widgets/expense_item.dart';
 import 'package:splitz/presentation/widgets/feedback_message.dart';
 import 'package:splitz/presentation/widgets/field_primary.dart';
+import 'package:splitz/presentation/widgets/footer_action.dart';
 import 'package:splitz/presentation/widgets/loading.dart';
 import 'package:splitz/presentation/widgets/slice_editor.dart';
 import 'package:splitz/presentation/widgets/splitz_divider.dart';
@@ -47,6 +47,8 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
   late final List<TextEditingController> _controllers;
   bool _controllersWasInitialized = false;
   FocusNode? _lastFocusedNode;
+
+  final _bodyScrollController = ScrollController();
 
   @override
   void initState() {
@@ -103,8 +105,8 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
   void initializeFocusAndControllers(Map<String, SplitzConfig> splitzConfigs) {
     _controllersWasInitialized = true;
     _preffixFocusNode = FocusNode()..addListener(trackFocusChanges);
-    _focusNodes = List.generate(
-        splitzConfigs.length, (_) => FocusNode()..addListener(trackFocusChanges));
+    _focusNodes = List.generate(splitzConfigs.length,
+        (_) => FocusNode()..addListener(trackFocusChanges));
     _controllers = [
       ...splitzConfigs.values.map(
         (config) => TextEditingController(text: config.slice.toString()),
@@ -154,6 +156,17 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
 
   void toggleUseCustomSlices() => setState(() {
         _shoulUseCustomSplitzConfig = !_shoulUseCustomSplitzConfig;
+        if (_shoulUseCustomSplitzConfig) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (_bodyScrollController.hasClients) {
+              _bodyScrollController.animateTo(
+                _bodyScrollController.position.maxScrollExtent,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOut,
+              );
+            }
+          });
+        }
       });
 
   void onNewSplitzConfigs(Map<String, SplitzConfig> newConfigs) => setState(() {
@@ -211,57 +224,54 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
     return getCategoryEditorBody();
   }
 
-  Widget getCategoryEditorBody() => SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            const Padding(
-              padding: EdgeInsets.all(24.0),
-              child: Text('Select an image for this category:'),
+  Widget getCategoryEditorBody() => Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          const Padding(
+            padding: EdgeInsets.all(24.0),
+            child: Text('Select an image for this category:'),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: CategorySelector(
+              categories: _availableCategories!,
+              onSelect: selectImage,
+              selectedCategory: _currentCategory,
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: CategorySelector(
-                categories: _availableCategories!,
-                onSelect: selectImage,
-                selectedCategory: _currentCategory,
-              ),
+          ),
+          const Padding(
+            padding: EdgeInsets.all(24.0),
+            child: Text('Type a preffix for this category:'),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: PrimaryField(
+              onChanged: onChangePrefix,
+              focusNode: _preffixFocusNode,
             ),
-            const Padding(
-              padding: EdgeInsets.all(24.0),
-              child: Text('Type a preffix for this category:'),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                const Text('Use custom division for this category'),
+                Checkbox(
+                  value: _shoulUseCustomSplitzConfig,
+                  onChanged: (_) => toggleUseCustomSlices(),
+                ),
+              ],
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: PrimaryField(
-                onChanged: onChangePrefix,
-                focusNode: _preffixFocusNode,
-              ),
+          ),
+          if (_shoulUseCustomSplitzConfig)
+            SliceEditor(
+              splitzConfigs: _customSplitzConfigs,
+              focusNodes: _focusNodes,
+              controllers: _controllers,
+              onEditConfigs: onNewSplitzConfigs,
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  const Text('Use custom division for this category'),
-                  Checkbox(
-                    value: _shoulUseCustomSplitzConfig,
-                    onChanged: (_) => toggleUseCustomSlices(),
-                  ),
-                ],
-              ),
-            ),
-            if (_shoulUseCustomSplitzConfig)
-              SliceEditor(
-                splitzConfigs: _customSplitzConfigs,
-                focusNodes: _focusNodes,
-                controllers: _controllers,
-                onEditConfigs: onNewSplitzConfigs,
-              ),
-            const SizedBox(height: 200)
-          ],
-        ),
+        ],
       );
 
   Widget? getBottom(BuildContext ctx) {
@@ -272,27 +282,17 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
     return getCategoryEditorBottom(ctx);
   }
 
-  Widget getCategoryEditorBottom(BuildContext ctx) => Column(
-        children: [
-          SplitzDivider(color: Theme.of(ctx).colorScheme.primary),
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: PrimaryButton(
-                text: 'Save',
-                onPressed: save,
-                enabled: _currentCategory.imageUrl.isNotEmpty &&
-                    _currentCategory.prefix.isNotEmpty,
-              ),
-            ),
-          ),
-        ],
+  Widget getCategoryEditorBottom(BuildContext ctx) => ActionFooter(
+        onAction: save,
+        text: 'Save',
+        enabled: _currentCategory.imageUrl.isNotEmpty &&
+            _currentCategory.prefix.isNotEmpty,
       );
 
   @override
   Widget build(BuildContext ctx) {
     return BaseScreen(
+      scrollController: _bodyScrollController,
       onRefresh: initScreen,
       topWidget: getHeader(context),
       bottomWidget: getBottom(context),
