@@ -1,56 +1,29 @@
 import 'dart:convert';
 
-class Category {
+class FullCategory {
   int id;
-  String? name;
-  String? icon;
   IconTypes? iconTypes;
-  List<Category>? subcategories;
+  List<FullCategory>? subcategories;
 
-  Category({
+  FullCategory({
     required this.id,
-    this.name,
-    this.icon,
     this.iconTypes,
     this.subcategories,
   });
 
-  Category copyWith({
-    int? id,
-    String? name,
-    String? icon,
-    IconTypes? iconTypes,
-    List<Category>? subcategories,
-  }) =>
-      Category(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        icon: icon ?? this.icon,
-        iconTypes: iconTypes ?? this.iconTypes,
-        subcategories: subcategories ?? this.subcategories,
-      );
-
-  factory Category.fromJson(String str) => Category.fromMap(json.decode(str));
-
-  String toJson() => json.encode(toMap());
-
-  factory Category.fromMap(Map<String, dynamic> json) => Category(
+  factory FullCategory.fromMap(Map<String, dynamic> json) => FullCategory(
         id: json["id"],
-        name: json["name"],
-        icon: json["icon"],
         iconTypes: json["icon_types"] == null
             ? null
             : IconTypes.fromMap(json["icon_types"]),
         subcategories: json["subcategories"] == null
             ? []
-            : List<Category>.from(
-                json["subcategories"]!.map((x) => Category.fromMap(x))),
+            : List<FullCategory>.from(
+                json["subcategories"]!.map((x) => FullCategory.fromMap(x))),
       );
 
   Map<String, dynamic> toMap() => {
         "id": id,
-        "name": name,
-        "icon": icon,
         "icon_types": iconTypes?.toMap(),
         "subcategories": subcategories == null
             ? []

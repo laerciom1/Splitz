@@ -99,7 +99,7 @@ abstract class SplitzService {
   ) async {
     final response = await SplitwiseRepository.getExpenses(groupId);
     final filteredExpenses = [
-      ...(response.expenses ?? [])
+      ...response.expenses
           .where((e) => e.deletedAt == null && e.payment != true),
     ];
     return filteredExpenses.map((e) {

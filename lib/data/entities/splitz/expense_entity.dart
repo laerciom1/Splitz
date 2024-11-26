@@ -1,4 +1,4 @@
-import 'package:splitz/data/models/splitwise/get_expenses/get_expenses_response.dart';
+import 'package:splitz/data/models/splitwise/common/expense_full.dart';
 import 'package:splitz/data/entities/splitz/group_config_entity.dart';
 import 'package:collection/collection.dart';
 
@@ -123,7 +123,7 @@ class ExpenseEntity {
     );
   }
 
-  factory ExpenseEntity.fromExpenseResponse(Expense e, String imageUrl) {
+  factory ExpenseEntity.fromExpenseResponse(FullExpense e, String imageUrl) {
     final users = <UserExpenseEntity>[];
     int? payerId;
     for (final user in e.users) {
@@ -159,7 +159,8 @@ class ExpenseEntity {
     required Map<String, SplitzConfig> splitzConfigs,
     ExpenseEntity? newVersion,
   }) {
-    final payerId = splitzConfigs.values.firstWhereOrNull((e) => e.payer == true)?.id;
+    final payerId =
+        splitzConfigs.values.firstWhereOrNull((e) => e.payer == true)?.id;
     return ExpenseEntity(
       state: ExpenseEntityState.example,
       cost: cost,

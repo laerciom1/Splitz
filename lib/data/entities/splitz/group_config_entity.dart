@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:splitz/data/entities/splitz/expense_entity.dart';
-import 'package:splitz/data/models/splitwise/common/category.dart';
+import 'package:splitz/data/models/splitwise/common/category_full.dart';
 import 'package:splitz/extensions/strings.dart';
 
 class GroupConfigEntity {
@@ -113,7 +113,7 @@ class SplitzCategory {
                 .map((k, v) => MapEntry<String, dynamic>(k, v.toMap())),
       };
 
-  factory SplitzCategory.fromCategory(Category c) => SplitzCategory(
+  factory SplitzCategory.fromCategory(FullCategory c) => SplitzCategory(
         prefix: '',
         imageUrl: c.iconTypes!.square!.large!,
         id: c.id,
