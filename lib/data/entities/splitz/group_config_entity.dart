@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:splitz/data/entities/splitz/expense_entity.dart';
-import 'package:splitz/data/models/splitwise/common/category_full.dart';
+import 'package:splitz/data/models/splitwise/get_categories/get_categories_response.dart';
 import 'package:splitz/extensions/strings.dart';
 
 class GroupConfigEntity {
@@ -27,7 +27,8 @@ class GroupConfigEntity {
 
   String toJson() => json.encode(toMap());
 
-  factory GroupConfigEntity.fromMap(Map<dynamic, dynamic> json) => GroupConfigEntity(
+  factory GroupConfigEntity.fromMap(Map<dynamic, dynamic> json) =>
+      GroupConfigEntity(
         splitzCategories: json["splitz_categories"] == null
             ? {}
             : Map.from(json["splitz_categories"]).map((k, v) =>
@@ -57,7 +58,8 @@ class GroupConfigEntity {
       payerId = payerUser?.userId ?? payerId;
     }
     var splitzConfigs = this.splitzConfigs;
-    splitzConfigs['$payerId'] = splitzConfigs['$payerId']!.copyWith(payer: true);
+    splitzConfigs['$payerId'] =
+        splitzConfigs['$payerId']!.copyWith(payer: true);
     return copyWith(splitzConfigs: splitzConfigs);
   }
 }
@@ -115,7 +117,7 @@ class SplitzCategory {
 
   factory SplitzCategory.fromCategory(FullCategory c) => SplitzCategory(
         prefix: '',
-        imageUrl: c.iconTypes!.square!.large!,
+        imageUrl: c.iconTypes.square.large,
         id: c.id,
       );
 }

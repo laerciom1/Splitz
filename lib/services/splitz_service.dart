@@ -1,7 +1,7 @@
 import 'package:splitz/data/entities/splitz/app_preferences_entity.dart';
 import 'package:splitz/data/entities/splitz/expense_entity.dart';
 import 'package:splitz/data/entities/splitz/init_result_entity.dart';
-import 'package:splitz/data/models/splitwise/common/group.dart';
+import 'package:splitz/data/models/splitwise/common/group_full.dart';
 import 'package:splitz/data/models/splitwise/get_group/get_group_response.dart';
 import 'package:splitz/data/entities/splitz/group_config_entity.dart';
 import 'package:splitz/data/repositories/splitwise_repo.dart';
@@ -74,13 +74,11 @@ abstract class SplitzService {
     return appPrefs.currentUserId!;
   }
 
-  static Future<List<Group>> getGroups() async {
+  static Future<List<FullGroup>> getGroups() async {
     final response = await SplitwiseRepository.getGroups();
     if (response.groups.isNullOrEmpty) return [];
-    final groups = response.groups!.where((e) => e.id != 0).toList()
-      ..sort((a, b) => (b.updatedAt ?? DateTime.now()).compareTo(
-            (a.updatedAt ?? DateTime.now()),
-          ));
+    final groups = response.groups.where((e) => e.id != 0).toList()
+      ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
     return groups;
   }
 
@@ -148,9 +146,7 @@ abstract class SplitzService {
     final result = <SplitzCategory>[];
     for (var c in response.categories) {
       result.add(SplitzCategory.fromCategory(c));
-      result.addAll(
-        (c.subcategories ?? []).map((c) => SplitzCategory.fromCategory(c)),
-      );
+      result.addAll(c.subcategories.map((c) => SplitzCategory.fromCategory(c)));
     }
     final actualCategoriesSet = <String>{};
     for (var e in actualCategories.values) {

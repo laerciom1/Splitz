@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:splitz/data/entities/splitz/expense_entity.dart';
-import 'package:splitz/data/models/splitwise/common/group.dart';
+import 'package:splitz/data/models/splitwise/common/group_full.dart';
 import 'package:splitz/data/models/splitwise/get_group/get_group_response.dart';
 import 'package:splitz/data/entities/splitz/group_config_entity.dart';
 import 'package:splitz/extensions/strings.dart';
@@ -32,7 +32,7 @@ class ExpensesListScreen extends StatefulWidget {
 class _ExpensesListScreenState extends State<ExpensesListScreen> {
   List<ExpenseEntity>? _expenses;
   GroupConfigEntity? _groupConfig;
-  Group? _groupInfo;
+  FullGroup? _groupInfo;
   String _feedbackMessage = '';
   bool _isLoading = true;
 
@@ -47,7 +47,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
   void setData({
     List<ExpenseEntity>? expenses,
     GroupConfigEntity? groupConfig,
-    Group? groupInfo,
+    FullGroup? groupInfo,
     String feedbackMessage = '',
     bool isLoading = false,
   }) =>

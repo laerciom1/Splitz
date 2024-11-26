@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:splitz/data/models/splitwise/common/group.dart';
+import 'package:splitz/data/models/splitwise/common/group_full.dart';
 
 const _avatarSize = 80.0;
 const _avatarLeftPadding = 60.0;
@@ -26,7 +26,7 @@ class ExpensesPageHeader extends SliverPersistentHeaderDelegate {
   @override
   final double maxExtent;
 
-  final Group groupInfo;
+  final FullGroup groupInfo;
   final GlobalKey<ScaffoldState> scaffold;
   final String? popOverText;
 

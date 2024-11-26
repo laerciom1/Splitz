@@ -1,7 +1,7 @@
 class DeleteExpenseResponse {
   final bool? success;
 
-  DeleteExpenseResponse({this.success});
+  DeleteExpenseResponse({required this.success});
 
   factory DeleteExpenseResponse.fromMap(Map<String, dynamic> json) =>
       DeleteExpenseResponse(success: json["success"]);

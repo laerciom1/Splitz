@@ -1,14 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:splitz/data/models/splitwise/common/group.dart';
+import 'package:splitz/data/models/splitwise/common/group_full.dart';
 
 const _cardHeight = 180.0;
 
 class GroupItem extends StatelessWidget {
   const GroupItem({required this.group, required this.onTap, super.key});
 
-  final Group group;
-  final void Function(Group) onTap;
+  final FullGroup group;
+  final void Function(FullGroup) onTap;
 
   @override
   Widget build(BuildContext context) {

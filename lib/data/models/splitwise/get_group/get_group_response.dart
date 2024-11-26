@@ -1,32 +1,10 @@
-import 'dart:convert';
-
-import 'package:splitz/data/models/splitwise/common/group.dart';
+import 'package:splitz/data/models/splitwise/common/group_full.dart';
 
 class GetGroupResponse {
-  Group? group;
+  final FullGroup group;
 
-  GetGroupResponse({
-    this.group,
-  });
-
-  GetGroupResponse copyWith({
-    Group? group,
-  }) =>
-      GetGroupResponse(
-        group: group ?? this.group,
-      );
-
-  factory GetGroupResponse.fromJson(String str) =>
-      GetGroupResponse.fromMap(json.decode(str));
-
-  String toJson() => json.encode(toMap());
+  GetGroupResponse({required this.group});
 
   factory GetGroupResponse.fromMap(Map<String, dynamic> json) =>
-      GetGroupResponse(
-        group: json["group"] == null ? null : Group.fromMap(json["group"]),
-      );
-
-  Map<String, dynamic> toMap() => {
-        "group": group?.toMap(),
-      };
+      GetGroupResponse(group: FullGroup.fromMap(json["group"]));
 }
