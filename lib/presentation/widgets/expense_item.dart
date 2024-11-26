@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:splitz/data/entities/expense_entity.dart';
+import 'package:splitz/data/entities/splitz/expense_entity.dart';
 import 'package:splitz/extensions/datetime.dart';
 import 'package:splitz/extensions/double.dart';
 import 'package:splitz/extensions/strings.dart';

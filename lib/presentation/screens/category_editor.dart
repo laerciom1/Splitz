@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:splitz/data/entities/expense_entity.dart';
+import 'package:splitz/data/entities/splitz/expense_entity.dart';
 import 'package:splitz/data/models/splitz/group_config.dart';
 import 'package:splitz/extensions/strings.dart';
 import 'package:splitz/navigator.dart';

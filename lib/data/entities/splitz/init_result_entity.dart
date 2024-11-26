@@ -1,10 +1,10 @@
 enum FirstScreen { splitzLogin, splitwiseLogin, groupsList, group }
 
-class InitResult {
+class InitResultEntity {
   final FirstScreen firstScreen;
   final dynamic args;
 
-  InitResult({
+  InitResultEntity({
     required this.firstScreen,
     this.args,
   });

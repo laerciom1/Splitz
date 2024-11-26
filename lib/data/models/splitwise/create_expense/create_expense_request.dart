@@ -1,4 +1,4 @@
-import 'package:splitz/data/entities/expense_entity.dart';
+import 'package:splitz/data/entities/splitz/expense_entity.dart';
 
 abstract class CreateExpenseRequest {
   static Map<String, dynamic> createBody(

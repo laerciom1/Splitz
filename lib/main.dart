@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:splitz/data/entities/init_result.dart';
+import 'package:splitz/data/entities/splitz/init_result_entity.dart';
 import 'package:splitz/firebase_options.dart';
 import 'package:splitz/presentation/screens/expenses_list.dart';
 import 'package:splitz/presentation/screens/groups_list.dart';
@@ -31,7 +31,7 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  InitResult? initResult;
+  InitResultEntity? initResult;
 
   @override
   void initState() {

@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:collection/collection.dart';
-import 'package:splitz/data/entities/expense_entity.dart';
+import 'package:splitz/data/entities/splitz/expense_entity.dart';
 import 'package:splitz/data/models/splitwise/common/category.dart';
 import 'package:splitz/extensions/strings.dart';
 

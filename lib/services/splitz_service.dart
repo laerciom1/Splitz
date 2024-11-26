@@ -1,6 +1,6 @@
-import 'package:splitz/data/entities/app_preferences.dart';
-import 'package:splitz/data/entities/expense_entity.dart';
-import 'package:splitz/data/entities/init_result.dart';
+import 'package:splitz/data/entities/splitz/app_preferences_entity.dart';
+import 'package:splitz/data/entities/splitz/expense_entity.dart';
+import 'package:splitz/data/entities/splitz/init_result_entity.dart';
 import 'package:splitz/data/models/splitwise/common/group.dart';
 import 'package:splitz/data/models/splitwise/get_group/get_group_response.dart';
 import 'package:splitz/data/models/splitz/group_config.dart';
@@ -14,46 +14,46 @@ import 'package:splitz/data/repositories/storage_repo.dart';
 const _storageKey = 'SPLITZ_SERVICE_STORAGE_KEY';
 
 abstract class SplitzService {
-  static AppPreferences? _inMemoryAppPreferences;
+  static AppPreferencesEntity? _inMemoryAppPreferences;
 
-  static Future<AppPreferences> get _appPreferences async {
+  static Future<AppPreferencesEntity> get _appPreferences async {
     if (_inMemoryAppPreferences != null) return _inMemoryAppPreferences!;
     final appPrefs = await StorageService.read(_storageKey);
     if (appPrefs != null) {
-      _inMemoryAppPreferences = AppPreferences.fromJson(appPrefs);
+      _inMemoryAppPreferences = AppPreferencesEntity.fromJson(appPrefs);
     } else {
-      _inMemoryAppPreferences = AppPreferences();
+      _inMemoryAppPreferences = AppPreferencesEntity();
       await saveAppPrefs(_inMemoryAppPreferences!);
     }
     return _inMemoryAppPreferences!;
   }
 
-  static Future<void> saveAppPrefs(AppPreferences appPrefs) async =>
+  static Future<void> saveAppPrefs(AppPreferencesEntity appPrefs) async =>
       StorageService.save(_storageKey, appPrefs.toJson());
 
   static Future<void> clearAppPrefs() async =>
       StorageService.clear(_storageKey);
 
-  static Future<InitResult> init() async {
+  static Future<InitResultEntity> init() async {
     final isSignedInToSplitz = AuthService.isSignedInToSplitz;
     if (!isSignedInToSplitz) {
-      return InitResult(firstScreen: FirstScreen.splitzLogin);
+      return InitResultEntity(firstScreen: FirstScreen.splitzLogin);
     }
 
     final isSignedInToSplitwise = await AuthService.isSignedInToSplitwise;
     if (!isSignedInToSplitwise) {
-      return InitResult(firstScreen: FirstScreen.splitwiseLogin);
+      return InitResultEntity(firstScreen: FirstScreen.splitwiseLogin);
     }
 
     final appPrefs = await _appPreferences;
     if (appPrefs.selectedGroup.isNotNullNorEmpty) {
-      return InitResult(
+      return InitResultEntity(
         firstScreen: FirstScreen.group,
         args: appPrefs.selectedGroup,
       );
     }
 
-    return InitResult(firstScreen: FirstScreen.groupsList);
+    return InitResultEntity(firstScreen: FirstScreen.groupsList);
   }
 
   static Future<void> getAndSaveCurrentSplitwiseUser() async {
