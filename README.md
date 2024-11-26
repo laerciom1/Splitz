@@ -5,9 +5,7 @@ This app is a customizable experience for the splitwise services, which aims to 
 I made it with the best experience for me in mind, I'll add some gifs here in the future (:
 
 ### Next steps:
-- [ ] Indicator to selected group 
 - [ ] Indicator to how much is left until 100% when editing percentages manually
-- [ ] Smart loading of data for expenses list screen
 
 ### Refactors
 - [ ] Review on model classes
@@ -42,6 +40,8 @@ I made it with the best experience for me in mind, I'll add some gifs here in th
 - [ ] Add animations
 
 ### Done
+- [x] Indicator to selected group
+- [x] Smart loading of data for expenses list screen
 - [x] Handle physical back button
 - [x] Turn GroupConfig -> splitConfig into a map
 - [x] Logout
