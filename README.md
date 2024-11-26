@@ -5,7 +5,6 @@ This app is a customizable experience for the splitwise services, which aims to 
 I made it with the best experience for me in mind, I'll add some gifs here in the future (:
 
 ### Next steps:
-- [ ] Dynamic theme
 - [ ] Review on model classes
   - [ ] remove unused code
   - [ ] create entities
