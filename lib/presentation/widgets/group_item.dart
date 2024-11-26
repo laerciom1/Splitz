@@ -1,18 +1,18 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:splitz/data/models/splitwise/common/group_full.dart';
+import 'package:splitz/data/entities/external/group_entity.dart';
 
 const _cardHeight = 180.0;
 
 class GroupItem extends StatelessWidget {
   const GroupItem({required this.group, required this.onTap, super.key});
 
-  final FullGroup group;
-  final void Function(FullGroup) onTap;
+  final GroupEntity group;
+  final void Function(GroupEntity) onTap;
 
   @override
   Widget build(BuildContext context) {
-    final String imageUrl = group.coverPhoto.xxlarge;
+    final String imageUrl = group.imageUrl;
     return InkWell(
       onTap: () => onTap(group),
       child: SizedBox(

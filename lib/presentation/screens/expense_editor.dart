@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:splitz/data/entities/splitz/expense_entity.dart';
+import 'package:splitz/data/entities/external/expense_entity.dart';
 import 'package:splitz/data/entities/splitz/group_config_entity.dart';
 import 'package:splitz/extensions/strings.dart';
 import 'package:splitz/navigator.dart';

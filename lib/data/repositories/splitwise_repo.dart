@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:splitz/data/entities/splitz/expense_entity.dart';
+import 'package:splitz/data/entities/external/expense_entity.dart';
 import 'package:splitz/data/models/splitwise/common/expense_request.dart';
 import 'package:splitz/data/models/splitwise/create_expense/create_expense_response.dart';
 import 'package:splitz/data/models/splitwise/delete_expense/delete_expense.dart';

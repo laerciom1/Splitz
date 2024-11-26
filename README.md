@@ -5,16 +5,13 @@ This app is a customizable experience for the splitwise services, which aims to 
 I made it with the best experience for me in mind, I'll add some gifs here in the future (:
 
 ### Next steps:
-- [ ] Review on model classes
-  - [ ] remove unused code
-  - [ ] create entities
 - [ ] Export data from the bills of the month
+- [ ] Category Editor - Delete/Edit/Reorder Category
 
 ### Refactors
 
 ### Features
 - [ ] Order categories of a group preferences
-- [ ] Category Editor - Delete/Edit/Reorder Category
 - [ ] Permission to edit group preferences
 - [ ] Expense Editor - Undo (delete/edit)
 - [ ] Filters:
@@ -26,7 +23,7 @@ I made it with the best experience for me in mind, I'll add some gifs here in th
 - [ ] Edit a group of expenses (limited edition)
   - [ ] Edit the category of selected expenses
   - [ ] Edit split config of selected expenses
-- [ ] Load more button on Splits list
+- [ ] Load more on Splits list
 - [ ] Improve Splitz Login
   - [ ] Add other options to login
 
@@ -43,6 +40,9 @@ I made it with the best experience for me in mind, I'll add some gifs here in th
 - [ ] Add animations
 
 ### Done
+- [x] Review on model classes
+  - [x] remove unused code
+  - [x] create entities
 - [x] Indicator to how much is left until 100% when editing percentages manually
 - [x] Indicator to selected group
 - [x] Smart loading of data for expenses list screen

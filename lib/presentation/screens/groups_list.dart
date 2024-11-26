@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:splitz/data/models/splitwise/common/group_full.dart';
+import 'package:splitz/data/entities/external/group_entity.dart';
 import 'package:splitz/extensions/list.dart';
 import 'package:splitz/extensions/strings.dart';
 import 'package:splitz/navigator.dart';
@@ -20,7 +20,7 @@ class GroupsListScreen extends StatefulWidget {
 }
 
 class _GroupsListScreenState extends State<GroupsListScreen> {
-  List<FullGroup>? groups;
+  List<GroupEntity>? groups;
   String feedbackMessage = '';
   bool isLoading = true;
 
@@ -46,7 +46,7 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
     });
   }
 
-  void setGroups(List<FullGroup> newGroups) {
+  void setGroups(List<GroupEntity> newGroups) {
     setState(() {
       isLoading = false;
       groups = newGroups;
@@ -73,7 +73,7 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
     }
   }
 
-  Future<void> onSelectGroup(FullGroup group) async {
+  Future<void> onSelectGroup(GroupEntity group) async {
     await SplitzService.selectGroup('${group.id}');
     AppNavigator.replaceAll([ExpensesListScreen(groupId: '${group.id}')]);
   }

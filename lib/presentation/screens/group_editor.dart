@@ -94,7 +94,7 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
       final splitzConfigs = SplitzService.mergeSplitzConfigs(
         splitzGroupConfig?.splitzConfigs ?? {},
         SplitzService.getSplitzConfigsFromMembers(
-          splitwiseGroupInfo.group.members,
+          splitwiseGroupInfo.members,
         ),
       );
       setGroupConfig(

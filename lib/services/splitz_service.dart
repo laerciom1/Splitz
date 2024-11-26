@@ -1,8 +1,8 @@
+import 'package:splitz/data/entities/external/group_entity.dart';
+import 'package:splitz/data/entities/external/member_entity.dart';
 import 'package:splitz/data/entities/splitz/app_preferences_entity.dart';
-import 'package:splitz/data/entities/splitz/expense_entity.dart';
+import 'package:splitz/data/entities/external/expense_entity.dart';
 import 'package:splitz/data/entities/splitz/init_result_entity.dart';
-import 'package:splitz/data/models/splitwise/common/group_full.dart';
-import 'package:splitz/data/models/splitwise/get_group/get_group_response.dart';
 import 'package:splitz/data/entities/splitz/group_config_entity.dart';
 import 'package:splitz/data/repositories/splitwise_repo.dart';
 import 'package:splitz/data/repositories/splitz_repo.dart';
@@ -74,10 +74,13 @@ abstract class SplitzService {
     return appPrefs.currentUserId!;
   }
 
-  static Future<List<FullGroup>> getGroups() async {
+  static Future<List<GroupEntity>> getGroups() async {
     final response = await SplitwiseRepository.getGroups();
     if (response.groups.isNullOrEmpty) return [];
-    final groups = response.groups.where((e) => e.id != 0).toList()
+    final groups = response.groups
+        .map(GroupEntity.fromSplitwiseModel)
+        .where((e) => e.id != 0)
+        .toList()
       ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
     return groups;
   }
@@ -107,11 +110,13 @@ abstract class SplitzService {
     }).toList();
   }
 
-  static Future<GetGroupResponse> getGroupInfo(String groupId) async =>
-      await SplitwiseRepository.getGroupInfo(groupId);
+  static Future<GroupEntity> getGroupInfo(String groupId) async {
+    final response = await SplitwiseRepository.getGroupInfo(groupId);
+    return GroupEntity.fromSplitwiseModel(response.group);
+  }
 
   static Map<String, SplitzConfig> getSplitzConfigsFromMembers(
-    List<Member> members,
+    List<MemberEntity> members,
   ) {
     final result = <String, SplitzConfig>{};
     double sum = 0;
@@ -120,14 +125,14 @@ abstract class SplitzService {
       result['${members[idx].id}'] = SplitzConfig(
         id: members[idx].id,
         name: members[idx].firstName,
-        avatarUrl: members[idx].picture.large,
+        avatarUrl: members[idx].imageUrl,
         slice: (100 / members.length).round(),
       );
     }
     result['${members.last.id}'] = SplitzConfig(
       id: members.last.id,
       name: members.last.firstName,
-      avatarUrl: members.last.picture.large,
+      avatarUrl: members.last.imageUrl,
       slice: (100 - sum).round(),
     );
     return result;

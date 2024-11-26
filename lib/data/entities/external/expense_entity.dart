@@ -1,5 +1,5 @@
-import 'package:splitz/data/entities/splitz/group_config_entity.dart';
 import 'package:collection/collection.dart';
+import 'package:splitz/data/entities/splitz/group_config_entity.dart';
 import 'package:splitz/data/models/splitwise/get_expenses/get_expenses_response.dart';
 
 enum ExpenseEntityState { example, listed, loading, createError, editError }

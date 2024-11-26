@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:splitz/data/entities/splitz/expense_entity.dart';
-import 'package:splitz/data/models/splitwise/common/group_full.dart';
-import 'package:splitz/data/models/splitwise/get_group/get_group_response.dart';
+import 'package:splitz/data/entities/external/expense_entity.dart';
+import 'package:splitz/data/entities/external/group_entity.dart';
 import 'package:splitz/data/entities/splitz/group_config_entity.dart';
 import 'package:splitz/extensions/strings.dart';
 import 'package:splitz/navigator.dart';
@@ -32,7 +31,7 @@ class ExpensesListScreen extends StatefulWidget {
 class _ExpensesListScreenState extends State<ExpensesListScreen> {
   List<ExpenseEntity>? _expenses;
   GroupConfigEntity? _groupConfig;
-  FullGroup? _groupInfo;
+  GroupEntity? _groupInfo;
   String _feedbackMessage = '';
   bool _isLoading = true;
 
@@ -47,7 +46,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
   void setData({
     List<ExpenseEntity>? expenses,
     GroupConfigEntity? groupConfig,
-    FullGroup? groupInfo,
+    GroupEntity? groupInfo,
     String feedbackMessage = '',
     bool isLoading = false,
   }) =>
@@ -86,14 +85,14 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
     _lastFunc = initScreen;
     setData(isLoading: true);
     late GroupConfigEntity? remoteGroupConfig;
-    late GetGroupResponse remoteGroupInfo;
+    late GroupEntity remoteGroupInfo;
     try {
       final [config, info] = await Future.wait([
         SplitzService.getGroupConfig(widget.groupId),
         SplitzService.getGroupInfo(widget.groupId),
       ]);
       remoteGroupConfig = config as GroupConfigEntity?;
-      remoteGroupInfo = info as GetGroupResponse;
+      remoteGroupInfo = info as GroupEntity;
     } catch (e, s) {
       const message =
           'Something went wrong retrieving your group preferences.\n'
@@ -102,7 +101,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
     }
 
     if (remoteGroupConfig == null) return editGroupPreferences();
-    setData(groupConfig: remoteGroupConfig, groupInfo: remoteGroupInfo.group);
+    setData(groupConfig: remoteGroupConfig, groupInfo: remoteGroupInfo);
     return await getExpenses();
   }
 
