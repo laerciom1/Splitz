@@ -1,6 +1,12 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:splitz/data/entities/expense_entity.dart';
+import 'package:splitz/data/models/splitwise/common/group.dart';
+import 'package:splitz/data/models/splitwise/get_group/get_group_response.dart';
 import 'package:splitz/data/models/splitz/group_config.dart';
 import 'package:splitz/extensions/list.dart';
 import 'package:splitz/extensions/strings.dart';
@@ -9,10 +15,12 @@ import 'package:splitz/presentation/screens/expense_editor.dart';
 import 'package:splitz/presentation/screens/group_editor.dart';
 import 'package:splitz/presentation/screens/groups_list.dart';
 import 'package:splitz/presentation/templates/base_screen.dart';
+import 'package:splitz/presentation/widgets/drawer.dart';
 import 'package:splitz/presentation/widgets/fab_add_split.dart';
 import 'package:splitz/presentation/widgets/expense_item.dart';
 import 'package:splitz/presentation/widgets/feedback_message.dart';
 import 'package:splitz/presentation/widgets/loading.dart';
+import 'package:splitz/presentation/widgets/expenses_page_header.dart';
 import 'package:splitz/presentation/widgets/snackbar.dart';
 import 'package:splitz/services/splitz_service.dart';
 
@@ -30,6 +38,7 @@ class ExpensesListScreen extends StatefulWidget {
 class _ExpensesListScreenState extends State<ExpensesListScreen> {
   List<ExpenseEntity>? _expenses;
   GroupConfig? _groupConfig;
+  Group? _groupInfo;
   String _feedbackMessage = '';
   bool _isLoading = true;
 
@@ -55,11 +64,16 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
         _feedbackMessage = '';
       });
 
-  void setInitData(List<ExpenseEntity> expenses, GroupConfig groupConfig) =>
+  void setInitData(
+    List<ExpenseEntity> expenses,
+    GroupConfig groupConfig,
+    Group groupInfo,
+  ) =>
       setState(() {
         _isLoading = false;
         _expenses = expenses;
         _groupConfig = groupConfig;
+        _groupInfo = groupInfo;
         _feedbackMessage = '';
       });
 
@@ -89,9 +103,16 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
   Future<void> initScreen() async {
     _lastFunc = initScreen;
     setLoading();
-    GroupConfig? remoteGroupConfig;
+    late GroupConfig? remoteGroupConfig;
+    late GetGroupResponse remoteGroupInfo;
     try {
-      remoteGroupConfig = await SplitzService.getGroupConfig(widget.groupId);
+      final [config, info] = await Future.wait([
+        SplitzService.getGroupConfig(widget.groupId),
+        SplitzService.getGroupInfo(widget.groupId),
+      ]);
+      remoteGroupConfig = config as GroupConfig?;
+      remoteGroupInfo = info as GetGroupResponse;
+      // remoteGroupConfig = await SplitzService.getGroupConfig(widget.groupId);
     } catch (e, s) {
       const message =
           'Something went wrong retrieving your group preferences.\n'
@@ -100,18 +121,21 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
     }
 
     if (remoteGroupConfig == null) return editGroupPreferences();
-    return await getExpenses(remoteGroupConfig);
+    return await getExpenses(remoteGroupConfig, remoteGroupInfo.group!);
   }
 
-  Future<void> getExpenses(GroupConfig groupConfig) async {
-    _lastFunc = () => getExpenses(groupConfig);
+  Future<void> getExpenses(
+    GroupConfig groupConfig,
+    Group groupInfo,
+  ) async {
+    _lastFunc = () => getExpenses(groupConfig, groupInfo);
     setLoading();
     try {
       final expenses = await SplitzService.getExpenses(
         widget.groupId,
         groupConfig.splitzCategories,
       );
-      setInitData(expenses, groupConfig);
+      setInitData(expenses, groupConfig, groupInfo);
     } catch (e, s) {
       const message = 'Something went wrong retrieving your expenses.\n'
           'Drag down to refresh.';
@@ -293,18 +317,71 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BaseScreen(
-      onPop: (_, __) async {
+    // return BaseScreen(
+    //   onPop: (_, __) async {
+    //     if (_scaffoldKey.currentState?.isDrawerOpen ?? false) {
+    //       _scaffoldKey.currentState?.openEndDrawer();
+    //     } else {
+    //       AppNavigator.replaceAll([const GroupsListScreen()]);
+    //     }
+    //   },
+    //   scaffoldKey: _scaffoldKey,
+    //   onRefresh: _lastFunc,
+    //   floatingActionButton: getFAB(),
+    //   child: getBody(),
+    // );
+    getBody();
+    if (_groupInfo == null) return const Text('loading');
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (_, __) async {
         if (_scaffoldKey.currentState?.isDrawerOpen ?? false) {
           _scaffoldKey.currentState?.openEndDrawer();
         } else {
           AppNavigator.replaceAll([const GroupsListScreen()]);
         }
       },
-      scaffoldKey: _scaffoldKey,
-      onRefresh: _lastFunc,
-      floatingActionButton: getFAB(),
-      child: getBody(),
+      child: Scaffold(
+        key: _scaffoldKey,
+        drawer: SplitzDrawer(),
+        floatingActionButton: getFAB(),
+        body: RefreshIndicator(
+          onRefresh: () async => unawaited(_lastFunc?.call()),
+          child: CustomScrollView(
+            slivers: [
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: ExpensesPageHeader(
+                  groupInfo: _groupInfo!,
+                  scaffold: _scaffoldKey,
+                  popOverText: 'Use swipe and click to interact with expenses',
+                ),
+              ),
+              SliverPadding(padding: EdgeInsets.only(top: 80)),
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (BuildContext context, int index) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 6.0,
+                        horizontal: 24,
+                      ),
+                      child: ExpenseItem(
+                        expense: _expenses![index],
+                        onRetry: onRetry,
+                        onCancel: onCancelEdit,
+                        onDelete: onDelete,
+                        onSelect: onEdit,
+                      ),
+                    );
+                  },
+                  childCount: _expenses!.length,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

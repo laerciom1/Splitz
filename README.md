@@ -7,6 +7,7 @@ I made it with the best experience for me in mind, I'll add some gifs here in th
 ### Next steps:
 - [ ] Indicator to selected group 
 - [ ] Indicator to how much is left until 100% when editing percentages manually
+- [ ] Smart loading of data for expenses list screen
 
 ### Refactors
 - [ ] Review on model classes
@@ -18,6 +19,7 @@ I made it with the best experience for me in mind, I'll add some gifs here in th
 - [ ] Permission to edit group preferences
 - [ ] Order categories of a group preferences
 - [ ] Expense Editor - Undo (delete/edit)
+- [ ] Edit a group of expenses (limited edition)
 - [ ] Filters:
   - [ ] Category
   - [ ] Date:

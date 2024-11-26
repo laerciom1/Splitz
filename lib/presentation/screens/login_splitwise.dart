@@ -64,12 +64,12 @@ class _SplitwiseLoginScreenState extends State<SplitwiseLoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BaseScreen(
-      onPop: (_, __) async {},
-      appBar: false,
-      child: shouldLoadPage
-          ? WebViewWidget(controller: controller)
-          : Center(
+    return shouldLoadPage
+        ? WebViewWidget(controller: controller)
+        : BaseScreen(
+            onPop: (_, __) async {},
+            appBar: false,
+            child: Center(
               child: Column(
                 children: [
                   PrimaryButton(onPressed: doLogin, text: 'Login to Splitwise'),
@@ -77,6 +77,6 @@ class _SplitwiseLoginScreenState extends State<SplitwiseLoginScreen> {
                 ],
               ),
             ),
-    );
+          );
   }
 }
