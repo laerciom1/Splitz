@@ -60,3 +60,10 @@ android/**/*.jks
 android/app/google-services.json
 android/.idea/*
 config/
+
+# FVM Version Cache
+.fvm/
+ios/Runner/GoogleService-Info.plist
+ios/Runner/Info.plist
+.vscode/settings.json
+.fvmrc
