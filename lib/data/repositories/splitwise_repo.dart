@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:splitz/data/entities/splitz/expense_entity.dart';
-import 'package:splitz/data/models/splitwise/create_expense/create_expense_request.dart';
+import 'package:splitz/data/models/splitwise/common/expense_request.dart';
 import 'package:splitz/data/models/splitwise/create_expense/create_expense_response.dart';
 import 'package:splitz/data/models/splitwise/delete_expense/delete_expense.dart';
 import 'package:splitz/data/models/splitwise/get_categories/get_categories_response.dart';
@@ -8,7 +8,6 @@ import 'package:splitz/data/models/splitwise/get_current_user/get_current_user_r
 import 'package:splitz/data/models/splitwise/get_expenses/get_expenses_response.dart';
 import 'package:splitz/data/models/splitwise/get_group/get_group_response.dart';
 import 'package:splitz/data/models/splitwise/get_groups/get_groups_response.dart';
-import 'package:splitz/data/models/splitwise/update_expense/update_expense_request.dart';
 import 'package:splitz/data/models/splitwise/update_expense/update_expense_response.dart';
 import 'package:splitz/services/auth_service.dart';
 import 'package:splitz/services/log_service.dart';
@@ -129,7 +128,7 @@ abstract class SplitwiseRepository {
   static Future<int> createExpense(ExpenseEntity expense) async {
     try {
       final dio = await _dioClient;
-      final request = CreateExpenseRequest.createBody(expense);
+      final request = ExpenseRequest.createBody(expense);
       final response = await dio.post('/create_expense', data: request);
       final result = CreateExpenseResponse.fromMap(
         response.data as Map<String, dynamic>,
@@ -168,7 +167,7 @@ abstract class SplitwiseRepository {
   static Future<int> updateExpense(ExpenseEntity expense) async {
     try {
       final dio = await _dioClient;
-      final request = UpdateExpenseRequest.createBody(expense);
+      final request = ExpenseRequest.createBody(expense);
       final response = await dio.post(
         '/update_expense/${expense.id!}',
         data: request,
