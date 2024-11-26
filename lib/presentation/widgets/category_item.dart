@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:splitz/data/models/splitz/group_config.dart';
+import 'package:splitz/data/entities/splitz/group_config_entity.dart';
 import 'package:splitz/extensions/list.dart';
 import 'package:splitz/presentation/theme/slice_colors.dart';
 import 'package:splitz/presentation/widgets/slice_badge.dart';
@@ -51,7 +51,7 @@ class CategoryItem extends StatelessWidget {
                   style: const TextStyle(fontSize: 20),
                 ),
                 Row(
-                  children: getBadges(),
+                  children: getBadges() ,
                 ),
               ],
             ),

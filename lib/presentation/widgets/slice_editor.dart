@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:splitz/data/models/splitz/group_config.dart';
+import 'package:splitz/data/entities/splitz/group_config_entity.dart';
 import 'package:splitz/extensions/list.dart';
 import 'package:splitz/extensions/strings.dart';
 import 'package:splitz/presentation/theme/slice_colors.dart';

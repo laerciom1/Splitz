@@ -1,16 +1,16 @@
 import 'package:firebase_database/firebase_database.dart';
-import 'package:splitz/data/models/splitz/group_config.dart';
+import 'package:splitz/data/entities/splitz/group_config_entity.dart';
 import 'package:splitz/services/log_service.dart';
 
 abstract class SplitzRepository {
   static final FirebaseDatabase _db = FirebaseDatabase.instance;
-  static Future<GroupConfig?> getGroupConfig(String groupId) async {
+  static Future<GroupConfigEntity?> getGroupConfig(String groupId) async {
     try {
       final snapshot = await _db.ref('/groups/$groupId').get();
       if (snapshot.value != null) {
         final json = snapshot.value as Map<dynamic, dynamic>;
         // final json = Map<String, dynamic>.from(snapshot.value as Map);
-        final result = GroupConfig.fromMap(json);
+        final result = GroupConfigEntity.fromMap(json);
         return result;
       }
       return null;
@@ -20,9 +20,9 @@ abstract class SplitzRepository {
     }
   }
 
-  static Future<GroupConfig> updateGroup(
+  static Future<GroupConfigEntity> updateGroup(
     String groupId,
-    GroupConfig config,
+    GroupConfigEntity config,
   ) async {
     try {
       final ref = _db.ref('/groups/$groupId');

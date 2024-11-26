@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:splitz/data/entities/splitz/expense_entity.dart';
 import 'package:splitz/data/models/splitwise/common/group.dart';
 import 'package:splitz/data/models/splitwise/get_group/get_group_response.dart';
-import 'package:splitz/data/models/splitz/group_config.dart';
+import 'package:splitz/data/entities/splitz/group_config_entity.dart';
 import 'package:splitz/extensions/strings.dart';
 import 'package:splitz/navigator.dart';
 import 'package:splitz/presentation/screens/expense_editor.dart';
@@ -31,7 +31,7 @@ class ExpensesListScreen extends StatefulWidget {
 
 class _ExpensesListScreenState extends State<ExpensesListScreen> {
   List<ExpenseEntity>? _expenses;
-  GroupConfig? _groupConfig;
+  GroupConfigEntity? _groupConfig;
   Group? _groupInfo;
   String _feedbackMessage = '';
   bool _isLoading = true;
@@ -46,7 +46,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
 
   void setData({
     List<ExpenseEntity>? expenses,
-    GroupConfig? groupConfig,
+    GroupConfigEntity? groupConfig,
     Group? groupInfo,
     String feedbackMessage = '',
     bool isLoading = false,
@@ -85,14 +85,14 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
   Future<void> initScreen() async {
     _lastFunc = initScreen;
     setData(isLoading: true);
-    late GroupConfig? remoteGroupConfig;
+    late GroupConfigEntity? remoteGroupConfig;
     late GetGroupResponse remoteGroupInfo;
     try {
       final [config, info] = await Future.wait([
         SplitzService.getGroupConfig(widget.groupId),
         SplitzService.getGroupInfo(widget.groupId),
       ]);
-      remoteGroupConfig = config as GroupConfig?;
+      remoteGroupConfig = config as GroupConfigEntity?;
       remoteGroupInfo = info as GetGroupResponse;
     } catch (e, s) {
       const message =

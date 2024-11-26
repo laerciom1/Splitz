@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:splitz/data/models/splitz/group_config.dart';
+import 'package:splitz/data/entities/splitz/group_config_entity.dart';
 
 class CategoryImage extends StatelessWidget {
   const CategoryImage({

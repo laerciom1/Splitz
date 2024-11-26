@@ -4,30 +4,30 @@ import 'package:splitz/data/entities/splitz/expense_entity.dart';
 import 'package:splitz/data/models/splitwise/common/category.dart';
 import 'package:splitz/extensions/strings.dart';
 
-class GroupConfig {
+class GroupConfigEntity {
   Map<String, SplitzCategory> splitzCategories;
   Map<String, SplitzConfig> splitzConfigs;
 
-  GroupConfig({
+  GroupConfigEntity({
     required this.splitzCategories,
     required this.splitzConfigs,
   });
 
-  GroupConfig copyWith({
+  GroupConfigEntity copyWith({
     Map<String, SplitzCategory>? splitzCategories,
     Map<String, SplitzConfig>? splitzConfigs,
   }) =>
-      GroupConfig(
+      GroupConfigEntity(
         splitzCategories: splitzCategories ?? this.splitzCategories,
         splitzConfigs: splitzConfigs ?? this.splitzConfigs,
       );
 
-  factory GroupConfig.fromJson(String str) =>
-      GroupConfig.fromMap(json.decode(str));
+  factory GroupConfigEntity.fromJson(String str) =>
+      GroupConfigEntity.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory GroupConfig.fromMap(Map<dynamic, dynamic> json) => GroupConfig(
+  factory GroupConfigEntity.fromMap(Map<dynamic, dynamic> json) => GroupConfigEntity(
         splitzCategories: json["splitz_categories"] == null
             ? {}
             : Map.from(json["splitz_categories"]).map((k, v) =>
@@ -45,7 +45,7 @@ class GroupConfig {
             .map((k, v) => MapEntry<String, dynamic>(k, v.toMap())),
       };
 
-  GroupConfig withPayer({
+  GroupConfigEntity withPayer({
     List<UserExpenseEntity>? users,
     String? currentUserId,
   }) {

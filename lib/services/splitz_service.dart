@@ -3,7 +3,7 @@ import 'package:splitz/data/entities/splitz/expense_entity.dart';
 import 'package:splitz/data/entities/splitz/init_result_entity.dart';
 import 'package:splitz/data/models/splitwise/common/group.dart';
 import 'package:splitz/data/models/splitwise/get_group/get_group_response.dart';
-import 'package:splitz/data/models/splitz/group_config.dart';
+import 'package:splitz/data/entities/splitz/group_config_entity.dart';
 import 'package:splitz/data/repositories/splitwise_repo.dart';
 import 'package:splitz/data/repositories/splitz_repo.dart';
 import 'package:splitz/extensions/list.dart';
@@ -90,7 +90,7 @@ abstract class SplitzService {
     await saveAppPrefs(appPrefs);
   }
 
-  static Future<GroupConfig?> getGroupConfig(String groupId) async =>
+  static Future<GroupConfigEntity?> getGroupConfig(String groupId) async =>
       await SplitzRepository.getGroupConfig(groupId);
 
   static Future<List<ExpenseEntity>> getExpenses(
@@ -165,9 +165,9 @@ abstract class SplitzService {
     ];
   }
 
-  static Future<GroupConfig> updateSplitzGroupConfig(
+  static Future<GroupConfigEntity> updateSplitzGroupConfig(
     String groupId,
-    GroupConfig config,
+    GroupConfigEntity config,
   ) async =>
       await SplitzRepository.updateGroup(groupId, config);
 

@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:splitz/data/entities/splitz/expense_entity.dart';
-import 'package:splitz/data/models/splitz/group_config.dart';
+import 'package:splitz/data/entities/splitz/group_config_entity.dart';
 import 'package:splitz/extensions/strings.dart';
 import 'package:splitz/navigator.dart';
 import 'package:splitz/presentation/templates/base_screen.dart';
@@ -26,7 +26,7 @@ class CategoryEditorScreen extends StatefulWidget {
   });
 
   final SplitzCategory? category;
-  final GroupConfig groupConfig;
+  final GroupConfigEntity groupConfig;
 
   @override
   State<CategoryEditorScreen> createState() => _CategoryEditorScreenState();

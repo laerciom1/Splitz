@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:splitz/data/models/splitz/group_config.dart';
+import 'package:splitz/data/entities/splitz/group_config_entity.dart';
 import 'package:splitz/presentation/widgets/category_image.dart';
 
 class CategorySelector extends StatelessWidget {
