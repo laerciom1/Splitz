@@ -140,13 +140,9 @@ class SliceEditor extends StatelessWidget {
     final hintLabel = left < 0 ? 'above' : 'remaining';
     return Column(
       children: [
-        if (sum == 100.0)
-          SliceSlider(
-            onRangesChanged: setRanges,
-            initRangeValues: getRanges(),
-          ),
-        if (sum != 100.0)
-          Column(
+        SizedBox(
+          height: sum != 100.0 ? null : 0,
+          child: Column(
             children: [
               Text(
                 '${sum.toInt()}% of 100%',
@@ -159,7 +155,15 @@ class SliceEditor extends StatelessWidget {
               const SizedBox(height: 12),
             ],
           ),
+        ),
         ...getUserTiles(context),
+        SizedBox(
+          height: sum == 100.0 ? null : 0,
+          child: SliceSlider(
+            onRangesChanged: setRanges,
+            initRangeValues: getRanges(),
+          ),
+        ),
         const SizedBox(height: 24),
       ],
     );

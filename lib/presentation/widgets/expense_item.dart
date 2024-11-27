@@ -6,6 +6,7 @@ import 'package:splitz/extensions/double.dart';
 import 'package:splitz/extensions/strings.dart';
 
 const _imageHeight = 80.0;
+const _imagePadding = 8.0;
 const _badgeHeight = 24.0;
 
 class ExpenseItem extends StatelessWidget {
@@ -47,7 +48,7 @@ class ExpenseItem extends StatelessWidget {
       );
 
   Widget getInfo(String str) => Text(
-        style: const TextStyle(fontSize: 12),
+        style: const TextStyle(fontSize: 11),
         str,
         softWrap: true,
       );
@@ -56,7 +57,7 @@ class ExpenseItem extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          getInfo(expense.date.toDateFormat('dd/MM/yyyy')),
+          getInfo(expense.date.toDateFormat('dd/MM')),
           Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -74,7 +75,7 @@ class ExpenseItem extends StatelessWidget {
         ],
       );
 
-  Widget addingBadgeContent() {
+  Widget loadingBadgeContent() {
     return const Padding(
       padding: EdgeInsets.all(_badgeHeight / 4),
       child: SizedBox(
@@ -111,7 +112,7 @@ class ExpenseItem extends StatelessWidget {
       case ExpenseEntityState.example:
         return null;
       case ExpenseEntityState.loading:
-        return addingBadgeContent();
+        return loadingBadgeContent();
       case ExpenseEntityState.createError:
       case ExpenseEntityState.editError:
         return errorBadgeContent();
@@ -130,48 +131,53 @@ class ExpenseItem extends StatelessWidget {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final placeholderBgColor = Theme.of(context).hoverColor;
-    final isOnErrorState = expense.state == ExpenseEntityState.createError ||
-        expense.state == ExpenseEntityState.editError;
-    final isOnErrorOnEditState = expense.state == ExpenseEntityState.editError;
-    final dismissible =
-        expense.state == ExpenseEntityState.listed || isOnErrorState;
-    final selectable =
-        expense.state == ExpenseEntityState.listed && onSelect != null;
-    Widget widget = Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).hoverColor,
-        borderRadius:
-            dismissible ? null : const BorderRadius.all(Radius.circular(12)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 8, left: 8),
-            child: getImage(placeholderBgColor),
-          ),
-          Flexible(
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(expense.description, softWrap: true),
-                  getExpenseInfo(),
-                ],
+  Widget baseWidget({
+    required BuildContext context,
+    required bool dismissible,
+  }) =>
+      Container(
+        constraints:
+            const BoxConstraints(minHeight: _imageHeight + _imagePadding * 2),
+        decoration: BoxDecoration(
+          color: Theme.of(context).hoverColor,
+          borderRadius:
+              dismissible ? null : const BorderRadius.all(Radius.circular(12)),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(_imagePadding),
+              child: getImage(Theme.of(context).hoverColor),
+            ),
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  0,
+                  _imagePadding,
+                  _imagePadding,
+                  _imagePadding,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(expense.description, softWrap: true),
+                    getExpenseInfo(),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
 
-    if (dismissible) {
-      widget = ClipRRect(
+  Widget addDismissibleBehavior({
+    required bool isOnErrorState,
+    required bool isOnErrorOnEditState,
+    required Widget child,
+  }) =>
+      ClipRRect(
         clipBehavior: Clip.hardEdge,
         borderRadius: const BorderRadius.all(Radius.circular(12)),
         child: Dismissible(
@@ -183,7 +189,7 @@ class ExpenseItem extends StatelessWidget {
             if (isOnErrorOnEditState) return onCancel!(expense);
             return onDelete!(expense);
           },
-          // start to end
+          // start to end widget
           background: Container(
             color: isOnErrorState ? Colors.green : Colors.red,
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -204,7 +210,7 @@ class ExpenseItem extends StatelessWidget {
               ],
             ),
           ),
-          // end to start
+          // end to start widget
           secondaryBackground: Container(
             color: isOnErrorOnEditState ? Colors.orange : Colors.red,
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -225,8 +231,72 @@ class ExpenseItem extends StatelessWidget {
               ],
             ),
           ),
-          child: widget,
+          child: child,
         ),
+      );
+
+  Widget addBadgeContent({
+    required BuildContext context,
+    required Widget badgeContent,
+    required Widget child,
+  }) {
+    final badgeBorderColor = Theme.of(context).colorScheme.primary;
+    final badgeColor = Theme.of(context).primaryColor;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12.0),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          child,
+          Positioned(
+            bottom: -1 * (_badgeHeight / 2),
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: badgeBorderColor),
+                  borderRadius: BorderRadius.circular(_badgeHeight),
+                  color: badgeColor,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        minHeight: _badgeHeight,
+                        maxHeight: _badgeHeight * 2,
+                        minWidth: _badgeHeight,
+                      ),
+                      child: badgeContent,
+                    )
+                  ],
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isOnErrorState = expense.state == ExpenseEntityState.createError ||
+        expense.state == ExpenseEntityState.editError;
+    final isOnErrorOnEditState = expense.state == ExpenseEntityState.editError;
+    final dismissible =
+        expense.state == ExpenseEntityState.listed || isOnErrorState;
+    final selectable =
+        expense.state == ExpenseEntityState.listed && onSelect != null;
+
+    Widget widget = baseWidget(context: context, dismissible: dismissible);
+
+    if (dismissible) {
+      widget = addDismissibleBehavior(
+        isOnErrorState: isOnErrorState,
+        isOnErrorOnEditState: isOnErrorOnEditState,
+        child: widget,
       );
     }
 
@@ -240,43 +310,10 @@ class ExpenseItem extends StatelessWidget {
 
     final badgeContent = getBadgeContent();
     if (badgeContent != null) {
-      final badgeBorderColor = Theme.of(context).colorScheme.primary;
-      final badgeColor = Theme.of(context).primaryColor;
-      widget = Padding(
-        padding: const EdgeInsets.only(bottom: 12.0),
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            widget,
-            Positioned(
-              bottom: -1 * (_badgeHeight / 2),
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: badgeBorderColor),
-                    borderRadius: BorderRadius.circular(_badgeHeight),
-                    color: badgeColor,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(
-                          minHeight: _badgeHeight,
-                          maxHeight: _badgeHeight * 2,
-                          minWidth: _badgeHeight,
-                        ),
-                        child: badgeContent,
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            )
-          ],
-        ),
+      widget = addBadgeContent(
+        context: context,
+        badgeContent: badgeContent,
+        child: widget,
       );
     }
     return widget;

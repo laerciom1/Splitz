@@ -43,8 +43,6 @@ app.*.map.json
 /android/app/release
 .metadata
 pubspec.lock
-lib/firebase_options.dart
-firebase.json
 .figerprints
 
 android/gradle-wrapper.jar
@@ -54,16 +52,19 @@ android/gradlew
 android/gradlew.bat
 android/local.properties
 android/GeneratedPluginRegistrant.java
-android/key.properties
-android/**/*.keystore
-android/**/*.jks
-android/app/google-services.json
 android/.idea/*
-config/
 
 # FVM Version Cache
 .fvm/
-ios/Runner/GoogleService-Info.plist
-ios/Runner/Info.plist
 .vscode/settings.json
 .fvmrc
+
+firebase.json
+config/
+lib/firebase_options.dart
+android/**/*.jks
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+ios/Runner/Info.plist
+
+splitz_private/
