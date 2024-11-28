@@ -8,7 +8,6 @@ import 'package:splitz/navigator.dart';
 import 'package:splitz/presentation/screens/expense_editor.dart';
 import 'package:splitz/presentation/screens/group_editor.dart';
 import 'package:splitz/presentation/screens/groups_list.dart';
-import 'package:splitz/presentation/widgets/drawer.dart';
 import 'package:splitz/presentation/widgets/fab_add_split.dart';
 import 'package:splitz/presentation/widgets/expense_item.dart';
 import 'package:splitz/presentation/widgets/feedback_message.dart';
@@ -313,7 +312,6 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
       onPopInvokedWithResult: (_, __) => onPop(),
       child: Scaffold(
         key: _scaffoldKey,
-        drawer: SplitzDrawer(),
         floatingActionButton: getFAB(),
         body: RefreshIndicator(
           onRefresh: () async => unawaited(_lastFunc?.call()),

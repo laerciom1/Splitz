@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:splitz/data/entities/external/group_entity.dart';
+import 'package:splitz/presentation/widgets/context_menu.dart';
 
 const _avatarSize = 80.0;
 const _avatarLeftPadding = 60.0;
@@ -77,7 +78,8 @@ class ExpensesPageHeader extends SliverPersistentHeaderDelegate {
                 ),
               ),
             ),
-            Text(text, style: const TextStyle(fontSize: 16, color: Colors.white)),
+            Text(text,
+                style: const TextStyle(fontSize: 16, color: Colors.white)),
           ],
         ),
       );
@@ -89,35 +91,16 @@ class ExpensesPageHeader extends SliverPersistentHeaderDelegate {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            IconButton(
-              iconSize: _actionsIconSize,
-              onPressed: () => scaffold.currentState!.openDrawer(),
-              icon: const Icon(Icons.menu),
-            ),
+            ContextMenu.primary,
             if (popOverText != null)
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: MenuAnchor(
-                  builder: (context, controller, child) => IconButton(
-                    iconSize: _actionsIconSize,
-                    onPressed: () {
-                      if (controller.isOpen) {
-                        controller.close();
-                      } else {
-                        controller.open();
-                      }
-                    },
-                    icon: const Icon(Icons.info_outline),
-                  ),
-                  menuChildren: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8.0,
-                      ),
-                      child: Text(popOverText!),
-                    )
-                  ],
-                ),
+              ContextMenu(
+                direction: TextDirection.rtl,
+                icon: Icons.info_outline,
+                children: [
+                  ContextMenuOption(
+                    child: Text(popOverText!),
+                  )
+                ],
               ),
           ],
         ),
@@ -154,7 +137,7 @@ class ExpensesPageHeader extends SliverPersistentHeaderDelegate {
                   getGroupInfo(
                     offset: avatarOffset,
                     opacity: secondScale,
-                    avatarBgColor: Theme.of(context).primaryColor,
+                    avatarBgColor: Theme.of(context).colorScheme.surface,
                     text: groupInfo.name,
                     imageUrl: groupInfo.imageUrl,
                   ),

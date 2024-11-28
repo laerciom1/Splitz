@@ -5,15 +5,13 @@ This app is a customizable experience for the splitwise services, which aims to 
 I made it with the best experience for me in mind, I'll add some gifs here in the future (:
 
 ### Next steps:
-- [ ] Export data from the bills of the month
+- [ ] Expense Editor - Undo delete/edit
 - [ ] Category Editor - Delete/Edit/Reorder Category
+- [ ] Export data from the bills of the month
 
 ### Refactors
 
 ### Features
-- [ ] Order categories of a group preferences
-- [ ] Permission to edit group preferences
-- [ ] Expense Editor - Undo (delete/edit)
 - [ ] Filters:
   - [ ] Category
   - [ ] Date:
@@ -24,12 +22,10 @@ I made it with the best experience for me in mind, I'll add some gifs here in th
   - [ ] Edit the category of selected expenses
   - [ ] Edit split config of selected expenses
 - [ ] Load more on Splits list
-- [ ] Improve Splitz Login
-  - [ ] Add other options to login
+- [ ] Add other options to Splitz Login
+- [ ] Permission to edit group preferences
 
 ### Design
-- [ ] Improve drawer layour
-- [ ] Add logo to SplitzAppBar
 - [ ] Improve Splitz Login
   - [ ] Make a decent screen
   - [ ] Use a custom buttom to login with Google option
@@ -40,6 +36,8 @@ I made it with the best experience for me in mind, I'll add some gifs here in th
 - [ ] Add animations
 
 ### Done
+- [x] Add logo to SplitzAppBar
+- [x] Improve drawer layout (turns it into a MenuAnchor for now)
 - [x] Review on model classes
   - [x] remove unused code
   - [x] create entities
@@ -63,4 +61,4 @@ I made it with the best experience for me in mind, I'll add some gifs here in th
 
 ### Mandatory to go live (in the long term future, maybe?)
 - [ ] Onboarding flow (tutorial)
-- [ ] Encrypt data on Firebase 
+- [ ] Encrypt data on Firebase

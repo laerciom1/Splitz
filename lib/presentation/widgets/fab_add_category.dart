@@ -25,7 +25,7 @@ class AddCategoryFAB extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final backgroundColor = Theme.of(context).primaryColor;
+    final backgroundColor = Theme.of(context).colorScheme.surface;
     final borderColor = Theme.of(context).colorScheme.primary;
     return SpeedDial(
       spaceBetweenChildren: 8,

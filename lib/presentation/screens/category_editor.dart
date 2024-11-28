@@ -180,15 +180,15 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
     AppNavigator.pop(category);
   }
 
-  Widget? getHeader(BuildContext ctx) {
+  Widget? getHeader(BuildContext context) {
     if (_isLoading || _feedbackMessage.isNotEmpty) {
       return null;
     }
 
-    return getCategoryEditorHeader(ctx);
+    return getCategoryEditorHeader(context);
   }
 
-  Widget getCategoryEditorHeader(BuildContext ctx) => Column(
+  Widget getCategoryEditorHeader(BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
@@ -208,7 +208,7 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
             ),
           ),
           const SizedBox(height: 24),
-          SplitzDivider(color: Theme.of(ctx).colorScheme.primary)
+          SplitzDivider(color: Theme.of(context).colorScheme.primary)
         ],
       );
 
@@ -292,6 +292,7 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
   @override
   Widget build(BuildContext ctx) {
     return BaseScreen(
+      appBarCenterText: 'Creating category',
       scrollController: _bodyScrollController,
       onRefresh: initScreen,
       topWidget: getHeader(context),

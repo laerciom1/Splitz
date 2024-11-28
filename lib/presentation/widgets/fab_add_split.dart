@@ -19,8 +19,8 @@ class AddSplitFAB extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final backgroundColor = Theme.of(context).primaryColor;
     final borderColor = Theme.of(context).colorScheme.primary;
+    final backgroundColor = Theme.of(context).colorScheme.surface;
     return SpeedDial(
       spaceBetweenChildren: 8,
       spacing: 4,

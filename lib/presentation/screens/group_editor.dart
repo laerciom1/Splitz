@@ -10,6 +10,7 @@ import 'package:splitz/navigator.dart';
 import 'package:splitz/presentation/screens/category_editor.dart';
 import 'package:splitz/presentation/screens/expenses_list.dart';
 import 'package:splitz/presentation/templates/base_screen.dart';
+import 'package:splitz/presentation/widgets/context_menu.dart';
 import 'package:splitz/presentation/widgets/fab_add_category.dart';
 import 'package:splitz/presentation/widgets/category_item.dart';
 import 'package:splitz/presentation/widgets/feedback_message.dart';
@@ -33,6 +34,7 @@ class GroupEditorScreen extends StatefulWidget {
 class _GroupEditorScreenState extends State<GroupEditorScreen>
     with WidgetsBindingObserver {
   GroupConfigEntity? _groupConfig;
+  String _screenTitle = '';
   String _feedbackMessage = '';
   bool _isLoading = true;
   bool _showWaitingTimer = false;
@@ -70,11 +72,13 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
   void setGroupConfig({
     required GroupConfigEntity groupConfig,
     bool? showWaitingTimer,
+    String? screenTitle,
   }) {
     setState(() {
       _isLoading = false;
       _groupConfig = groupConfig;
       _feedbackMessage = '';
+      _screenTitle = screenTitle ?? _screenTitle;
       if (!_controllersWasInitialized) {
         initializeFocusAndControllers(groupConfig.splitzConfigs);
       }
@@ -98,6 +102,8 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
         ),
       );
       setGroupConfig(
+        screenTitle:
+            '${splitzGroupConfig != null ? 'Editing' : 'Creating'} group preferences',
         groupConfig: GroupConfigEntity(
           splitzCategories: splitzGroupConfig?.splitzCategories ?? {},
           splitzConfigs: splitzConfigs,
@@ -209,7 +215,7 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
     return getGroupEditorHeader(ctx);
   }
 
-  Widget getGroupEditorHeader(BuildContext ctx) => Column(
+  Widget getGroupEditorHeader(BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
@@ -245,7 +251,7 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
             ),
           ),
           const SizedBox(height: 24),
-          SplitzDivider(color: Theme.of(ctx).colorScheme.primary)
+          SplitzDivider(color: Theme.of(context).colorScheme.primary)
         ],
       );
 
@@ -301,6 +307,8 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
   @override
   Widget build(BuildContext context) {
     return BaseScreen(
+      appBarCenterText: _screenTitle,
+      appBarLeading: ContextMenu.primary,
       onPop: (_, __) async => finishEditing(),
       onRefresh: initScreen,
       floatingActionButton: getFAB(),

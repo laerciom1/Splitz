@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg enable-background="new 0 0 1280 1280" version="1.1" viewBox="0 0 1280 1280" xml:space="preserve"
+	xmlns="http://www.w3.org/2000/svg">
+	<path fill="#FFFFFF" stroke="#000000" stroke-width="7" stroke-miterlimit="10"
+		d="m591.92 703.45-194.07-18.44-2.14 3.17 10.47 31.94c27.84-0.6 58.82-0.02 92.35 2.57 35.85 2.77 68.43 7.36 97.25 12.66-1.3-10.64-2.58-21.27-3.86-31.9z" />
+	<polygon fill="#FFFFFF" stroke="#000000" stroke-width="7" stroke-miterlimit="10"
+		points="747.62 357.84 766.62 319.84 718.62 298.84 702.13 344.36" />
+	<polygon fill="#FFFFFF" stroke="#000000" stroke-width="7" stroke-miterlimit="10"
+		points="734.62 398.84 747.62 357.84 702.62 344.84 684.88 391.22" />
+	<polygon fill="#FFFFFF" stroke="#000000" stroke-width="7" stroke-miterlimit="10"
+		points="718.62 436.84 734.62 398.84 684.62 390.84 671.51 427.49" />
+	<polygon fill="#FFFFFF" stroke="#000000" stroke-width="7" stroke-miterlimit="10"
+		points="702.62 481.84 718.62 436.84 671.62 427.84 656.7 467.71" />
+	<polygon fill="#FFFFFF" stroke="#000000" stroke-width="7" stroke-miterlimit="10"
+		points="696.62 511.84 702.62 476.84 656.62 467.84 647.62 499.84" />
+	<polygon fill="#FFFFFF" stroke="#000000" stroke-width="7" stroke-miterlimit="10"
+		points="695.48 535.05 695.62 511.84 647.62 499.84 647.12 527.21" />
+	<line fill="#FFFFFF" stroke="#000000" stroke-width="7" stroke-miterlimit="10" x1="523.62" x2="483.62" y1="687.56"
+		y2="685.84" />
+	<path fill="#FFFFFF" stroke="#000000" stroke-width="7" stroke-miterlimit="10" d="m520.62 733.84" />
+	<path fill="#FFFFFF" stroke="#000000" stroke-width="7" stroke-miterlimit="10" d="m836.62 652.84" />
+	<path fill="#FFFFFF" stroke="#000000" stroke-width="7" stroke-miterlimit="10" d="m836.62 652.84" />
+	<polygon fill="#FFFFFF" stroke="#000000" stroke-width="7" stroke-miterlimit="10"
+		points="766.62 319.84 783.18 277.35 751.21 227.51 718.62 298.84" />
+	<polygon fill="#FFFFFF" stroke="#000000" stroke-width="7" stroke-miterlimit="10"
+		points="854.62 552.84 882.62 599.84 487.62 1045.8" />
+	<polygon fill="#FFFFFF" stroke="#000000" stroke-width="7" stroke-miterlimit="10"
+		points="844.21 642.69 814.36 594.5 776.27 646.95 806 685.84" />
+	<polygon fill="#FFFFFF" stroke="#000000" stroke-width="7" stroke-miterlimit="10"
+		points="773.59 722.43 745.24 689.66 776.62 646.84 805.62 685.84" />
+	<polygon fill="#FFFFFF" stroke="#000000" stroke-width="7" stroke-miterlimit="10"
+		points="738.04 762.57 771.9 720.48 742.62 685.84 705.62 737.84" />
+	<polygon fill="#FFFFFF" stroke="#000000" stroke-width="7" stroke-miterlimit="10"
+		points="705.62 799.18 736.28 761.23 705.62 737.84 680.18 779.23" />
+	<polygon fill="#FFFFFF" stroke="#000000" stroke-width="7" stroke-miterlimit="10"
+		points="674.49 834.34 704.22 798.08 680.62 775.84 648.72 822.55" />
+	<polygon fill="#FFFFFF" stroke="#000000" stroke-width="7" stroke-miterlimit="10"
+		points="630.92 883.53 674.62 833.84 648.62 819.84 606.72 880.37" />
+	<polygon fill="#FFFFFF" stroke="#000000" stroke-width="7" stroke-miterlimit="10"
+		points="455.56 691.09 465.12 718.94 435.14 718.86 423.71 688.01" />
+	<polygon fill="#FFFFFF" stroke="#000000" stroke-width="7" stroke-miterlimit="10"
+		points="485.34 691.06 495.62 720.63 465.12 719.54 453.12 690.01" />
+	<polygon fill="#FFFFFF" stroke="#000000" stroke-width="7" stroke-miterlimit="10"
+		points="517.16 692.89 527.12 722.34 496.12 720.65 485.12 691.01" />
+	<path fill="#FFFFFF" stroke="#000000" stroke-width="7" stroke-miterlimit="10"
+		d="m558.84 727.3c-0.22-2.74-9.22-31.3-9.22-31.3h-32l9 26.97 32.22 4.33z" />
+	<path fill="#FFFFFF" stroke="#000000" stroke-width="16" stroke-miterlimit="10"
+		d="m827.41 547.53c-54.17-5.37-108.4-10.1-162.57-15.45-23.03-2.28-27.95-10.45-20.03-32.02 25.93-70.7 52.15-141.3 77.95-212.04 4.6-12.62 7.76-25.77 11.58-38.67-62.73 63.65-130.34 140.26-197.23 231-51.81 70.28-95.16 138.18-131.41 201.17 51.6 4.17 91.2 6.88 115.99 8.49 39.69 2.58 69.19 4.14 76.18 20.84 3.03 7.25 0.85 14.5-3.38 25.39-9.84 25.3-19.46 50.69-29.48 75.92-21.18 53.33-42.84 106.47-63.74 159.91-8.41 21.5-16.31 43.2-24.21 64.91l7.42 5.67c95.4-125.85 163.05-216.98 176.25-235.51 4.45-6.26 27.78-39.64 33.01-47.34 4.32-6.37 4.83-7.27 10.07-14.5 43.17-59.46 89.24-117 133.15-175.98 3.42-4.6 4.88-10.66 7.25-16.04-5.59-1.99-11.06-5.18-16.8-5.75z" />
+</svg>

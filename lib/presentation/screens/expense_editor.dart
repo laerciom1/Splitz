@@ -38,6 +38,7 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
     with WidgetsBindingObserver {
   Map<String, SplitzConfig>? _splitzConfigs;
   ExpenseEntity? _expense;
+  String _screenTitle = '';
 
   late final List<TextEditingController> _controllers;
   late final TextEditingController _descriptionController;
@@ -73,11 +74,13 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
           imageUrl: widget.category.imageUrl,
           splitzConfigs: _splitzConfigs!,
         );
+        _screenTitle = 'Creating expense';
       } else {
         _expense = widget.expense!;
         _splitzConfigs = widget.groupConfig
             .withPayer(users: widget.expense!.users)
             .splitzConfigs;
+        _screenTitle = 'Editing expense';
       }
 
       initializeFocusAndControllers(_splitzConfigs!);
@@ -160,7 +163,7 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
 
   void save() => AppNavigator.pop(_expense);
 
-  Widget getExpenseEditorHeader(BuildContext ctx) => Column(
+  Widget getExpenseEditorHeader(BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (_expense == null)
@@ -178,7 +181,7 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
               child: ExpenseItem(expense: _expense!),
             ),
             const SizedBox(height: 24),
-            SplitzDivider(color: Theme.of(ctx).colorScheme.primary)
+            SplitzDivider(color: Theme.of(context).colorScheme.primary)
           ]
         ],
       );
@@ -261,6 +264,7 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
   @override
   Widget build(BuildContext ctx) {
     return BaseScreen(
+      appBarCenterText: _screenTitle,
       topWidget: getExpenseEditorHeader(context),
       bottomWidget: getExpenseEditorBottom(context),
       child: getExpenseEditorBody(),

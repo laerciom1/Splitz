@@ -7,6 +7,7 @@ import 'package:splitz/extensions/strings.dart';
 import 'package:splitz/navigator.dart';
 import 'package:splitz/presentation/screens/expenses_list.dart';
 import 'package:splitz/presentation/templates/base_screen.dart';
+import 'package:splitz/presentation/widgets/context_menu.dart';
 import 'package:splitz/presentation/widgets/feedback_message.dart';
 import 'package:splitz/presentation/widgets/group_item.dart';
 import 'package:splitz/presentation/widgets/loading.dart';
@@ -93,13 +94,6 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
   Widget getGroups() => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.all(12.0),
-            child: Text(
-              'Select a group:',
-              style: TextStyle(fontSize: 16),
-            ),
-          ),
           ...groups!.map<Widget>((e) {
             return GroupItem(group: e, onTap: onSelectGroup);
           }).intersperse(const SizedBox(height: 2))
@@ -109,6 +103,14 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
   @override
   Widget build(BuildContext context) {
     return BaseScreen(
+      appBarCenterText: 'Groups',
+      appBarLeading: ContextMenu(
+        direction: TextDirection.ltr,
+        icon: Icons.menu,
+        children: [
+          ContextMenuOption.logout,
+        ],
+      ),
       onPop: (_, __) async {},
       onRefresh: initScreen,
       child: getBody(),

@@ -139,7 +139,7 @@ class ExpenseItem extends StatelessWidget {
         constraints:
             const BoxConstraints(minHeight: _imageHeight + _imagePadding * 2),
         decoration: BoxDecoration(
-          color: Theme.of(context).hoverColor,
+          color: Theme.of(context).colorScheme.surfaceBright,
           borderRadius:
               dismissible ? null : const BorderRadius.all(Radius.circular(12)),
         ),
@@ -148,7 +148,7 @@ class ExpenseItem extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.all(_imagePadding),
-              child: getImage(Theme.of(context).hoverColor),
+              child: getImage(Theme.of(context).colorScheme.surfaceBright),
             ),
             Flexible(
               child: Padding(
@@ -241,7 +241,7 @@ class ExpenseItem extends StatelessWidget {
     required Widget child,
   }) {
     final badgeBorderColor = Theme.of(context).colorScheme.primary;
-    final badgeColor = Theme.of(context).primaryColor;
+    final badgeColor = Theme.of(context).colorScheme.surface;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: Stack(

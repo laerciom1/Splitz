@@ -63,8 +63,7 @@ class _MainAppState extends State<MainApp> {
 
   @override
   Widget build(BuildContext context) {
-    TextTheme textTheme =
-        createTextTheme(context, "Roboto Slab", "Roboto Serif");
+    TextTheme textTheme = createTextTheme(context, "Lexend", "Lexend");
     MaterialTheme theme = MaterialTheme(textTheme);
     return MaterialApp(
       navigatorKey: AppNavigator.navigator,

@@ -58,8 +58,8 @@ class SliceEditor extends StatelessWidget {
     onEditConfigs(splitzConfigs);
   }
 
-  Widget getUserInfo(int index, SplitzConfig config, BuildContext ctx) {
-    final inverseSurface = Theme.of(ctx).colorScheme.inverseSurface;
+  Widget getUserInfo(int index, SplitzConfig config, BuildContext context) {
+    final inverseSurface = Theme.of(context).colorScheme.inverseSurface;
     return Row(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
