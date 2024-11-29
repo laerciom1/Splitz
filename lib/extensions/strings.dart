@@ -9,4 +9,9 @@ extension StringX on String? {
         'Stacktrace:\n'
         '${s.toString()}';
   }
+
+  String get lastChar {
+    if (isNullOrEmpty) return '';
+    return this!.substring(this!.length - 1);
+  }
 }

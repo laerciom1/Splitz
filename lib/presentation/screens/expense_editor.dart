@@ -15,6 +15,8 @@ import 'package:splitz/presentation/widgets/splitz_divider.dart';
 import 'package:splitz/services/splitz_service.dart';
 
 const _initCost = '0.00';
+const _fieldTitleVPadding = 12.0;
+const _fieldTitleHPadding = 16.0;
 
 class ExpenseEditorScreen extends StatefulWidget {
   const ExpenseEditorScreen({
@@ -193,8 +195,11 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
           children: <Widget>[
             if (_expense != null) ...[
               const Padding(
-                padding: EdgeInsets.all(24.0),
-                child: Text('Type a description:'),
+                padding: EdgeInsets.symmetric(
+                  horizontal: _fieldTitleHPadding,
+                  vertical: _fieldTitleVPadding,
+                ),
+                child: Text('Description:'),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -205,8 +210,11 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
                 ),
               ),
               const Padding(
-                padding: EdgeInsets.all(24.0),
-                child: Text('Type a cost:'),
+                padding: EdgeInsets.symmetric(
+                  horizontal: _fieldTitleHPadding,
+                  vertical: _fieldTitleVPadding,
+                ),
+                child: Text('Cost:'),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -225,18 +233,26 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
                       turnOffGrouping: true,
                     ),
                     TextInputFormatter.withFunction(
-                      (_, newValue) => TextEditingValue(
-                        text: newValue.text.isNotEmpty
-                            ? newValue.text
-                            : _initCost,
-                      ),
+                      (_, newValue) {
+                        if (newValue.text.isNullOrEmpty) {
+                          return const TextEditingValue(text: _initCost);
+                        }
+                        final parts = newValue.text.split('.');
+                        final intPart = int.parse(parts[0]);
+                        final inputedDigit = int.parse(parts[1].lastChar);
+                        final newText = '${intPart + inputedDigit}.00';
+                        return TextEditingValue(text: newText);
+                      },
                     )
                   ],
                 ),
               ),
               const Padding(
-                padding: EdgeInsets.all(24.0),
-                child: Text('Select who paid this time:'),
+                padding: EdgeInsets.symmetric(
+                  horizontal: _fieldTitleHPadding,
+                  vertical: _fieldTitleVPadding,
+                ),
+                child: Text('Who paid this time?'),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
