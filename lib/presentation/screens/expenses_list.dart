@@ -65,19 +65,15 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
     return idx;
   }
 
-  void updateExpenses(List<ExpenseEntity> expenses) => setState(() {
-        _expenses = expenses;
-      });
-
   void updateExpense(int idx, ExpenseEntity expense) {
     final newList = [..._expenses!];
     newList[idx] = expense;
-    updateExpenses(newList);
+    setData(expenses: newList);
   }
 
   void deleteExpense(int idx) {
     final newList = [..._expenses!]..removeAt(idx);
-    updateExpenses(newList);
+    setData(expenses: newList);
   }
 
   Future<void> initScreen() async {
@@ -129,8 +125,11 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
       ),
     );
     if (expense == null) return;
-    updateExpenses(
-      [expense.copyWith(state: ExpenseEntityState.loading), ..._expenses!],
+    setData(
+      expenses: [
+        expense.copyWith(state: ExpenseEntityState.loading),
+        ..._expenses!
+      ],
     );
     await onRetryCreate(expense, 0);
   }
