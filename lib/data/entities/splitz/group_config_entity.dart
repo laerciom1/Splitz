@@ -18,8 +18,8 @@ class GroupConfigEntity {
     Map<String, SplitzConfig>? splitzConfigs,
   }) =>
       GroupConfigEntity(
-        splitzCategories: splitzCategories ?? this.splitzCategories,
-        splitzConfigs: splitzConfigs ?? this.splitzConfigs,
+        splitzCategories: splitzCategories ?? {...this.splitzCategories},
+        splitzConfigs: splitzConfigs ?? {...this.splitzConfigs},
       );
 
   factory GroupConfigEntity.fromJson(String str) =>
@@ -57,7 +57,7 @@ class GroupConfigEntity {
           e.paidShare.isNotNullNorEmpty && double.parse(e.paidShare!) != 0.0);
       payerId = payerUser?.userId ?? payerId;
     }
-    var splitzConfigs = this.splitzConfigs;
+    var splitzConfigs = {...this.splitzConfigs};
     splitzConfigs['$payerId'] =
         splitzConfigs['$payerId']!.copyWith(payer: true);
     return copyWith(splitzConfigs: splitzConfigs);
