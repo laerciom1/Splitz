@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:flutter/material.dart';
 import 'package:splitz/data/entities/external/expense_entity.dart';
 import 'package:splitz/data/entities/splitz/export_entity.dart';
@@ -71,12 +69,14 @@ class _ExpensesExportStateScreen extends State<ExpensesExportScreen> {
     );
   }
 
-  Future<void> getMonthResume(DateTime date) async {
-    _lastFunc = () => getMonthResume(date);
+  Future<void> getMonthResume() async {
+    _lastFunc = getMonthResume;
     try {
-      setData(selectedMonth: date, isLoading: true);
-      final export =
-          await SplitzService.getExportExpenses(widget.groupId, date);
+      setData(isLoading: true);
+      final export = await SplitzService.getExportExpenses(
+        widget.groupId,
+        _selectedMonth!,
+      );
       setData(export: export);
     } catch (e, s) {
       const message =
@@ -123,7 +123,7 @@ class _ExpensesExportStateScreen extends State<ExpensesExportScreen> {
     return getExport();
   }
 
-  Widget getEmptyState() => Text('Select a month');
+  Widget getEmptyState() => const Text('Select a month');
 
   Widget getExportExpense(ExpenseEntity e) => Row(
         children: [
@@ -131,7 +131,7 @@ class _ExpensesExportStateScreen extends State<ExpensesExportScreen> {
             e.date.toDateFormat('dd/MM'),
             style: _expenseTextStyle,
           ),
-          SizedBox(width: _spacing / 4),
+          const SizedBox(width: _spacing / 4),
           Text(
             e.description,
             style: _expenseTextStyle,
@@ -155,7 +155,7 @@ class _ExpensesExportStateScreen extends State<ExpensesExportScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('${category.prefix}: ${category.total.toBRL()}'),
-        SizedBox(height: _spacing * (1 / 3)),
+        const SizedBox(height: _spacing * (1 / 3)),
         Row(
           children: [
             Expanded(
@@ -186,7 +186,7 @@ class _ExpensesExportStateScreen extends State<ExpensesExportScreen> {
           children: [
             ..._export!.categories
                 .map<Widget>(getExportCategory)
-                .intersperse(SizedBox(height: _spacing))
+                .intersperse(const SizedBox(height: _spacing))
           ],
         ),
       );
@@ -220,23 +220,23 @@ class _ExpensesExportStateScreen extends State<ExpensesExportScreen> {
         width: double.infinity,
         decoration: BoxDecoration(
           color: ThemeColors.surfaceBright,
-          borderRadius: BorderRadius.only(
+          borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(_spacing),
             topRight: Radius.circular(_spacing),
           ),
         ),
         child: Padding(
-          padding: EdgeInsets.fromLTRB(
+          padding: const EdgeInsets.fromLTRB(
             _spacing * (2 / 3),
             _spacing * (2 / 3),
             _spacing * (2 / 3),
             0,
           ),
           child: Container(
-            padding: EdgeInsets.all(_spacing / 3),
+            padding: const EdgeInsets.all(_spacing / 3),
             decoration: BoxDecoration(
               color: ThemeColors.surface,
-              borderRadius: BorderRadius.only(
+              borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(_spacing / 2),
                 topRight: Radius.circular(_spacing / 2),
               ),
@@ -256,7 +256,8 @@ class _ExpensesExportStateScreen extends State<ExpensesExportScreen> {
           text: e.toDateFormat('MMM/yy'),
           onPressed: () {
             AppNavigator.pop();
-            getMonthResume(e);
+            setData(selectedMonth: e);
+            getMonthResume();
           },
         ),
       );
