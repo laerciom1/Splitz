@@ -123,7 +123,13 @@ class _ExpensesExportStateScreen extends State<ExpensesExportScreen> {
     return getExport();
   }
 
-  Widget getEmptyState() => const Text('Select a month');
+  Widget getEmptyState() => Center(
+        child: Icon(
+          Icons.calendar_month,
+          size: 128.0,
+          color: ThemeColors.surfaceContainerLow,
+        ),
+      );
 
   Widget getExportExpense(ExpenseEntity e) => Row(
         children: [
@@ -182,8 +188,12 @@ class _ExpensesExportStateScreen extends State<ExpensesExportScreen> {
           horizontal: _spacing / 2,
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
+            Text(
+              _selectedMonth!.toDateFormat('MMM/yy'),
+              style: const TextStyle(fontSize: 20),
+            ),
             ..._export!.categories
                 .map<Widget>(getExportCategory)
                 .intersperse(const SizedBox(height: _spacing))
@@ -196,17 +206,11 @@ class _ExpensesExportStateScreen extends State<ExpensesExportScreen> {
         text: 'Export',
         enabled: _export != null,
         leading: PrimaryButton(
-          text: selectButtonText,
+          text: 'Select a month',
           onPressed: openMonthSelector,
           enabled: true,
         ),
       );
-
-  String get selectButtonText {
-    return _selectedMonth == null
-        ? 'Select a month'
-        : _selectedMonth.toDateFormat('MMM/yy');
-  }
 
   void openMonthSelector() {
     showModalBottomSheet<void>(
@@ -232,20 +236,8 @@ class _ExpensesExportStateScreen extends State<ExpensesExportScreen> {
             _spacing * (2 / 3),
             0,
           ),
-          child: Container(
-            padding: const EdgeInsets.all(_spacing / 3),
-            decoration: BoxDecoration(
-              color: ThemeColors.surface,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(_spacing / 2),
-                topRight: Radius.circular(_spacing / 2),
-              ),
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                children: _monthOptions.map(getMonthOption).toList(),
-              ),
-            ),
+          child: SingleChildScrollView(
+            child: Column(children: [..._monthOptions.map(getMonthOption)]),
           ),
         ),
       );

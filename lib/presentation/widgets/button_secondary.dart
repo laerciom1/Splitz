@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:splitz/presentation/theme/util.dart';
 
 class SecondaryButton extends StatelessWidget {
   final String text;
@@ -15,6 +16,9 @@ class SecondaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
+      style: ButtonStyle(
+        backgroundColor: WidgetStatePropertyAll(ThemeColors.surface),
+      ),
       onPressed: enabled ? onPressed : null,
       child: Text(text),
     );

@@ -66,7 +66,10 @@ class ContextMenuOption extends StatelessWidget {
       tempChild = InkWell(
         onTap: onTap,
         borderRadius: const BorderRadius.all(Radius.circular(12)),
-        child: tempChild,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: tempChild,
+        ),
       );
     }
     return Padding(

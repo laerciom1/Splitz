@@ -29,6 +29,8 @@ abstract class ThemeColors {
       Theme.of(AppNavigator.context).colorScheme.surfaceBright;
   static Color get inverseSurface =>
       Theme.of(AppNavigator.context).colorScheme.inverseSurface;
+  static Color get surfaceContainerLow =>
+      Theme.of(AppNavigator.context).colorScheme.surfaceContainerLow;
   static Color get error =>
       Theme.of(AppNavigator.context).colorScheme.error;
 }
