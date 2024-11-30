@@ -64,7 +64,7 @@ firebase.json
 config/
 lib/firebase_options.dart
 lib/gsheets_credentials.dart
-android/**/*.jks
 android/app/google-services.json
+android/app/key.jks
 ios/Runner/GoogleService-Info.plist
 ios/Runner/Info.plist
