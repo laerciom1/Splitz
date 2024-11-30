@@ -5,7 +5,6 @@ This app is a customizable experience for the splitwise services, which aims to 
 I made it with the best experience for me in mind, I'll add some gifs here in the future (:
 
 ### Next steps:
-- [ ] Export data from the bills of the month
 - [ ] Expense Editor - Undo delete/edit
 - [ ] Category Editor - Delete/Edit/Reorder Category
 
@@ -36,6 +35,7 @@ I made it with the best experience for me in mind, I'll add some gifs here in th
 - [ ] Add animations
 
 ### Done
+- [x] Export data from the bills of the month
 - [x] Add logo to SplitzAppBar
 - [x] Improve drawer layout (turns it into a MenuAnchor for now)
 - [x] Review on model classes
