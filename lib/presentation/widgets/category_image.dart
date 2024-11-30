@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:splitz/data/entities/splitz/group_config_entity.dart';
+import 'package:splitz/presentation/theme/util.dart';
 
 class CategoryImage extends StatelessWidget {
   const CategoryImage({
@@ -25,7 +26,7 @@ class CategoryImage extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(6),
           border: isSelected
-              ? Border.all(color: Theme.of(context).colorScheme.primary)
+              ? Border.all(color: ThemeColors.primary)
               : null,
         ),
         child: Padding(

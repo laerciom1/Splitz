@@ -3,6 +3,7 @@ import 'package:splitz/data/entities/splitz/group_config_entity.dart';
 import 'package:splitz/extensions/list.dart';
 import 'package:splitz/extensions/strings.dart';
 import 'package:splitz/presentation/theme/slice_colors.dart';
+import 'package:splitz/presentation/theme/util.dart';
 import 'package:splitz/presentation/widgets/circle_avatar.dart';
 import 'package:splitz/presentation/widgets/field_percentage.dart';
 import 'package:splitz/presentation/widgets/slice_badge.dart';
@@ -59,14 +60,13 @@ class SliceEditor extends StatelessWidget {
   }
 
   Widget getUserInfo(int index, SplitzConfig config, BuildContext context) {
-    final inverseSurface = Theme.of(context).colorScheme.inverseSurface;
     return Row(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         PercentageField(
           text: config.slice.toString(),
-          textColor: inverseSurface,
+          textColor: ThemeColors.inverseSurface,
           backgroundColor: sliceColors[index],
           focusNode: focusNodes[index],
           controller: controllers[index],
@@ -100,7 +100,7 @@ class SliceEditor extends StatelessWidget {
                 ? BoxDecoration(
                     borderRadius: BorderRadius.circular(_padding * 2),
                     border: Border.all(
-                      color: Theme.of(context).colorScheme.primary,
+                      color: ThemeColors.primary,
                       strokeAlign: BorderSide.strokeAlignOutside,
                     ),
                   )
@@ -136,7 +136,7 @@ class SliceEditor extends StatelessWidget {
     final ranges = getRanges();
     final sum = ranges.fold(0.0, (accu, curr) => accu + curr);
     final left = 100.0 - sum;
-    final hintColor = left < 0 ? Theme.of(context).colorScheme.error : null;
+    final hintColor = left < 0 ? ThemeColors.error : null;
     final hintLabel = left < 0 ? 'above' : 'remaining';
     return Column(
       children: [

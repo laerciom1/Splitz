@@ -10,6 +10,7 @@ import 'package:splitz/navigator.dart';
 import 'package:splitz/presentation/screens/category_editor.dart';
 import 'package:splitz/presentation/screens/expenses_list.dart';
 import 'package:splitz/presentation/templates/base_screen.dart';
+import 'package:splitz/presentation/theme/util.dart';
 import 'package:splitz/presentation/widgets/context_menu.dart';
 import 'package:splitz/presentation/widgets/fab_add_category.dart';
 import 'package:splitz/presentation/widgets/category_item.dart';
@@ -112,7 +113,7 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
     } catch (e, s) {
       const message =
           'Something went wrong retrieving your group information.\n'
-          'You can drag down to refresh.';
+          'You can drag down to retry.';
       return setFeedback(message.addErrorDescription(e, s));
     }
   }
@@ -207,6 +208,19 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
   void finishEditing() =>
       AppNavigator.replaceAll([ExpensesListScreen(groupId: widget.groupId)]);
 
+  @override
+  Widget build(BuildContext context) {
+    return BaseScreen(
+      appBarCenterText: _screenTitle,
+      appBarLeading: ContextMenu.primary,
+      onPop: (_, __) async => finishEditing(),
+      onRefresh: initScreen,
+      floatingActionButton: getFAB(),
+      topWidget: getHeader(context),
+      child: getBody(),
+    );
+  }
+
   Widget? getHeader(BuildContext ctx) {
     if (_isLoading || _feedbackMessage.isNotEmpty) {
       return null;
@@ -251,7 +265,7 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
             ),
           ),
           const SizedBox(height: 24),
-          SplitzDivider(color: Theme.of(context).colorScheme.primary)
+          SplitzDivider(color: ThemeColors.primary)
         ],
       );
 
@@ -301,19 +315,6 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
       enableActions: !_showWaitingTimer,
       onAdd: addCategory,
       onFinish: finishEditing,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BaseScreen(
-      appBarCenterText: _screenTitle,
-      appBarLeading: ContextMenu.primary,
-      onPop: (_, __) async => finishEditing(),
-      onRefresh: initScreen,
-      floatingActionButton: getFAB(),
-      topWidget: getHeader(context),
-      child: getBody(),
     );
   }
 }

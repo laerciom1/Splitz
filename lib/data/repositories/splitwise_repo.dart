@@ -15,11 +15,11 @@ import 'package:splitz/services/log_service.dart';
 const _splitwiseBaseUrl = String.fromEnvironment('SW_BASE_URL');
 
 abstract class SplitwiseRepository {
-  static Dio? _dio;
-  static Future<Dio> get _dioClient async {
-    if (_dio != null) return _dio!;
+  static Dio? _dioClient;
+  static Future<Dio> get _dio async {
+    if (_dioClient != null) return _dioClient!;
     final splitwiseToken = await AuthService.splitwiseToken;
-    _dio = Dio(BaseOptions(baseUrl: _splitwiseBaseUrl))
+    _dioClient = Dio(BaseOptions(baseUrl: _splitwiseBaseUrl))
       ..interceptors.add(
         InterceptorsWrapper(
           onRequest: (options, handler) {
@@ -28,12 +28,12 @@ abstract class SplitwiseRepository {
           },
         ),
       );
-    return _dio!;
+    return _dioClient!;
   }
 
   static Future<GetCurrentUserResponse> getCurrentUser() async {
     try {
-      final dio = await _dioClient;
+      final dio = await _dio;
       final response = await dio.get('/get_current_user');
       final result = GetCurrentUserResponse.fromMap(
         response.data as Map<String, dynamic>,
@@ -51,7 +51,7 @@ abstract class SplitwiseRepository {
 
   static Future<GetGroupsResponse> getGroups() async {
     try {
-      final dio = await _dioClient;
+      final dio = await _dio;
       final response = await dio.get('/get_groups');
       final result = GetGroupsResponse.fromMap(
         response.data as Map<String, dynamic>,
@@ -69,7 +69,7 @@ abstract class SplitwiseRepository {
 
   static Future<GetGroupResponse> getGroupInfo(String groupId) async {
     try {
-      final dio = await _dioClient;
+      final dio = await _dio;
       final response = await dio.get('/get_group/$groupId');
       final result = GetGroupResponse.fromMap(
         response.data as Map<String, dynamic>,
@@ -89,7 +89,7 @@ abstract class SplitwiseRepository {
     try {
       final now = DateTime.now();
       final firstDayOfLastMonth = DateTime(now.year, now.month - 1, 1);
-      final dio = await _dioClient;
+      final dio = await _dio;
       final response = await dio.get(
         '/get_expenses?group_id=$groupId&dated_after=${firstDayOfLastMonth.toString()}&limit=100',
       );
@@ -107,9 +107,34 @@ abstract class SplitwiseRepository {
     }
   }
 
+  static Future<GetExpensesResponse> getExportExpenses(
+    String groupId,
+    DateTime month,
+  ) async {
+    try {
+      final firstDay = DateTime(month.year, month.month, 1);
+      final lastDay = DateTime(month.year, month.month + 1, 0);
+      final dio = await _dio;
+      final response = await dio.get(
+        '/get_expenses?group_id=$groupId&dated_after=${firstDay.toString()}&dated_before=${lastDay.toString()}&limit=100',
+      );
+      final result = GetExpensesResponse.fromMap(
+        response.data as Map<String, dynamic>,
+      );
+      return result;
+    } catch (e, s) {
+      LogService.log(
+        'SplitwiseRepository.getExportExpenses',
+        error: e,
+        stackTrace: s,
+      );
+      rethrow;
+    }
+  }
+
   static Future<GetCategoriesResponse> getAvailableCategories() async {
     try {
-      final dio = await _dioClient;
+      final dio = await _dio;
       final response = await dio.get('/get_categories');
       final result = GetCategoriesResponse.fromMap(
         response.data as Map<String, dynamic>,
@@ -127,7 +152,7 @@ abstract class SplitwiseRepository {
 
   static Future<int> createExpense(ExpenseEntity expense) async {
     try {
-      final dio = await _dioClient;
+      final dio = await _dio;
       final request = ExpenseRequest.createBody(expense);
       final response = await dio.post('/create_expense', data: request);
       final result = CreateExpenseResponse.fromMap(
@@ -146,7 +171,7 @@ abstract class SplitwiseRepository {
 
   static Future<void> deleteExpense(ExpenseEntity expense) async {
     try {
-      final dio = await _dioClient;
+      final dio = await _dio;
       final response = await dio.post('/delete_expense/${expense.id!}');
       final result = DeleteExpenseResponse.fromMap(
         response.data as Map<String, dynamic>,
@@ -166,7 +191,7 @@ abstract class SplitwiseRepository {
 
   static Future<int> updateExpense(ExpenseEntity expense) async {
     try {
-      final dio = await _dioClient;
+      final dio = await _dio;
       final request = ExpenseRequest.createBody(expense);
       final response = await dio.post(
         '/update_expense/${expense.id!}',

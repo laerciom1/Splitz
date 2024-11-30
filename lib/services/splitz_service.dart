@@ -2,10 +2,13 @@ import 'package:splitz/data/entities/external/group_entity.dart';
 import 'package:splitz/data/entities/external/member_entity.dart';
 import 'package:splitz/data/entities/splitz/app_preferences_entity.dart';
 import 'package:splitz/data/entities/external/expense_entity.dart';
+import 'package:splitz/data/entities/splitz/export_entity.dart';
 import 'package:splitz/data/entities/splitz/init_result_entity.dart';
 import 'package:splitz/data/entities/splitz/group_config_entity.dart';
+import 'package:splitz/data/repositories/gsheets_repo.dart';
 import 'package:splitz/data/repositories/splitwise_repo.dart';
 import 'package:splitz/data/repositories/splitz_repo.dart';
+import 'package:splitz/extensions/datetime.dart';
 import 'package:splitz/extensions/list.dart';
 import 'package:splitz/extensions/strings.dart';
 import 'package:splitz/services/auth_service.dart';
@@ -18,7 +21,7 @@ abstract class SplitzService {
 
   static Future<AppPreferencesEntity> get _appPreferences async {
     if (_inMemoryAppPreferences != null) return _inMemoryAppPreferences!;
-    final appPrefs = await StorageService.read(_storageKey);
+    final appPrefs = await StorageRepository.read(_storageKey);
     if (appPrefs != null) {
       _inMemoryAppPreferences = AppPreferencesEntity.fromJson(appPrefs);
     } else {
@@ -29,10 +32,10 @@ abstract class SplitzService {
   }
 
   static Future<void> saveAppPrefs(AppPreferencesEntity appPrefs) async =>
-      StorageService.save(_storageKey, appPrefs.toJson());
+      StorageRepository.save(_storageKey, appPrefs.toJson());
 
   static Future<void> clearAppPrefs() async =>
-      StorageService.clear(_storageKey);
+      StorageRepository.clear(_storageKey);
 
   static Future<InitResultEntity> init() async {
     final isSignedInToSplitz = AuthService.isSignedInToSplitz;
@@ -180,6 +183,49 @@ abstract class SplitzService {
 
   static Future<int> updateExpense(ExpenseEntity expense) async =>
       await SplitwiseRepository.updateExpense(expense);
+
+  static Future<ExportEntity> getExportExpenses(
+    String groupId,
+    DateTime month,
+  ) async {
+    final response =
+        await SplitwiseRepository.getExportExpenses(groupId, month);
+    final filteredExpenses = [
+      ...response.expenses
+          .where((e) => e.deletedAt == null && e.payment != true),
+    ];
+    final expenses = filteredExpenses.map(ExpenseEntity.fromExpenseResponse);
+    return ExportEntity.fromExpenses(expenses);
+  }
+
+  static Future<void> exportExpenses(
+    ExportEntity export,
+  ) async {
+    final dateColumn = ['Date'];
+    final descriptionColumn = ['Expense'];
+    final costColumn = ['Cost'];
+    final categoryColumn = ['Category'];
+    final totalColumn = ['Total'];
+
+    for (final category in export.categories) {
+      categoryColumn.add(category.prefix);
+      totalColumn.add('${category.total}'.replaceAll('.', ','));
+      for (final expense in category.expenses) {
+        dateColumn.add(expense.date.toDateFormat('dd/MM/yy'));
+        descriptionColumn.add(expense.description);
+        costColumn.add(expense.cost.replaceAll('.', ','));
+      }
+    }
+
+    await GSheetsRepository.recreate('SplitzExport', [
+      dateColumn,
+      descriptionColumn,
+      costColumn,
+      [],
+      categoryColumn,
+      totalColumn,
+    ]);
+  }
 
   static Future<void> signOut() async {
     AuthService.signOut();

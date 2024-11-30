@@ -59,7 +59,7 @@ abstract class AuthService {
   static Future<String?> get splitwiseToken async {
     try {
       if (_splitwiseToken != null) return _splitwiseToken;
-      final storedCredentials = await StorageService.read(_storageKey);
+      final storedCredentials = await StorageRepository.read(_storageKey);
       if (storedCredentials == null) return null;
       final credentials = Credentials.fromJson(storedCredentials);
       _splitwiseToken = credentials.accessToken;
@@ -93,7 +93,7 @@ abstract class AuthService {
           final credentials =
               (await _grant.handleAuthorizationResponse(queryParams))
                   .credentials;
-          await StorageService.save(_storageKey, credentials.toJson());
+          await StorageRepository.save(_storageKey, credentials.toJson());
           onResult(true);
           return NavigationDecision.prevent;
         }
@@ -111,7 +111,7 @@ abstract class AuthService {
     try {
       var futures = <Future<void>>[];
       if (await AuthService.isSignedInToSplitwise) {
-        futures.add(StorageService.clear(_storageKey));
+        futures.add(StorageRepository.clear(_storageKey));
       }
       if (AuthService.isSignedInToSplitz) {
         futures.add(FirebaseAuth.instance.signOut());

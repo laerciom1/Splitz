@@ -62,14 +62,14 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
       if (result.isEmpty) {
         setFeedback(
           'It looks like you dont have groups on your Splitwise account.\n'
-          'You can drag down to refresh or create a group on Splitwise app.',
+          'You can drag down to retry or create a group on Splitwise app first.',
         );
       } else {
         setGroups(result);
       }
     } catch (e, s) {
       const message = 'Something went wrong retrieving your groups.\n'
-          'You can drag down to refresh.';
+          'You can drag down to retry.';
       setFeedback(message.addErrorDescription(e, s));
     }
   }
@@ -77,6 +77,23 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
   Future<void> onSelectGroup(GroupEntity group) async {
     await SplitzService.selectGroup('${group.id}');
     AppNavigator.replaceAll([ExpensesListScreen(groupId: '${group.id}')]);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BaseScreen(
+      appBarCenterText: 'Groups',
+      appBarLeading: ContextMenu(
+        direction: TextDirection.ltr,
+        icon: Icons.menu,
+        children: [
+          ContextMenuOption.logout,
+        ],
+      ),
+      onPop: (_, __) async {},
+      onRefresh: initScreen,
+      child: getBody(),
+    );
   }
 
   Widget getBody() {
@@ -99,21 +116,4 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
           }).intersperse(const SizedBox(height: 2))
         ],
       );
-
-  @override
-  Widget build(BuildContext context) {
-    return BaseScreen(
-      appBarCenterText: 'Groups',
-      appBarLeading: ContextMenu(
-        direction: TextDirection.ltr,
-        icon: Icons.menu,
-        children: [
-          ContextMenuOption.logout,
-        ],
-      ),
-      onPop: (_, __) async {},
-      onRefresh: initScreen,
-      child: getBody(),
-    );
-  }
 }

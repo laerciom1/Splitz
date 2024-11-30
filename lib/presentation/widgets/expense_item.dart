@@ -4,6 +4,7 @@ import 'package:splitz/data/entities/external/expense_entity.dart';
 import 'package:splitz/extensions/datetime.dart';
 import 'package:splitz/extensions/double.dart';
 import 'package:splitz/extensions/strings.dart';
+import 'package:splitz/presentation/theme/util.dart';
 
 const _imageHeight = 80.0;
 const _imagePadding = 8.0;
@@ -43,7 +44,7 @@ class ExpenseItem extends StatelessWidget {
         height: _imageHeight,
         width: _imageHeight,
         child: expense.imageUrl.isNotNullNorEmpty
-            ? CachedNetworkImage(imageUrl: expense.imageUrl)
+            ? CachedNetworkImage(imageUrl: expense.imageUrl!)
             : getImagePlaceholder(backgroundcolor),
       );
 
@@ -139,7 +140,7 @@ class ExpenseItem extends StatelessWidget {
         constraints:
             const BoxConstraints(minHeight: _imageHeight + _imagePadding * 2),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceBright,
+          color: ThemeColors.surfaceBright,
           borderRadius:
               dismissible ? null : const BorderRadius.all(Radius.circular(12)),
         ),
@@ -148,7 +149,7 @@ class ExpenseItem extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.all(_imagePadding),
-              child: getImage(Theme.of(context).colorScheme.surfaceBright),
+              child: getImage(ThemeColors.surfaceBright),
             ),
             Flexible(
               child: Padding(
@@ -240,8 +241,6 @@ class ExpenseItem extends StatelessWidget {
     required Widget badgeContent,
     required Widget child,
   }) {
-    final badgeBorderColor = Theme.of(context).colorScheme.primary;
-    final badgeColor = Theme.of(context).colorScheme.surface;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: Stack(
@@ -255,9 +254,9 @@ class ExpenseItem extends StatelessWidget {
             child: Center(
               child: Container(
                 decoration: BoxDecoration(
-                  border: Border.all(color: badgeBorderColor),
+                  border: Border.all(color: ThemeColors.primary),
                   borderRadius: BorderRadius.circular(_badgeHeight),
-                  color: badgeColor,
+                  color: ThemeColors.surface,
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,

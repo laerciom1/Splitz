@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:splitz/presentation/theme/util.dart';
 import 'package:splitz/presentation/widgets/fab_anchor.dart';
 import 'package:splitz/presentation/widgets/fab_option.dart';
 
@@ -25,12 +26,10 @@ class AddCategoryFAB extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final backgroundColor = Theme.of(context).colorScheme.surface;
-    final borderColor = Theme.of(context).colorScheme.primary;
     return SpeedDial(
       spaceBetweenChildren: 8,
       spacing: 4,
-      backgroundColor: backgroundColor,
+      backgroundColor: ThemeColors.surface,
       children: [
         FABOption(
           text: 'Add category',
@@ -48,13 +47,13 @@ class AddCategoryFAB extends StatelessWidget {
         ),
       ],
       activeChild: FABAnchor(
-        backgroundColor: backgroundColor,
-        borderColor: borderColor,
+        backgroundColor: ThemeColors.surface,
+        borderColor: ThemeColors.primary,
         child: getAnchorChild(Icons.close, enableActions),
       ),
       child: FABAnchor(
-        backgroundColor: backgroundColor,
-        borderColor: borderColor,
+        backgroundColor: ThemeColors.surface,
+        borderColor: ThemeColors.primary,
         child: getAnchorChild(Icons.add, enableActions),
       ),
     );

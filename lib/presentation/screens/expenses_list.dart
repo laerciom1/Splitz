@@ -12,7 +12,7 @@ import 'package:splitz/presentation/widgets/fab_add_split.dart';
 import 'package:splitz/presentation/widgets/expense_item.dart';
 import 'package:splitz/presentation/widgets/feedback_message.dart';
 import 'package:splitz/presentation/widgets/loading.dart';
-import 'package:splitz/presentation/widgets/expenses_page_header.dart';
+import 'package:splitz/presentation/widgets/expenses_list_page_header.dart';
 import 'package:splitz/presentation/widgets/snackbar.dart';
 import 'package:splitz/services/splitz_service.dart';
 
@@ -91,7 +91,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
     } catch (e, s) {
       const message =
           'Something went wrong retrieving your group preferences.\n'
-          'You can drag down to refresh.';
+          'You can drag down to retry.';
       return setData(feedbackMessage: message.addErrorDescription(e, s));
     }
 
@@ -248,14 +248,39 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
   void editGroupPreferences() =>
       AppNavigator.replaceAll([GroupEditorScreen(groupId: widget.groupId)]);
 
+  void onPop() {
+    if (_scaffoldKey.currentState?.isDrawerOpen ?? false) {
+      _scaffoldKey.currentState?.openEndDrawer();
+    } else {
+      AppNavigator.replaceAll([const GroupsListScreen()]);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (_, __) => onPop(),
+      child: Scaffold(
+        key: _scaffoldKey,
+        floatingActionButton: getFAB(),
+        body: RefreshIndicator(
+          onRefresh: () async => unawaited(_lastFunc?.call()),
+          child: CustomScrollView(
+            slivers: getSlivers(),
+          ),
+        ),
+      ),
+    );
+  }
+
   List<Widget> getSlivers() => [
         if (_groupInfo != null)
           SliverPersistentHeader(
             pinned: true,
-            delegate: ExpensesPageHeader(
+            delegate: ExpensesListPageHeader(
               groupInfo: _groupInfo!,
               scaffold: _scaffoldKey,
-              popOverText: 'Swipe or click to interact with expenses',
             ),
           ),
         const SliverPadding(padding: EdgeInsets.only(top: 80)),
@@ -293,32 +318,6 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
       categories: _groupConfig!.splitzCategories,
       onSelectCategory: onCreate,
       onEditGroupPreferences: editGroupPreferences,
-    );
-  }
-
-  void onPop() {
-    if (_scaffoldKey.currentState?.isDrawerOpen ?? false) {
-      _scaffoldKey.currentState?.openEndDrawer();
-    } else {
-      AppNavigator.replaceAll([const GroupsListScreen()]);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (_, __) => onPop(),
-      child: Scaffold(
-        key: _scaffoldKey,
-        floatingActionButton: getFAB(),
-        body: RefreshIndicator(
-          onRefresh: () async => unawaited(_lastFunc?.call()),
-          child: CustomScrollView(
-            slivers: getSlivers(),
-          ),
-        ),
-      ),
     );
   }
 }

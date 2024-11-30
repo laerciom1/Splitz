@@ -7,6 +7,7 @@ import 'package:splitz/data/entities/splitz/group_config_entity.dart';
 import 'package:splitz/extensions/strings.dart';
 import 'package:splitz/navigator.dart';
 import 'package:splitz/presentation/templates/base_screen.dart';
+import 'package:splitz/presentation/theme/util.dart';
 import 'package:splitz/presentation/widgets/expense_item.dart';
 import 'package:splitz/presentation/widgets/field_primary.dart';
 import 'package:splitz/presentation/widgets/footer_action.dart';
@@ -165,6 +166,16 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
 
   void save() => AppNavigator.pop(_expense);
 
+  @override
+  Widget build(BuildContext ctx) {
+    return BaseScreen(
+      appBarCenterText: _screenTitle,
+      topWidget: getExpenseEditorHeader(context),
+      bottomWidget: getExpenseEditorBottom(context),
+      child: getExpenseEditorBody(),
+    );
+  }
+
   Widget getExpenseEditorHeader(BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -183,7 +194,7 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
               child: ExpenseItem(expense: _expense!),
             ),
             const SizedBox(height: 24),
-            SplitzDivider(color: Theme.of(context).colorScheme.primary)
+            SplitzDivider(color: ThemeColors.primary)
           ]
         ],
       );
@@ -276,14 +287,4 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
             _expense?.cost != _initCost &&
             _expense?.payerId != null,
       );
-
-  @override
-  Widget build(BuildContext ctx) {
-    return BaseScreen(
-      appBarCenterText: _screenTitle,
-      topWidget: getExpenseEditorHeader(context),
-      bottomWidget: getExpenseEditorBottom(context),
-      child: getExpenseEditorBody(),
-    );
-  }
 }

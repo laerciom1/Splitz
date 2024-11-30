@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:splitz/data/entities/splitz/group_config_entity.dart';
+import 'package:splitz/presentation/theme/util.dart';
 import 'package:splitz/presentation/widgets/category_image.dart';
 
 class CategorySelector extends StatelessWidget {
@@ -23,7 +24,7 @@ class CategorySelector extends StatelessWidget {
         borderRadius: BorderRadius.circular(12.0),
         border: Border.all(
           width: 1.0,
-          color: Theme.of(context).colorScheme.primary,
+          color: ThemeColors.primary,
         ),
       ),
       child: SingleChildScrollView(

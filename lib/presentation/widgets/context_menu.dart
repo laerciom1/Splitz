@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:splitz/extensions/list.dart';
 import 'package:splitz/navigator.dart';
+import 'package:splitz/presentation/screens/expenses_export.dart';
 import 'package:splitz/presentation/screens/groups_list.dart';
 import 'package:splitz/presentation/screens/login_splitz.dart';
 import 'package:splitz/services/splitz_service.dart';
@@ -83,6 +84,18 @@ class ContextMenuOption extends StatelessWidget {
             Icon(Icons.group),
             SizedBox(width: 12),
             Text('Groups'),
+          ],
+        ),
+      );
+
+  static ContextMenuOption export(int groupId) => ContextMenuOption(
+        onTap: () =>
+            AppNavigator.push(ExpensesExportScreen(groupId: '$groupId')),
+        child: const Row(
+          children: [
+            Icon(Icons.cloud_upload),
+            SizedBox(width: 12),
+            Text('Export'),
           ],
         ),
       );

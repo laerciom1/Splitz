@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:splitz/data/entities/external/group_entity.dart';
+import 'package:splitz/presentation/theme/util.dart';
 
 const _cardHeight = 180.0;
 
@@ -30,10 +31,10 @@ class GroupItem extends StatelessWidget {
               padding: const EdgeInsets.all(4.0),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
+                  color: ThemeColors.surface,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: ThemeColors.primary,
                   ),
                 ),
                 child: Padding(

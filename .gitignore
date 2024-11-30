@@ -59,12 +59,12 @@ android/.idea/*
 .vscode/settings.json
 .fvmrc
 
+private/
 firebase.json
 config/
 lib/firebase_options.dart
+lib/gsheets_credentials.dart
 android/**/*.jks
 android/app/google-services.json
 ios/Runner/GoogleService-Info.plist
 ios/Runner/Info.plist
-
-splitz_private/

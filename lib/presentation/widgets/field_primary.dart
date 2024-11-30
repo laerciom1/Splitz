@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:splitz/presentation/theme/util.dart';
 
 class PrimaryField extends StatelessWidget {
   const PrimaryField({
@@ -25,7 +26,7 @@ class PrimaryField extends StatelessWidget {
         borderRadius: BorderRadius.circular(12.0),
         border: Border.all(
           width: 1.0,
-          color: Theme.of(context).colorScheme.primary,
+          color: ThemeColors.primary,
         ),
       ),
       child: Padding(

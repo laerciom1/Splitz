@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:splitz/data/entities/splitz/group_config_entity.dart';
+import 'package:splitz/presentation/theme/util.dart';
 import 'package:splitz/presentation/widgets/fab_anchor.dart';
 import 'package:splitz/presentation/widgets/fab_option.dart';
 
@@ -19,12 +20,10 @@ class AddSplitFAB extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final borderColor = Theme.of(context).colorScheme.primary;
-    final backgroundColor = Theme.of(context).colorScheme.surface;
     return SpeedDial(
       spaceBetweenChildren: 8,
       spacing: 4,
-      backgroundColor: backgroundColor,
+      backgroundColor: ThemeColors.surface,
       children: [
         ...categories.values.map(
           (category) => FABOption(
@@ -41,13 +40,13 @@ class AddSplitFAB extends StatelessWidget {
         ),
       ],
       activeChild: FABAnchor(
-        backgroundColor: backgroundColor,
-        borderColor: borderColor,
+        backgroundColor: ThemeColors.surface,
+        borderColor: ThemeColors.primary,
         child: const Icon(Icons.close),
       ),
       child: FABAnchor(
-        backgroundColor: backgroundColor,
-        borderColor: borderColor,
+        backgroundColor: ThemeColors.surface,
+        borderColor: ThemeColors.primary,
         child: const Icon(Icons.add),
       ),
     );

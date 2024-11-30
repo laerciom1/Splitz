@@ -13,8 +13,8 @@ class ExpenseEntity {
   DateTime date;
   int groupId;
   int categoryId;
-  String imageUrl;
   List<UserExpenseEntity> users;
+  String? imageUrl;
   String currencyCode;
   int? id;
   int? payerId;
@@ -27,8 +27,8 @@ class ExpenseEntity {
     required this.date,
     required this.groupId,
     required this.categoryId,
-    required this.imageUrl,
     required this.users,
+    this.imageUrl,
     this.currencyCode = 'BRL',
     this.id,
     this.payerId,
@@ -123,7 +123,7 @@ class ExpenseEntity {
     );
   }
 
-  factory ExpenseEntity.fromExpenseResponse(FullExpense e, String imageUrl) {
+  factory ExpenseEntity.fromExpenseResponse(FullExpense e, [String? imageUrl]) {
     final users = <UserExpenseEntity>[];
     int? payerId;
     for (final user in e.users) {

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:splitz/presentation/theme/util.dart';
 import 'package:splitz/presentation/widgets/app_bar.dart';
 
 class BaseScreen extends StatelessWidget {
@@ -35,8 +36,6 @@ class BaseScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final detailColor = Theme.of(context).colorScheme.primary;
-    final backgroundColor = Theme.of(context).colorScheme.surface;
     Widget widget = LayoutBuilder(builder: (context, constraints) {
       return SingleChildScrollView(
         controller: scrollController,
@@ -67,8 +66,8 @@ class BaseScreen extends StatelessWidget {
         : SplitzAppBar(
             customLeading: appBarLeading,
             center: appBarCenterText,
-            detailColor: detailColor,
-            bgColor: backgroundColor,
+            detailColor: ThemeColors.primary,
+            bgColor: ThemeColors.surface,
           );
 
     Widget screen = Scaffold(

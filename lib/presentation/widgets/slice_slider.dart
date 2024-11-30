@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:multi_thumb_slider/multi_thumb_slider.dart';
 import 'package:splitz/presentation/theme/slice_colors.dart';
 import 'package:another_xlider/another_xlider.dart';
+import 'package:splitz/presentation/theme/util.dart';
 
 const _sliderHeight = 8.0;
 
@@ -55,7 +56,7 @@ class SliceSlider extends StatelessWidget {
   Widget getThumb(BuildContext context) => Container(
         width: _sliderHeight * 2,
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary,
+          color: ThemeColors.primary,
           shape: BoxShape.circle,
         ),
       );
@@ -159,7 +160,7 @@ class SliceSlider extends StatelessWidget {
       thumbBuilder: (_, __) => Container(
         width: _sliderHeight * 2,
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary,
+          color: ThemeColors.primary,
           shape: BoxShape.circle,
         ),
       ),

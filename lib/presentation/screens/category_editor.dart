@@ -6,6 +6,7 @@ import 'package:splitz/data/entities/splitz/group_config_entity.dart';
 import 'package:splitz/extensions/strings.dart';
 import 'package:splitz/navigator.dart';
 import 'package:splitz/presentation/templates/base_screen.dart';
+import 'package:splitz/presentation/theme/util.dart';
 import 'package:splitz/presentation/widgets/category_selector.dart';
 import 'package:splitz/presentation/widgets/expense_item.dart';
 import 'package:splitz/presentation/widgets/feedback_message.dart';
@@ -97,7 +98,7 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
     } catch (e, s) {
       const message =
           'Something went wrong retrieving the available categories.\n'
-          'You can drag down to refresh.';
+          'You can drag down to retry.';
       return setFeedback(message.addErrorDescription(e, s));
     }
   }
@@ -180,6 +181,18 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
     AppNavigator.pop(category);
   }
 
+  @override
+  Widget build(BuildContext ctx) {
+    return BaseScreen(
+      appBarCenterText: 'Creating category',
+      scrollController: _bodyScrollController,
+      onRefresh: initScreen,
+      topWidget: getHeader(context),
+      bottomWidget: getBottom(context),
+      child: getBody(),
+    );
+  }
+
   Widget? getHeader(BuildContext context) {
     if (_isLoading || _feedbackMessage.isNotEmpty) {
       return null;
@@ -208,7 +221,7 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
             ),
           ),
           const SizedBox(height: 24),
-          SplitzDivider(color: Theme.of(context).colorScheme.primary)
+          SplitzDivider(color: ThemeColors.primary)
         ],
       );
 
@@ -288,16 +301,4 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
         enabled: _currentCategory.imageUrl.isNotEmpty &&
             _currentCategory.prefix.isNotEmpty,
       );
-
-  @override
-  Widget build(BuildContext ctx) {
-    return BaseScreen(
-      appBarCenterText: 'Creating category',
-      scrollController: _bodyScrollController,
-      onRefresh: initScreen,
-      topWidget: getHeader(context),
-      bottomWidget: getBottom(context),
-      child: getBody(),
-    );
-  }
 }
