@@ -26,7 +26,7 @@ increment-version:
 	echo "New version: $$NEW_VERSION"; \
 	echo $$NEW_VERSION > $(VERSION_FILE); \
 	sed -i.bak "s/^version:.*/version: $$NEW_VERSION/" $(PUBSPEC); \
-	-rm -f $(PUBSPEC).bak; \
+	rm -f $(PUBSPEC).bak; \
 	echo "Version updated successfully"
 
 build-apk:
@@ -40,7 +40,7 @@ upload-apk:
 commit-message:
 	@NEW_VERSION=$$(cat $(VERSION_FILE)); \
 	echo "Commit message: [release] $$NEW_VERSION"; \
-	-rm -f $(VERSION_FILE)
+	rm -f $(VERSION_FILE)
 
 store-private:
 	-rm -rf private
