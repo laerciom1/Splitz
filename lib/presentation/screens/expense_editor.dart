@@ -8,7 +8,9 @@ import 'package:splitz/extensions/strings.dart';
 import 'package:splitz/navigator.dart';
 import 'package:splitz/presentation/templates/base_screen.dart';
 import 'package:splitz/presentation/theme/util.dart';
+import 'package:splitz/presentation/widgets/button_primary.dart';
 import 'package:splitz/presentation/widgets/expense_item.dart';
+import 'package:splitz/presentation/widgets/field_date.dart';
 import 'package:splitz/presentation/widgets/field_primary.dart';
 import 'package:splitz/presentation/widgets/footer_action.dart';
 import 'package:splitz/presentation/widgets/slice_editor.dart';
@@ -16,7 +18,7 @@ import 'package:splitz/presentation/widgets/splitz_divider.dart';
 import 'package:splitz/services/splitz_service.dart';
 
 const _initCost = '0.00';
-const _fieldTitleVPadding = 12.0;
+const _fieldTitleVPadding = 8.0;
 const _fieldTitleHPadding = 16.0;
 
 class ExpenseEditorScreen extends StatefulWidget {
@@ -157,14 +159,16 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
         );
       });
 
+  void onChangeDate(DateTime d) => setState(() {
+        _expense = _expense!.copyWith(date: d);
+      });
+
   void onNewSplitzConfigs(Map<String, SplitzConfig> configs) => setState(() {
-        _expense = _expense!.copyWithShares(
-          splitzConfigs: configs,
-        );
+        _expense = _expense!.copyWithShares(splitzConfigs: configs);
         _splitzConfigs = configs;
       });
 
-  void save() => AppNavigator.pop(_expense);
+  void pop([ExpenseEntity? expense]) => AppNavigator.pop(expense);
 
   @override
   Widget build(BuildContext ctx) {
@@ -186,14 +190,17 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
             ),
           if (_expense != null) ...[
             const Padding(
-              padding: EdgeInsets.all(24),
+              padding: EdgeInsets.symmetric(
+                horizontal: _fieldTitleHPadding,
+                vertical: _fieldTitleVPadding,
+              ),
               child: Text('Expense resume:'),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: ExpenseItem(expense: _expense!),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: _fieldTitleVPadding * (4 / 3)),
             SplitzDivider(color: ThemeColors.primary)
           ]
         ],
@@ -263,6 +270,20 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
                   horizontal: _fieldTitleHPadding,
                   vertical: _fieldTitleVPadding,
                 ),
+                child: Text('Date:'),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: DateField(
+                  initValue: _expense?.date,
+                  onSelect: onChangeDate,
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: _fieldTitleHPadding,
+                  vertical: _fieldTitleVPadding,
+                ),
                 child: Text('Who paid this time?'),
               ),
               Padding(
@@ -281,10 +302,15 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
       );
 
   Widget? getExpenseEditorBottom(BuildContext ctx) => ActionFooter(
-        onAction: save,
+        onAction: () => pop(_expense),
         text: 'Save',
         enabled: (_expense?.description).isNotNullNorEmpty &&
             _expense?.cost != _initCost &&
             _expense?.payerId != null,
+        leading: PrimaryButton(
+          text: 'Cancel',
+          onPressed: pop,
+          enabled: true,
+        ),
       );
 }

@@ -136,7 +136,7 @@ class ExpenseEntity {
       state: ExpenseEntityState.listed,
       cost: e.cost,
       description: e.description,
-      date: e.date,
+      date: e.date.toLocal(),
       groupId: e.groupId,
       categoryId: e.category.id,
       imageUrl: imageUrl,

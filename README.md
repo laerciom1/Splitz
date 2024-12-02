@@ -5,12 +5,14 @@ This app is a customizable experience for the splitwise services, which aims to 
 I made it with the best experience for me in mind, I'll add some gifs here in the future (:
 
 ### Next steps:
+- [ ] Show group balance
 - [ ] Expense Editor - Undo delete/edit
 - [ ] Category Editor - Delete/Edit/Reorder Category
 
 ### Refactors
 
 ### Features
+- [ ] Expenses suggestions (notifications)
 - [ ] Filters:
   - [ ] Category
   - [ ] Date:
@@ -35,6 +37,7 @@ I made it with the best experience for me in mind, I'll add some gifs here in th
 - [ ] Add animations
 
 ### Done
+- [x] Expense Editor - Edit date
 - [x] Export data from the bills of the month
 - [x] Add logo to SplitzAppBar
 - [x] Improve drawer layout (turns it into a MenuAnchor for now)
