@@ -272,7 +272,6 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
             delegate: ExpensesListPageHeader(
               groupInfo: _groupInfo!,
               scaffold: _scaffoldKey,
-              onTapHeaderRefresh: initScreen,
             ),
           ),
         SliverPadding(
