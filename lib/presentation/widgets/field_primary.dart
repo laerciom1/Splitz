@@ -9,10 +9,12 @@ class PrimaryField extends StatelessWidget {
     this.controller,
     this.inputFormatters,
     this.keyboardType,
+    this.nextFocusNode,
     super.key,
   });
 
   final FocusNode focusNode;
+  final FocusNode? nextFocusNode;
   final TextEditingController? controller;
   final void Function(String) onChanged;
   final List<TextInputFormatter>? inputFormatters;
@@ -42,6 +44,7 @@ class PrimaryField extends StatelessWidget {
           autocorrect: false,
           onChanged: onChanged,
           keyboardType: keyboardType,
+          onSubmitted: (_) => nextFocusNode?.requestFocus(),
         ),
       ),
     );

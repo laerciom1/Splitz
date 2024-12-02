@@ -65,7 +65,7 @@ class _ExpensesExportStateScreen extends State<ExpensesExportScreen> {
     final today = DateTime.now();
     _monthOptions = List.generate(
       12,
-      (idx) => DateTime(today.year, today.month - (idx + 1), 1),
+      (idx) => DateTime(today.year, today.month - idx, 1),
     );
   }
 

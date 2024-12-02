@@ -112,11 +112,15 @@ abstract class SplitwiseRepository {
     DateTime month,
   ) async {
     try {
-      final firstDay = DateTime(month.year, month.month, 1);
-      final lastDay = DateTime(month.year, month.month + 1, 0);
+      final firstDay = DateTime(month.year, month.month, 1)
+          .subtract(const Duration(milliseconds: 1));
+      final lastDay = DateTime(month.year, month.month + 1, 1)
+          .subtract(const Duration(milliseconds: 1));
       final dio = await _dio;
       final response = await dio.get(
-        '/get_expenses?group_id=$groupId&dated_after=${firstDay.toString()}&dated_before=${lastDay.toString()}&limit=100',
+        '/get_expenses?group_id=$groupId&'
+        'dated_after=${firstDay.toUtc().toIso8601String()}&'
+        'dated_before=${lastDay.toUtc().toIso8601String()}&limit=100',
       );
       final result = GetExpensesResponse.fromMap(
         response.data as Map<String, dynamic>,

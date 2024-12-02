@@ -225,6 +225,7 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
                   onChanged: onChangeDescription,
                   focusNode: _descriptionFocusNode,
                   controller: _descriptionController,
+                  nextFocusNode: _costFocusNode,
                 ),
               ),
               const Padding(

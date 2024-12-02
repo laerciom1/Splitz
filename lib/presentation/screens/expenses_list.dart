@@ -34,8 +34,6 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
   String _feedbackMessage = '';
   bool _isLoading = true;
 
-  Future<void> Function()? _lastFunc;
-
   @override
   void initState() {
     super.initState();
@@ -77,7 +75,6 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
   }
 
   Future<void> initScreen() async {
-    _lastFunc = initScreen;
     setData(isLoading: true);
     late GroupConfigEntity? remoteGroupConfig;
     late GroupEntity remoteGroupInfo;
@@ -101,7 +98,6 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
   }
 
   Future<void> getExpenses() async {
-    _lastFunc = getExpenses;
     setData(isLoading: true);
     try {
       final expenses = await SplitzService.getExpenses(
@@ -136,11 +132,8 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
 
   Future<void> onRetryCreate(ExpenseEntity expense, int idx) async {
     try {
-      final id = await SplitzService.createExpense(expense);
-      updateExpense(
-        idx,
-        expense.copyWith(id: id, state: ExpenseEntityState.listed),
-      );
+      await SplitzService.createExpense(expense);
+      await initScreen();
     } catch (_) {
       updateExpense(0, expense.copyWith(state: ExpenseEntityState.createError));
     }
@@ -181,11 +174,8 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
         : expenseToEdit.copyWith(state: ExpenseEntityState.loading);
     try {
       updateExpense(idx, finalExpense);
-      final id = await SplitzService.updateExpense(finalExpense);
-      updateExpense(
-        idx,
-        finalExpense.copyWith(id: id, state: ExpenseEntityState.listed),
-      );
+      await SplitzService.updateExpense(finalExpense);
+      await initScreen();
     } catch (_) {
       updateExpense(
         idx,
@@ -200,6 +190,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
       if (idx == -1) return false;
       if (expense.state == ExpenseEntityState.listed) {
         await SplitzService.deleteExpense(expense);
+        await initScreen();
       }
       deleteExpense(idx);
       return true;
@@ -265,7 +256,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
         key: _scaffoldKey,
         floatingActionButton: getFAB(),
         body: RefreshIndicator(
-          onRefresh: () async => unawaited(_lastFunc?.call()),
+          onRefresh: () async => unawaited(initScreen()),
           child: CustomScrollView(
             slivers: getSlivers(),
           ),
@@ -281,11 +272,12 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
             delegate: ExpensesListPageHeader(
               groupInfo: _groupInfo!,
               scaffold: _scaffoldKey,
+              onTapHeaderRefresh: initScreen,
             ),
           ),
         SliverPadding(
           padding: EdgeInsets.only(
-            top: _groupInfo!.simplifiedDebt == null ? 80 : 88,
+            top: _groupInfo?.simplifiedDebt == null ? 80 : 88,
           ),
         ),
         if (_isLoading) const SliverToBoxAdapter(child: Loading()),
