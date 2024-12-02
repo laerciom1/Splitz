@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:splitz/data/entities/external/group_entity.dart';
+import 'package:splitz/extensions/double.dart';
+import 'package:splitz/extensions/strings.dart';
 import 'package:splitz/presentation/theme/util.dart';
 import 'package:splitz/presentation/widgets/context_menu.dart';
 
@@ -50,6 +52,7 @@ class ExpensesListPageHeader extends SliverPersistentHeaderDelegate {
     required double opacity,
     required Color avatarBgColor,
     required String text,
+    required String? simplifiedDebtsText,
     required String imageUrl,
   }) =>
       Positioned(
@@ -77,8 +80,15 @@ class ExpensesListPageHeader extends SliverPersistentHeaderDelegate {
                 ),
               ),
             ),
-            Text(text,
-                style: const TextStyle(fontSize: 16, color: Colors.white)),
+            Text(
+              text,
+              style: TextStyle(fontSize: 16, color: ThemeColors.onSurface),
+            ),
+            if (simplifiedDebtsText.isNotNullNorEmpty)
+              Text(
+                simplifiedDebtsText!,
+                style: TextStyle(fontSize: 12, color: ThemeColors.onSurface),
+              ),
           ],
         ),
       );
@@ -103,6 +113,13 @@ class ExpensesListPageHeader extends SliverPersistentHeaderDelegate {
         ),
       );
 
+  String? getSimplifiedDebtsText() {
+    if (groupInfo.simplifiedDebt == null) return null;
+    return '${groupInfo.simplifiedDebt!.fromName} owes '
+        '${groupInfo.simplifiedDebt!.amount.toBRL()} to '
+        '${groupInfo.simplifiedDebt!.toName}';
+  }
+
   @override
   Widget build(
     BuildContext context,
@@ -118,6 +135,8 @@ class ExpensesListPageHeader extends SliverPersistentHeaderDelegate {
     final avatarOffset = max(
         (maxExtent * firstScale) - (_avatarSize / 2), -1 * (_avatarSize / 4));
     final shadowOpacity = 1 - scale;
+
+    final simplifiedDebtsText = getSimplifiedDebtsText();
 
     return LayoutBuilder(builder: (context, constraints) {
       return SingleChildScrollView(
@@ -136,6 +155,7 @@ class ExpensesListPageHeader extends SliverPersistentHeaderDelegate {
                     opacity: secondScale,
                     avatarBgColor: ThemeColors.surface,
                     text: groupInfo.name,
+                    simplifiedDebtsText: simplifiedDebtsText,
                     imageUrl: groupInfo.imageUrl,
                   ),
                   getActions(),

@@ -23,6 +23,8 @@ TextTheme createTextTheme(
 abstract class ThemeColors {
   static Color get primary =>
       Theme.of(AppNavigator.context).colorScheme.primary;
+  static Color get onSurface =>
+      Theme.of(AppNavigator.context).colorScheme.onSurface;
   static Color get surface =>
       Theme.of(AppNavigator.context).colorScheme.surface;
   static Color get surfaceBright =>

@@ -78,10 +78,11 @@ abstract class SplitzService {
   }
 
   static Future<List<GroupEntity>> getGroups() async {
+    final currentUserId = await getCurrentSplitwiseUser();
     final response = await SplitwiseRepository.getGroups();
     if (response.groups.isNullOrEmpty) return [];
     final groups = response.groups
-        .map(GroupEntity.fromSplitwiseModel)
+        .map((e) => GroupEntity.fromSplitwiseModel(e, currentUserId))
         .where((e) => e.id != 0)
         .toList()
       ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
@@ -114,8 +115,9 @@ abstract class SplitzService {
   }
 
   static Future<GroupEntity> getGroupInfo(String groupId) async {
+    final currentUserId = await getCurrentSplitwiseUser();
     final response = await SplitwiseRepository.getGroupInfo(groupId);
-    return GroupEntity.fromSplitwiseModel(response.group);
+    return GroupEntity.fromSplitwiseModel(response.group, currentUserId);
   }
 
   static Map<String, SplitzConfig> getSplitzConfigsFromMembers(

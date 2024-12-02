@@ -5,26 +5,26 @@ This app is a customizable experience for the splitwise services, which aims to 
 I made it with the best experience for me in mind, I'll add some gifs here in the future (:
 
 ### Next steps:
-- [ ] Show group balance
 - [ ] Expense Editor - Undo delete/edit
 - [ ] Category Editor - Delete/Edit/Reorder Category
 
 ### Refactors
 
 ### Features
+- [ ] Auto order category based on usage
 - [ ] Expenses suggestions (notifications)
 - [ ] Filters:
-  - [ ] Category
-  - [ ] Date:
+  - [ ] By Category
+  - [ ] By Date:
     - [ ] before/after some date
     - [ ] specific month
     - [ ] specific interval
-- [ ] Edit a group of expenses (limited edition)
-  - [ ] Edit the category of selected expenses
-  - [ ] Edit split config of selected expenses
-- [ ] Load more on Splits list
+- [ ] Edit a group of selected expenses (limited options on edition)
+  - [ ] Category, date, Split config (division)
+- [ ] "Load more" button on Expenses List Screen
 - [ ] Add other options to Splitz Login
-- [ ] Permission to edit group preferences
+  - [ ] Email/Password, Facebook, etc...
+- [ ] Add the concept of "owner" to Splitz Config (permission to edit)
 
 ### Design
 - [ ] Improve Splitz Login
@@ -37,6 +37,7 @@ I made it with the best experience for me in mind, I'll add some gifs here in th
 - [ ] Add animations
 
 ### Done
+- [x] Show group balance
 - [x] Expense Editor - Edit date
 - [x] Export data from the bills of the month
 - [x] Add logo to SplitzAppBar
@@ -63,5 +64,6 @@ I made it with the best experience for me in mind, I'll add some gifs here in th
 - [x] Custom animation for wait time on edit splitz config on group editor
 
 ### Mandatory to go live (in the long term future, maybe?)
+- [ ] I11n & L10n
 - [ ] Onboarding flow (tutorial)
 - [ ] Encrypt data on Firebase

@@ -283,7 +283,11 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
               scaffold: _scaffoldKey,
             ),
           ),
-        const SliverPadding(padding: EdgeInsets.only(top: 80)),
+        SliverPadding(
+          padding: EdgeInsets.only(
+            top: _groupInfo!.simplifiedDebt == null ? 80 : 88,
+          ),
+        ),
         if (_isLoading) const SliverToBoxAdapter(child: Loading()),
         if (_feedbackMessage.isNotEmpty)
           SliverToBoxAdapter(child: FeedbackMessage(message: _feedbackMessage)),
