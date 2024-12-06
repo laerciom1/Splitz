@@ -5,8 +5,9 @@ This app is a customizable experience for the splitwise services, which aims to 
 I made it with the best experience for me in mind, I'll add some gifs here in the future (:
 
 ### Next steps:
-- [ ] Expense Editor - Undo delete/edit
 - [ ] Category Editor - Delete/Edit/Reorder Category
+- [ ] Expenses Export - Integration with GSheets - select export sheet
+- [ ] Integration with SettleUp
 
 ### Refactors
 
@@ -37,6 +38,8 @@ I made it with the best experience for me in mind, I'll add some gifs here in th
 - [ ] Add animations
 
 ### Done
+- [x] Expenses Export - Show total of the selected month
+- [x] Expense Editor - Undo delete/edit
 - [x] Show group balance
 - [x] Expense Editor - Edit date
 - [x] Export data from the bills of the month

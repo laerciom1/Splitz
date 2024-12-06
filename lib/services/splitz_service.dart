@@ -183,6 +183,9 @@ abstract class SplitzService {
   static Future<void> deleteExpense(ExpenseEntity expense) async =>
       await SplitwiseRepository.deleteExpense(expense);
 
+  static Future<void> undeleteExpense(ExpenseEntity expense) async =>
+      await SplitwiseRepository.undeleteExpense(expense);
+
   static Future<int> updateExpense(ExpenseEntity expense) async =>
       await SplitwiseRepository.updateExpense(expense);
 

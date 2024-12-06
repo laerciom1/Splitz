@@ -29,6 +29,7 @@ class ExpensesListScreen extends StatefulWidget {
 
 class _ExpensesListScreenState extends State<ExpensesListScreen> {
   List<ExpenseEntity>? _expenses;
+  ExpenseEntity? _lastModifiedExpense;
   GroupConfigEntity? _groupConfig;
   GroupEntity? _groupInfo;
   String _feedbackMessage = '';
@@ -42,6 +43,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
 
   void setData({
     List<ExpenseEntity>? expenses,
+    ExpenseEntity? lastModifiedExpense,
     GroupConfigEntity? groupConfig,
     GroupEntity? groupInfo,
     String feedbackMessage = '',
@@ -49,6 +51,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
   }) =>
       setState(() {
         _expenses = expenses;
+        _lastModifiedExpense = lastModifiedExpense ?? _lastModifiedExpense;
         _groupConfig = groupConfig ?? _groupConfig;
         _groupInfo = groupInfo ?? _groupInfo;
         _feedbackMessage = feedbackMessage;
@@ -56,7 +59,9 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
       });
 
   int findIndex(ExpenseEntity expense) {
-    final idx = _expenses!.indexWhere((e) => e == expense);
+    final idx = _expenses!.indexWhere(
+      (e) => e == expense || (e.id != null && e.id == expense.id),
+    );
     if (idx == -1) {
       showToast("Something went wrong locating your expense");
     }
@@ -65,20 +70,15 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
 
   void updateExpense(int idx, ExpenseEntity expense) {
     final newList = [..._expenses!];
-    newList[idx] = expense;
-    setData(expenses: newList);
-  }
-
-  void deleteExpense(int idx) {
-    final newList = [..._expenses!]..removeAt(idx);
-    setData(expenses: newList);
+    newList[idx] = expense.copyWith(backup: newList[idx].copyWith());
+    setData(expenses: newList, lastModifiedExpense: newList[idx]);
   }
 
   Future<void> initScreen() async {
-    setData(isLoading: true);
     late GroupConfigEntity? remoteGroupConfig;
     late GroupEntity remoteGroupInfo;
     try {
+      setData(isLoading: true);
       final [config, info] = await Future.wait([
         SplitzService.getGroupConfig(widget.groupId),
         SplitzService.getGroupInfo(widget.groupId),
@@ -98,8 +98,8 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
   }
 
   Future<void> getExpenses() async {
-    setData(isLoading: true);
     try {
+      setData(isLoading: true);
       final expenses = await SplitzService.getExpenses(
         widget.groupId,
         _groupConfig!.splitzCategories,
@@ -132,10 +132,25 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
 
   Future<void> onRetryCreate(ExpenseEntity expense, int idx) async {
     try {
+      setData(isLoading: true);
       await SplitzService.createExpense(expense);
       await initScreen();
     } catch (_) {
       updateExpense(0, expense.copyWith(state: ExpenseEntityState.createError));
+    }
+  }
+
+  Future<void> undoEdit() async {
+    final lastModifiedExpense = _lastModifiedExpense;
+    if (lastModifiedExpense != null) {
+      final idx = findIndex(lastModifiedExpense);
+      if (idx == -1) return;
+      await onRetryEdit(
+        expenseToEdit: lastModifiedExpense,
+        idx: idx,
+        newVersion: lastModifiedExpense.backup,
+        isUndo: true,
+      );
     }
   }
 
@@ -158,14 +173,19 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
       ),
     );
     if (expense == null) return;
-    await onRetryEdit(expenseToEdit, idx, expense);
+    await onRetryEdit(
+      expenseToEdit: expenseToEdit,
+      idx: idx,
+      newVersion: expense,
+    );
   }
 
-  Future<void> onRetryEdit(
-    ExpenseEntity expenseToEdit,
-    int idx, [
+  Future<void> onRetryEdit({
+    required ExpenseEntity expenseToEdit,
+    required int idx,
     ExpenseEntity? newVersion,
-  ]) async {
+    bool isUndo = false,
+  }) async {
     final finalExpense = newVersion != null
         ? expenseToEdit.copyWithBackup(
             state: ExpenseEntityState.loading,
@@ -173,14 +193,51 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
           )
         : expenseToEdit.copyWith(state: ExpenseEntityState.loading);
     try {
-      updateExpense(idx, finalExpense);
+      if (!isUndo) {
+        updateExpense(idx, finalExpense);
+      }
+      setData(isLoading: true);
       await SplitzService.updateExpense(finalExpense);
       await initScreen();
-    } catch (_) {
-      updateExpense(
-        idx,
-        finalExpense.copyWith(state: ExpenseEntityState.editError),
+      showToast(
+        'Expense ${isUndo ? 'restored' : 'edited'} successfully',
+        actionLabel: isUndo ? null : 'UNDO',
+        actionFunction: isUndo ? null : undoEdit,
       );
+    } catch (_) {
+      if (!isUndo) {
+        updateExpense(
+          idx,
+          finalExpense.copyWith(state: ExpenseEntityState.editError),
+        );
+        showToast(
+          'Something went wrong editing the expense. You can retry or cancel the edition by swiping the expense card',
+        );
+      } else {
+        showToast(
+          'Something went wrong restoring the expense',
+          actionLabel: 'RETRY',
+          actionFunction: undoEdit,
+        );
+      }
+    }
+  }
+
+  Future<void> undoDelete() async {
+    final lastModifiedExpense = _lastModifiedExpense;
+    if (lastModifiedExpense != null) {
+      try {
+        setData(isLoading: true);
+        await SplitzService.undeleteExpense(lastModifiedExpense);
+        showToast('Expense restored successfully');
+        await initScreen();
+      } catch (_) {
+        showToast(
+          'Something went wrong restoring the expense',
+          actionLabel: 'RETRY',
+          actionFunction: undoDelete,
+        );
+      }
     }
   }
 
@@ -189,10 +246,16 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
       final idx = findIndex(expense);
       if (idx == -1) return false;
       if (expense.state == ExpenseEntityState.listed) {
+        setData(isLoading: true);
         await SplitzService.deleteExpense(expense);
+        setData(lastModifiedExpense: _expenses![idx]);
         await initScreen();
+        showToast(
+          'Expense deleted successfully',
+          actionLabel: 'UNDO',
+          actionFunction: undoDelete,
+        );
       }
-      deleteExpense(idx);
       return true;
     } catch (_) {
       showToast(
@@ -231,7 +294,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
       await onRetryCreate(expense, idx);
     }
     if (expense.state == ExpenseEntityState.editError) {
-      await onRetryEdit(expense, idx);
+      await onRetryEdit(expenseToEdit: expense, idx: idx);
     }
     return false;
   }

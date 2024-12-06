@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:splitz/data/entities/external/expense_entity.dart';
 import 'package:splitz/data/models/splitwise/common/expense_request.dart';
 import 'package:splitz/data/models/splitwise/create_expense/create_expense_response.dart';
-import 'package:splitz/data/models/splitwise/delete_expense/delete_expense.dart';
+import 'package:splitz/data/models/splitwise/common/plain_success_response.dart';
 import 'package:splitz/data/models/splitwise/get_categories/get_categories_response.dart';
 import 'package:splitz/data/models/splitwise/get_current_user/get_current_user_response.dart';
 import 'package:splitz/data/models/splitwise/get_expenses/get_expenses_response.dart';
@@ -173,19 +173,32 @@ abstract class SplitwiseRepository {
     }
   }
 
-  static Future<void> deleteExpense(ExpenseEntity expense) async {
+  static Future<void> deleteExpense(ExpenseEntity expense) async =>
+      _handleDeleteOperation(expense);
+
+  static Future<void> undeleteExpense(ExpenseEntity expense) async =>
+      _handleDeleteOperation(expense, undelete: true);
+
+  static Future<void> _handleDeleteOperation(
+    ExpenseEntity expense, {
+    bool undelete = false,
+  }) async {
     try {
       final dio = await _dio;
-      final response = await dio.post('/delete_expense/${expense.id!}');
-      final result = DeleteExpenseResponse.fromMap(
+      final response = await dio.post(
+        '/${undelete ? 'un' : ''}delete_expense/${expense.id!}',
+      );
+      final result = PlainSuccessResponse.fromMap(
         response.data as Map<String, dynamic>,
       );
       if (result.success != true) {
-        throw Exception("success isn't true on deleteExpense result");
+        throw Exception(
+          "success isn't true on ${undelete ? 'un' : ''}deleteExpense result",
+        );
       }
     } catch (e, s) {
       LogService.log(
-        'SplitwiseRepository.deleteExpense',
+        'SplitwiseRepository.${undelete ? 'un' : ''}deleteExpense',
         error: e,
         stackTrace: s,
       );

@@ -4,7 +4,7 @@ import 'package:splitz/navigator.dart';
 void showToast(
   String message, {
   String? actionLabel,
-  void Function()? actionFunction,
+  Future<void> Function()? actionFunction,
 }) {
   final scaffold = ScaffoldMessenger.of(AppNavigator.context);
   final action = SnackBarAction(

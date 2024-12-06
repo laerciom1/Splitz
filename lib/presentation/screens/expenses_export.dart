@@ -36,6 +36,7 @@ class _ExpensesExportStateScreen extends State<ExpensesExportScreen> {
 
   ExportEntity? _export;
   DateTime? _selectedMonth;
+  double? _selectedMonthTotal;
   String _feedbackMessage = '';
   bool _isLoading = false;
 
@@ -55,6 +56,10 @@ class _ExpensesExportStateScreen extends State<ExpensesExportScreen> {
   }) {
     setState(() {
       _export = export ?? _export;
+      if (_export != null) {
+        _selectedMonthTotal = _export!.categories
+            .fold<double>(.0, (accu, curr) => accu + curr.total);
+      }
       _selectedMonth = selectedMonth ?? _selectedMonth;
       _feedbackMessage = feedbackMessage;
       _isLoading = isLoading;
@@ -191,7 +196,7 @@ class _ExpensesExportStateScreen extends State<ExpensesExportScreen> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              _selectedMonth!.toDateFormat('MMM/yy'),
+              '${_selectedMonth!.toDateFormat('MMM/yy')} - ${_selectedMonthTotal!.toBRL()}',
               style: const TextStyle(fontSize: 20),
             ),
             ..._export!.categories
