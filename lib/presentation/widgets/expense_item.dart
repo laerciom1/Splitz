@@ -5,10 +5,7 @@ import 'package:splitz/extensions/datetime.dart';
 import 'package:splitz/extensions/double.dart';
 import 'package:splitz/extensions/strings.dart';
 import 'package:splitz/presentation/theme/util.dart';
-
-const _imageHeight = 80.0;
-const _imagePadding = 8.0;
-const _badgeHeight = 24.0;
+import 'package:splitz/presentation/widgets/base_item.dart';
 
 class ExpenseItem extends StatelessWidget {
   const ExpenseItem({
@@ -41,8 +38,8 @@ class ExpenseItem extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8.0),
         ),
-        height: _imageHeight,
-        width: _imageHeight,
+        height: BaseItem.contentMinHeight,
+        width: BaseItem.contentMinHeight,
         child: expense.imageUrl.isNotNullNorEmpty
             ? CachedNetworkImage(imageUrl: expense.imageUrl!)
             : getImagePlaceholder(backgroundcolor),
@@ -76,27 +73,22 @@ class ExpenseItem extends StatelessWidget {
         ],
       );
 
-  Widget loadingBadgeContent() {
-    return const Padding(
-      padding: EdgeInsets.all(_badgeHeight / 4),
-      child: SizedBox(
-        height: _badgeHeight / 2,
-        width: _badgeHeight / 2,
-        child: CircularProgressIndicator(strokeWidth: 1),
-      ),
-    );
-  }
+  Widget loadingBadgeContent() => const Padding(
+        padding: EdgeInsets.all(BaseItem.badgeHeight / 4),
+        child: SizedBox(
+          height: BaseItem.badgeHeight / 2,
+          width: BaseItem.badgeHeight / 2,
+          child: CircularProgressIndicator(strokeWidth: 1),
+        ),
+      );
 
   Widget errorBadgeContent() {
     return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 6.0),
+      padding: EdgeInsets.symmetric(horizontal: 8.0),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            Icons.error,
-            size: _badgeHeight * .8,
-          ),
+          Icon(Icons.error),
           SizedBox(width: 4),
           Text(
             'Something went wrong. Swipe to retry or cancel',
@@ -120,165 +112,6 @@ class ExpenseItem extends StatelessWidget {
     }
   }
 
-  DismissDirection getDismissDirection() {
-    switch (expense.state) {
-      case ExpenseEntityState.listed:
-      case ExpenseEntityState.createError:
-      case ExpenseEntityState.editError:
-        return DismissDirection.horizontal;
-      case ExpenseEntityState.loading:
-      case ExpenseEntityState.example:
-        return DismissDirection.none;
-    }
-  }
-
-  Widget baseWidget({
-    required BuildContext context,
-    required bool dismissible,
-  }) =>
-      Container(
-        constraints:
-            const BoxConstraints(minHeight: _imageHeight + _imagePadding * 2),
-        decoration: BoxDecoration(
-          color: ThemeColors.surfaceBright,
-          borderRadius:
-              dismissible ? null : const BorderRadius.all(Radius.circular(12)),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(_imagePadding),
-              child: getImage(ThemeColors.surfaceBright),
-            ),
-            Flexible(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  0,
-                  _imagePadding,
-                  _imagePadding,
-                  _imagePadding,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(expense.description, softWrap: true),
-                    getExpenseInfo(),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-
-  Widget addDismissibleBehavior({
-    required bool isOnErrorState,
-    required bool isOnErrorOnEditState,
-    required Widget child,
-  }) =>
-      ClipRRect(
-        clipBehavior: Clip.hardEdge,
-        borderRadius: const BorderRadius.all(Radius.circular(12)),
-        child: Dismissible(
-          key: Key('${expense.id}-${expense.categoryId}'),
-          confirmDismiss: (direction) async {
-            if (isOnErrorState && direction == DismissDirection.startToEnd) {
-              return onRetry!(expense);
-            }
-            if (isOnErrorOnEditState) return onCancel!(expense);
-            return onDelete!(expense);
-          },
-          // start to end widget
-          background: Container(
-            color: isOnErrorState ? Colors.green : Colors.red,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Icon(
-                  isOnErrorState ? Icons.refresh : Icons.delete,
-                  color: Colors.white,
-                ),
-                const SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // end to start widget
-          secondaryBackground: Container(
-            color: isOnErrorOnEditState ? Colors.orange : Colors.red,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                  ),
-                ),
-                Icon(
-                  isOnErrorOnEditState ? Icons.cancel : Icons.delete,
-                  color: Colors.white,
-                ),
-              ],
-            ),
-          ),
-          child: child,
-        ),
-      );
-
-  Widget addBadgeContent({
-    required BuildContext context,
-    required Widget badgeContent,
-    required Widget child,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          child,
-          Positioned(
-            bottom: -1 * (_badgeHeight / 2),
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: ThemeColors.primary),
-                  borderRadius: BorderRadius.circular(_badgeHeight),
-                  color: ThemeColors.surface,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(
-                        minHeight: _badgeHeight,
-                        maxHeight: _badgeHeight * 2,
-                        minWidth: _badgeHeight,
-                      ),
-                      child: badgeContent,
-                    )
-                  ],
-                ),
-              ),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final isOnErrorState = expense.state == ExpenseEntityState.createError ||
@@ -288,33 +121,39 @@ class ExpenseItem extends StatelessWidget {
         expense.state == ExpenseEntityState.listed || isOnErrorState;
     final selectable =
         expense.state == ExpenseEntityState.listed && onSelect != null;
-
-    Widget widget = baseWidget(context: context, dismissible: dismissible);
-
-    if (dismissible) {
-      widget = addDismissibleBehavior(
-        isOnErrorState: isOnErrorState,
-        isOnErrorOnEditState: isOnErrorOnEditState,
-        child: widget,
-      );
-    }
-
-    if (selectable) {
-      widget = InkWell(
-        onTap: () => onSelect!.call(expense),
-        borderRadius: const BorderRadius.all(Radius.circular(12)),
-        child: widget,
-      );
-    }
-
-    final badgeContent = getBadgeContent();
-    if (badgeContent != null) {
-      widget = addBadgeContent(
-        context: context,
-        badgeContent: badgeContent,
-        child: widget,
-      );
-    }
-    return widget;
+    return BaseItem(
+      dismissible: dismissible,
+      dismissibleKey: Key('${expense.id}-${expense.categoryId}'),
+      dismissibleBgColor: isOnErrorState ? Colors.green : Colors.red,
+      dismissibleBgIcon: isOnErrorState ? Icons.refresh : Icons.delete,
+      dismissible2ndBgColor: isOnErrorOnEditState ? Colors.orange : Colors.red,
+      dismissible2ndBgIcon: isOnErrorOnEditState ? Icons.cancel : Icons.delete,
+      confirmDismiss: (direction) async {
+        if (isOnErrorState && direction == DismissDirection.startToEnd) {
+          return onRetry!(expense);
+        }
+        if (isOnErrorOnEditState) return onCancel!(expense);
+        return onDelete!(expense);
+      },
+      onTap: selectable ? () => onSelect!.call(expense) : null,
+      badgeContent: getBadgeContent(),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          getImage(ThemeColors.surfaceBright),
+          const SizedBox(width: 8.0),
+          Flexible(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(expense.description, softWrap: true),
+                getExpenseInfo(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

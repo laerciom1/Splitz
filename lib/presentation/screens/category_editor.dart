@@ -37,15 +37,16 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
     with WidgetsBindingObserver {
   late SplitzCategory _currentCategory;
   late Map<String, SplitzConfig> _customSplitzConfigs;
+  late bool _shoulUseCustomSplitzConfig;
   List<SplitzCategory>? _availableCategories;
 
-  bool _shoulUseCustomSplitzConfig = false;
   String _feedbackMessage = '';
   bool _isLoading = true;
 
   late final List<FocusNode> _focusNodes;
   late final FocusNode _preffixFocusNode;
   late final List<TextEditingController> _controllers;
+  late final TextEditingController _prefixController;
   bool _controllersWasInitialized = false;
   FocusNode? _lastFocusedNode;
 
@@ -55,9 +56,12 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _customSplitzConfigs = {...widget.groupConfig.splitzConfigs};
     _currentCategory =
         widget.category ?? SplitzCategory(prefix: '', imageUrl: '', id: 0);
+    _shoulUseCustomSplitzConfig = _currentCategory.splitzConfigs != null;
+    _customSplitzConfigs = _shoulUseCustomSplitzConfig
+        ? _currentCategory.splitzConfigs!
+        : {...widget.groupConfig.splitzConfigs};
     initScreen();
   }
 
@@ -91,10 +95,10 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
   Future<void> initScreen() async {
     setLoading();
     try {
-      final results = await SplitzService.getAvailableCategories(
+      final availableCategories = await SplitzService.getAvailableCategories(
         widget.groupConfig.splitzCategories,
       );
-      setAvailableCategories(results);
+      setAvailableCategories(availableCategories);
     } catch (e, s) {
       const message =
           'Something went wrong retrieving the available categories.\n'
@@ -108,6 +112,7 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
     _preffixFocusNode = FocusNode()..addListener(trackFocusChanges);
     _focusNodes = List.generate(splitzConfigs.length,
         (_) => FocusNode()..addListener(trackFocusChanges));
+    _prefixController = TextEditingController(text: _currentCategory.prefix);
     _controllers = [
       ...splitzConfigs.values.map(
         (config) => TextEditingController(text: config.slice.toString()),
@@ -262,6 +267,7 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
             child: PrimaryField(
               onChanged: onChangePrefix,
               focusNode: _preffixFocusNode,
+              controller: _prefixController,
             ),
           ),
           Padding(

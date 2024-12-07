@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:splitz/data/entities/external/expense_entity.dart';
 import 'package:splitz/data/entities/external/group_entity.dart';
@@ -157,7 +158,8 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
   Future<void> onEdit(ExpenseEntity expenseToEdit) async {
     final idx = findIndex(expenseToEdit);
     if (idx == -1) return;
-    final category = _groupConfig!.splitzCategories[expenseToEdit.prefix];
+    final category = _groupConfig!.splitzCategories
+        .firstWhereOrNull((e) => e.prefix == expenseToEdit.prefix);
     if (category == null) {
       showToast(
         "You can't edit an expense of a category that doesn't exist on your group preferences anymore",

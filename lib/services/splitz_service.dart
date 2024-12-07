@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:splitz/data/entities/external/group_entity.dart';
 import 'package:splitz/data/entities/external/member_entity.dart';
 import 'package:splitz/data/entities/splitz/app_preferences_entity.dart';
@@ -100,18 +101,23 @@ abstract class SplitzService {
 
   static Future<List<ExpenseEntity>> getExpenses(
     String groupId,
-    Map<String, SplitzCategory> categories,
+    List<SplitzCategory> categories,
   ) async {
     final response = await SplitwiseRepository.getExpenses(groupId);
     final filteredExpenses = [
       ...response.expenses
           .where((e) => e.deletedAt == null && e.payment != true),
     ];
-    return filteredExpenses.map((e) {
+    final result = <ExpenseEntity>[];
+    for (final e in filteredExpenses) {
       final prefix = e.description.split(' ')[0];
-      final imageUrl = categories[prefix]!.imageUrl;
-      return ExpenseEntity.fromExpenseResponse(e, imageUrl);
-    }).toList();
+      final imageUrl =
+          categories.firstWhereOrNull((e) => e.prefix == prefix)?.imageUrl;
+      if (imageUrl.isNotNullNorEmpty) {
+        result.add(ExpenseEntity.fromExpenseResponse(e, imageUrl));
+      }
+    }
+    return result;
   }
 
   static Future<GroupEntity> getGroupInfo(String groupId) async {
@@ -150,7 +156,7 @@ abstract class SplitzService {
       {...b, ...a};
 
   static Future<List<SplitzCategory>> getAvailableCategories(
-    Map<String, SplitzCategory> actualCategories,
+    List<SplitzCategory> actualCategories,
   ) async {
     final response = await SplitwiseRepository.getAvailableCategories();
     final result = <SplitzCategory>[];
@@ -159,7 +165,7 @@ abstract class SplitzService {
       result.addAll(c.subcategories.map((c) => SplitzCategory.fromCategory(c)));
     }
     final actualCategoriesSet = <String>{};
-    for (var e in actualCategories.values) {
+    for (var e in actualCategories) {
       actualCategoriesSet.addAll(['${e.id}', e.imageUrl]);
     }
     return [

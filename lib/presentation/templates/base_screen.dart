@@ -14,6 +14,7 @@ class BaseScreen extends StatelessWidget {
     this.floatingActionButton,
     this.safeArea = true,
     this.appBar = true,
+    this.shouldHaveMaxHeightConstraint = false,
     this.onRefresh,
     this.onPop,
     this.scaffoldKey,
@@ -29,6 +30,7 @@ class BaseScreen extends StatelessWidget {
   final Widget? floatingActionButton;
   final bool safeArea;
   final bool appBar;
+  final bool shouldHaveMaxHeightConstraint;
   final Future<void> Function()? onRefresh;
   final Future<void> Function(bool, dynamic)? onPop;
   final GlobalKey<ScaffoldState>? scaffoldKey;
@@ -41,7 +43,12 @@ class BaseScreen extends StatelessWidget {
         controller: scrollController,
         physics: const AlwaysScrollableScrollPhysics(),
         child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          constraints: BoxConstraints(
+            minHeight: constraints.maxHeight,
+            maxHeight: shouldHaveMaxHeightConstraint
+                ? constraints.maxHeight
+                : double.infinity,
+          ),
           child: child,
         ),
       );

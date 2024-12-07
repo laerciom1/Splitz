@@ -1,63 +1,80 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:splitz/data/entities/splitz/group_config_entity.dart';
-import 'package:splitz/extensions/list.dart';
-import 'package:splitz/presentation/theme/slice_colors.dart';
-import 'package:splitz/presentation/widgets/slice_badge.dart';
-
-const _cardHeight = 60.0;
+import 'package:splitz/presentation/widgets/base_item.dart';
+import 'package:splitz/presentation/widgets/slice_badges.dart';
 
 class CategoryItem extends StatelessWidget {
   const CategoryItem({
     required this.category,
     required this.splitzConfigs,
+    required this.onDelete,
+    required this.onSelect,
+    required this.index,
     super.key,
   });
 
   final SplitzCategory category;
   final Map<String, SplitzConfig> splitzConfigs;
-
-  List<Widget> getBadges() {
-    int index = 0;
-    return splitzConfigs.values
-        .map<Widget>((value) =>
-            SliceBadge(color: sliceColors[index++], text: '${value.slice}'))
-        .intersperse(const SizedBox(width: 4))
-        .toList();
-  }
+  final Future<bool> Function(SplitzCategory) onDelete;
+  final Future<void> Function(SplitzCategory) onSelect;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          height: _cardHeight,
-          width: _cardHeight,
-          clipBehavior: Clip.hardEdge,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
-          child: CachedNetworkImage(imageUrl: category.imageUrl),
-        ),
-        const SizedBox(width: 12),
-        Flexible(
-          child: SizedBox(
-            height: _cardHeight,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
+    return Padding(
+      key: Key('${category.id}-${category.prefix}'),
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: BaseItem(
+        dismissible: true,
+        dismissibleKey: Key('${category.id}-${category.prefix}'),
+        dismissibleBgColor: Colors.red,
+        dismissibleBgIcon: Icons.delete,
+        confirmDismiss: (_) async => onDelete(category),
+        onTap: () => onSelect(category),
+        child: Column(
+          children: [
+            Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  category.prefix,
-                  style: const TextStyle(fontSize: 20),
+                Container(
+                  height: BaseItem.contentMinHeight,
+                  width: BaseItem.contentMinHeight,
+                  clipBehavior: Clip.hardEdge,
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(8)),
+                  child: CachedNetworkImage(imageUrl: category.imageUrl),
                 ),
-                Row(
-                  children: getBadges() ,
+                const SizedBox(width: BaseItem.contentMinHeight / 10),
+                Expanded(
+                  child: LayoutBuilder(builder: (_, constraints) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          category.prefix,
+                          style: const TextStyle(
+                            fontSize: BaseItem.contentMinHeight / 4,
+                          ),
+                        ),
+                        const SizedBox(height: BaseItem.contentMinHeight / 10),
+                        SliceBadges(
+                          configs: splitzConfigs.values,
+                          totalWidth: constraints.maxWidth,
+                        ),
+                      ],
+                    );
+                  }),
                 ),
               ],
             ),
-          ),
-        )
-      ],
+            ReorderableDragStartListener(
+              index: index,
+              child: const Icon(Icons.drag_handle),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

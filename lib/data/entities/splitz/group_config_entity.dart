@@ -5,7 +5,7 @@ import 'package:splitz/data/models/splitwise/get_categories/get_categories_respo
 import 'package:splitz/extensions/strings.dart';
 
 class GroupConfigEntity {
-  Map<String, SplitzCategory> splitzCategories;
+  List<SplitzCategory> splitzCategories;
   Map<String, SplitzConfig> splitzConfigs;
 
   GroupConfigEntity({
@@ -14,34 +14,33 @@ class GroupConfigEntity {
   });
 
   GroupConfigEntity copyWith({
-    Map<String, SplitzCategory>? splitzCategories,
+    List<SplitzCategory>? splitzCategories,
     Map<String, SplitzConfig>? splitzConfigs,
   }) =>
       GroupConfigEntity(
-        splitzCategories: splitzCategories ?? {...this.splitzCategories},
+        splitzCategories: splitzCategories ?? [...this.splitzCategories],
         splitzConfigs: splitzConfigs ?? {...this.splitzConfigs},
       );
 
   factory GroupConfigEntity.fromJson(String str) =>
-      GroupConfigEntity.fromMap(json.decode(str));
+      GroupConfigEntity.fromMap(json.decode(str) as Map<dynamic, dynamic>);
 
   String toJson() => json.encode(toMap());
 
   factory GroupConfigEntity.fromMap(Map<dynamic, dynamic> json) =>
       GroupConfigEntity(
         splitzCategories: json["splitz_categories"] == null
-            ? {}
-            : Map.from(json["splitz_categories"]).map((k, v) =>
-                MapEntry<String, SplitzCategory>(k, SplitzCategory.fromMap(v))),
+            ? []
+            : List<SplitzCategory>.from(json["splitz_categories"]
+                .map((x) => SplitzCategory.fromMap(x)),),
         splitzConfigs: json["splitz_configs"] == null
             ? {}
             : Map.from(json["splitz_configs"]).map((k, v) =>
-                MapEntry<String, SplitzConfig>(k, SplitzConfig.fromMap(v))),
+                MapEntry<String, SplitzConfig>(k, SplitzConfig.fromMap(v)),),
       );
 
   Map<String, dynamic> toMap() => {
-        "splitz_categories": Map.from(splitzCategories)
-            .map((k, v) => MapEntry<String, dynamic>(k, v.toMap())),
+        "splitz_categories": List.from(splitzCategories).map((x) => x.toMap()).toList(),
         "splitz_configs": Map.from(splitzConfigs)
             .map((k, v) => MapEntry<String, dynamic>(k, v.toMap())),
       };
@@ -54,7 +53,7 @@ class GroupConfigEntity {
     if (currentUserId != null) payerId = int.parse(currentUserId);
     if (users != null) {
       final payerUser = users.firstWhereOrNull((e) =>
-          e.paidShare.isNotNullNorEmpty && double.parse(e.paidShare!) != 0.0);
+          e.paidShare.isNotNullNorEmpty && double.parse(e.paidShare!) != 0.0,);
       payerId = payerUser?.userId ?? payerId;
     }
     var splitzConfigs = {...this.splitzConfigs};
@@ -87,7 +86,7 @@ class SplitzCategory {
         prefix: prefix ?? this.prefix,
         imageUrl: imageUrl ?? this.imageUrl,
         id: id ?? this.id,
-        splitzConfigs: splitzConfigs ?? this.splitzConfigs,
+        splitzConfigs: splitzConfigs,
       );
 
   factory SplitzCategory.fromJson(String str) =>
@@ -102,7 +101,7 @@ class SplitzCategory {
         splitzConfigs: json["splitz_configs"] == null
             ? null
             : Map.from(json["splitz_configs"]).map((k, v) =>
-                MapEntry<String, SplitzConfig>(k, SplitzConfig.fromMap(v))),
+                MapEntry<String, SplitzConfig>(k, SplitzConfig.fromMap(v)),),
       );
 
   Map<String, dynamic> toMap() => {

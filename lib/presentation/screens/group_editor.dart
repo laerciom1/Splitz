@@ -1,10 +1,11 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:splitz/data/entities/external/group_entity.dart';
 import 'package:splitz/data/entities/splitz/group_config_entity.dart';
-import 'package:splitz/extensions/list.dart';
 import 'package:splitz/extensions/strings.dart';
 import 'package:splitz/navigator.dart';
 import 'package:splitz/presentation/screens/category_editor.dart';
@@ -17,6 +18,7 @@ import 'package:splitz/presentation/widgets/category_item.dart';
 import 'package:splitz/presentation/widgets/feedback_message.dart';
 import 'package:splitz/presentation/widgets/loading.dart';
 import 'package:splitz/presentation/widgets/slice_editor.dart';
+import 'package:splitz/presentation/widgets/snackbar.dart';
 import 'package:splitz/presentation/widgets/splitz_divider.dart';
 import 'package:splitz/services/splitz_service.dart';
 
@@ -54,67 +56,55 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
     initScreen();
   }
 
-  void setFeedback(String message) {
-    setState(() {
-      _isLoading = false;
-      _groupConfig = null;
-      _feedbackMessage = message;
-    });
-  }
-
-  void setLoading() {
-    setState(() {
-      _isLoading = true;
-      _groupConfig = null;
-      _feedbackMessage = '';
-    });
-  }
-
-  void setGroupConfig({
-    required GroupConfigEntity groupConfig,
+  void setData({
+    GroupConfigEntity? groupConfig,
     bool? showWaitingTimer,
     String? screenTitle,
+    bool? loading,
+    String? feedbackMessage,
   }) {
     setState(() {
-      _isLoading = false;
-      _groupConfig = groupConfig;
-      _feedbackMessage = '';
+      _isLoading = loading ?? false;
+      _feedbackMessage = feedbackMessage ?? '';
+      _groupConfig = groupConfig ?? _groupConfig;
       _screenTitle = screenTitle ?? _screenTitle;
-      if (!_controllersWasInitialized) {
-        initializeFocusAndControllers(groupConfig.splitzConfigs);
-      }
       if (showWaitingTimer != null) {
         _showWaitingTimer = showWaitingTimer;
+      }
+      if (!_controllersWasInitialized && groupConfig != null) {
+        initializeFocusAndControllers(groupConfig.splitzConfigs);
       }
     });
   }
 
   Future<void> initScreen() async {
-    setLoading();
+    setData(loading: true);
     try {
-      final splitzGroupConfig =
-          await SplitzService.getGroupConfig(widget.groupId);
-      final splitwiseGroupInfo =
-          await SplitzService.getGroupInfo(widget.groupId);
+      final [
+        splitzGroupConfig as GroupConfigEntity?,
+        splitwiseGroupInfo as GroupEntity,
+      ] = await Future.wait([
+        SplitzService.getGroupConfig(widget.groupId),
+        SplitzService.getGroupInfo(widget.groupId),
+      ]);
       final splitzConfigs = SplitzService.mergeSplitzConfigs(
         splitzGroupConfig?.splitzConfigs ?? {},
         SplitzService.getSplitzConfigsFromMembers(
           splitwiseGroupInfo.members,
         ),
       );
-      setGroupConfig(
+      setData(
         screenTitle:
-            '${splitzGroupConfig != null ? 'Editing' : 'Creating'} group preferences',
+            '${splitzGroupConfig != null ? 'Editing' : 'Creating'} group',
         groupConfig: GroupConfigEntity(
-          splitzCategories: splitzGroupConfig?.splitzCategories ?? {},
+          splitzCategories: splitzGroupConfig?.splitzCategories ?? [],
           splitzConfigs: splitzConfigs,
         ),
       );
     } catch (e, s) {
-      const message =
-          'Something went wrong retrieving your group information.\n'
+      const message = 'Something went wrong retrieving your group information. '
           'You can drag down to retry.';
-      return setFeedback(message.addErrorDescription(e, s));
+      return setData(feedbackMessage: message.addErrorDescription(e, s));
     }
   }
 
@@ -164,7 +154,7 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
   ]) {
     _timer?.cancel();
     final oldGroupConfig = _groupConfig!.copyWith();
-    setGroupConfig(
+    setData(
       groupConfig: groupConfig,
       showWaitingTimer: shouldTrigger,
     );
@@ -179,7 +169,11 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
             _showWaitingTimer = false;
           });
         } catch (_) {
-          setGroupConfig(groupConfig: oldGroupConfig, showWaitingTimer: false);
+          setData(groupConfig: oldGroupConfig, showWaitingTimer: false);
+          showToast(
+            'Something went wrong updating your group preferences. '
+            'Try again later',
+          );
         }
       });
     }
@@ -191,17 +185,74 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
     updateSplitzGroupConfig(groupConfig, sum == 100);
   }
 
-  void addCategory() async {
+  Future<void> onEditCategory([SplitzCategory? categoryToEdit]) async {
+    if (_groupConfig == null) return;
     final category = await AppNavigator.push<SplitzCategory?>(
-      CategoryEditorScreen(category: null, groupConfig: _groupConfig!),
+      CategoryEditorScreen(
+        category: categoryToEdit,
+        groupConfig: _groupConfig!,
+      ),
     );
     if (category == null) return;
-    final groupConfig = _groupConfig!.copyWith(
-      splitzCategories: {
-        ..._groupConfig!.splitzCategories,
-        category.prefix: category
-      },
+
+    final categories = [..._groupConfig!.splitzCategories];
+    final prefixMatchIndex =
+        categories.indexWhere((e) => e.prefix == category.prefix);
+
+    if (categoryToEdit == null) {
+      // Adding new category
+      if (prefixMatchIndex != -1) {
+        // Updates existing category
+        categories[prefixMatchIndex] = category;
+        _showCategoryUpdatedToast();
+      } else {
+        // Adds new category
+        categories.insert(0, category);
+      }
+    } else {
+      // Editing category
+      final originalIndex = categories.indexOf(categoryToEdit);
+      if (prefixMatchIndex != -1) {
+        // Updates existing category with the same prefix
+        categories[prefixMatchIndex] = category;
+        if (prefixMatchIndex != originalIndex) {
+          // Removes the old one if the index is different
+          categories.removeAt(originalIndex);
+          _showCategoryUpdatedToast();
+        }
+      } else {
+        // Updates to a different prefix
+        categories[originalIndex] = category;
+      }
+    }
+
+    updateSplitzGroupConfig(
+      _groupConfig!.copyWith(splitzCategories: categories),
     );
+  }
+
+  void _showCategoryUpdatedToast() => showToast(
+        'A category with this prefix was already registered. '
+        'We updated this category instead of creating a new one',
+      );
+
+  Future<bool> onDelete(SplitzCategory category) async {
+    final categories = [..._groupConfig!.splitzCategories];
+    categories.remove(category);
+    updateSplitzGroupConfig(
+      _groupConfig!.copyWith(splitzCategories: categories),
+    );
+    return true;
+  }
+
+  void onReorder(int oldIndex, int newIndex) {
+    final categories = [..._groupConfig!.splitzCategories];
+    if (oldIndex < newIndex) {
+      newIndex -= 1;
+    }
+    final item = categories.removeAt(oldIndex);
+    categories.insert(newIndex, item);
+    final groupConfig = _groupConfig!.copyWith(splitzCategories: categories);
     updateSplitzGroupConfig(groupConfig);
   }
 
@@ -217,15 +268,13 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
       onRefresh: initScreen,
       floatingActionButton: getFAB(),
       topWidget: getHeader(context),
+      shouldHaveMaxHeightConstraint: true,
       child: getBody(),
     );
   }
 
   Widget? getHeader(BuildContext ctx) {
-    if (_isLoading || _feedbackMessage.isNotEmpty) {
-      return null;
-    }
-
+    if (_isLoading || _feedbackMessage.isNotEmpty) return null;
     return getGroupEditorHeader(ctx);
   }
 
@@ -233,13 +282,11 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
-            padding: EdgeInsets.all(24.0),
-            child: Text(
-              'Default division of expenses among participants:',
-            ),
+            padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
+            child: Text('Default division of expenses among participants:'),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
             child: Stack(
               alignment: AlignmentDirectional.topEnd,
               children: [
@@ -281,31 +328,78 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
     return getGroupEditorBody();
   }
 
-  Widget getGroupEditorBody() => SizedBox(
-        width: double.infinity,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 24.0),
-                child: Text('Categories:'),
-              ),
-              ..._groupConfig!.splitzCategories.values.map<Widget>(
-                (e) {
-                  return CategoryItem(
-                    category: e,
-                    splitzConfigs:
-                        e.splitzConfigs ?? _groupConfig!.splitzConfigs,
-                  );
-                },
-              ).intersperse(const SizedBox(height: 12)),
-              const SizedBox(height: 24)
-            ],
-          ),
+  Widget getGroupEditorBody() {
+    final categories = <CategoryItem>[];
+
+    for (int idx = 0; idx < _groupConfig!.splitzCategories.length; idx += 1) {
+      final category = _groupConfig!.splitzCategories[idx];
+      final splitzConfigs =
+          category.splitzConfigs ?? _groupConfig!.splitzConfigs;
+      categories.add(
+        CategoryItem(
+          key: Key('${category.id}-${category.prefix}'),
+          index: idx,
+          category: category,
+          splitzConfigs: splitzConfigs,
+          onDelete: onDelete,
+          onSelect: onEditCategory,
         ),
       );
+    }
+
+    Widget proxyDecorator(
+      Widget child,
+      int index,
+      Animation<double> animation,
+    ) {
+      return AnimatedBuilder(
+        animation: animation,
+        builder: (BuildContext context, Widget? child) {
+          final double animValue = Curves.easeInOut.transform(animation.value);
+          final double scale = lerpDouble(1, 1.02, animValue)!;
+          final category = _groupConfig!.splitzCategories[index];
+          final splitzConfigs =
+              category.splitzConfigs ?? _groupConfig!.splitzConfigs;
+          return Material(
+            color: Colors.transparent,
+            child: Transform.scale(
+              scale: scale,
+              child: CategoryItem(
+                key: Key('${category.id}-${category.prefix}'),
+                index: index,
+                category: category,
+                splitzConfigs: splitzConfigs,
+                onDelete: onDelete,
+                onSelect: onEditCategory,
+              ),
+            ),
+          );
+        },
+        child: child,
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8.0),
+            child: Text('Categories:'),
+          ),
+          Expanded(
+            child: ReorderableListView(
+              proxyDecorator: proxyDecorator,
+              onReorder: onReorder,
+              children: categories,
+            ),
+          ),
+          const SizedBox(height: 24.0),
+        ],
+      ),
+    );
+  }
 
   Widget? getFAB() {
     if (_groupConfig == null || _isLoading || _feedbackMessage.isNotEmpty) {
@@ -313,7 +407,7 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
     }
     return AddCategoryFAB(
       enableActions: !_showWaitingTimer,
-      onAdd: addCategory,
+      onAdd: onEditCategory,
       onFinish: finishEditing,
     );
   }

@@ -6,7 +6,6 @@ import 'package:splitz/presentation/theme/slice_colors.dart';
 import 'package:splitz/presentation/theme/util.dart';
 import 'package:splitz/presentation/widgets/circle_avatar.dart';
 import 'package:splitz/presentation/widgets/field_percentage.dart';
-import 'package:splitz/presentation/widgets/slice_badge.dart';
 import 'package:splitz/presentation/widgets/slice_slider.dart';
 
 const _padding = 8.0;
@@ -76,15 +75,9 @@ class SliceEditor extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 16),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              config.name,
-              style: const TextStyle(fontSize: 16),
-            ),
-            SliceBadge(color: sliceColors[index]),
-          ],
+        Text(
+          config.name,
+          style: const TextStyle(fontSize: 16),
         ),
       ],
     );
@@ -164,7 +157,6 @@ class SliceEditor extends StatelessWidget {
             initRangeValues: getRanges(),
           ),
         ),
-        const SizedBox(height: 24),
       ],
     );
   }
