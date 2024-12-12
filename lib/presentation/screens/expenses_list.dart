@@ -9,6 +9,7 @@ import 'package:splitz/navigator.dart';
 import 'package:splitz/presentation/screens/expense_editor.dart';
 import 'package:splitz/presentation/screens/group_editor.dart';
 import 'package:splitz/presentation/screens/groups_list.dart';
+import 'package:splitz/presentation/screens/payment_editor.dart';
 import 'package:splitz/presentation/widgets/fab_add_split.dart';
 import 'package:splitz/presentation/widgets/expense_item.dart';
 import 'package:splitz/presentation/widgets/feedback_message.dart';
@@ -51,7 +52,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
     bool isLoading = false,
   }) =>
       setState(() {
-        _expenses = expenses;
+        _expenses = expenses ?? _expenses;
         _lastModifiedExpense = lastModifiedExpense ?? _lastModifiedExpense;
         _groupConfig = groupConfig ?? _groupConfig;
         _groupInfo = groupInfo ?? _groupInfo;
@@ -113,6 +114,16 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
     }
   }
 
+  Future<void> onAddPayment() async {
+    final payment = await AppNavigator.push<ExpenseEntity?>(
+      PaymentEditorScreen(
+        groupConfig: _groupConfig!,
+        groupId: widget.groupId,
+      ),
+    );
+    await handleNewExpense(payment);
+  }
+
   Future<void> onCreate(SplitzCategory category) async {
     final expense = await AppNavigator.push<ExpenseEntity?>(
       ExpenseEditorScreen(
@@ -121,6 +132,10 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
         groupId: widget.groupId,
       ),
     );
+    await handleNewExpense(expense);
+  }
+
+  Future<void> handleNewExpense(ExpenseEntity? expense) async {
     if (expense == null) return;
     setData(
       expenses: [
@@ -158,22 +173,33 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
   Future<void> onEdit(ExpenseEntity expenseToEdit) async {
     final idx = findIndex(expenseToEdit);
     if (idx == -1) return;
-    final category = _groupConfig!.splitzCategories
-        .firstWhereOrNull((e) => e.prefix == expenseToEdit.prefix);
-    if (category == null) {
-      showToast(
-        "You can't edit an expense of a category that doesn't exist on your group preferences anymore",
+    ExpenseEntity? expense;
+    if (expenseToEdit.payment) {
+      expense = await AppNavigator.push<ExpenseEntity?>(
+        PaymentEditorScreen(
+          groupConfig: _groupConfig!,
+          groupId: widget.groupId,
+          expense: expenseToEdit,
+        ),
       );
-      return;
+    } else {
+      final category = _groupConfig!.splitzCategories
+          .firstWhereOrNull((e) => e.prefix == expenseToEdit.prefix);
+      if (category == null) {
+        showToast(
+          "You can't edit an expense of a category that doesn't exist on your group preferences anymore",
+        );
+        return;
+      }
+      expense = await AppNavigator.push<ExpenseEntity?>(
+        ExpenseEditorScreen(
+          category: category,
+          groupConfig: _groupConfig!,
+          groupId: widget.groupId,
+          expense: expenseToEdit,
+        ),
+      );
     }
-    final expense = await AppNavigator.push<ExpenseEntity?>(
-      ExpenseEditorScreen(
-        category: category,
-        groupConfig: _groupConfig!,
-        groupId: widget.groupId,
-        expense: expenseToEdit,
-      ),
-    );
     if (expense == null) return;
     await onRetryEdit(
       expenseToEdit: expenseToEdit,
@@ -263,6 +289,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
       showToast(
         'Something went wrong deleting the expense. You can retry later',
       );
+      setData(isLoading: false);
       return false;
     }
   }
@@ -347,7 +374,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
         if (_isLoading) const SliverToBoxAdapter(child: Loading()),
         if (_feedbackMessage.isNotEmpty)
           SliverToBoxAdapter(child: FeedbackMessage(message: _feedbackMessage)),
-        if (_expenses != null)
+        if (_expenses != null && !_isLoading)
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
@@ -378,6 +405,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
       categories: _groupConfig!.splitzCategories,
       onSelectCategory: onCreate,
       onEditGroupPreferences: editGroupPreferences,
+      onAddPayment: onAddPayment,
     );
   }
 }

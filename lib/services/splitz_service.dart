@@ -105,15 +105,14 @@ abstract class SplitzService {
   ) async {
     final response = await SplitwiseRepository.getExpenses(groupId);
     final filteredExpenses = [
-      ...response.expenses
-          .where((e) => e.deletedAt == null && e.payment != true),
+      ...response.expenses.where((e) => e.deletedAt == null),
     ];
     final result = <ExpenseEntity>[];
     for (final e in filteredExpenses) {
       final prefix = e.description.split(' ')[0];
       final imageUrl =
           categories.firstWhereOrNull((e) => e.prefix == prefix)?.imageUrl;
-      if (imageUrl.isNotNullNorEmpty) {
+      if (imageUrl.isNotNullNorEmpty || e.payment) {
         result.add(ExpenseEntity.fromExpenseResponse(e, imageUrl));
       }
     }

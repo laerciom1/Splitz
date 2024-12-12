@@ -12,11 +12,13 @@ class AddSplitFAB extends StatelessWidget {
     required this.categories,
     required this.onSelectCategory,
     required this.onEditGroupPreferences,
+    required this.onAddPayment,
   });
 
   final List<SplitzCategory> categories;
   final void Function(SplitzCategory) onSelectCategory;
   final void Function() onEditGroupPreferences;
+  final void Function() onAddPayment;
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +33,12 @@ class AddSplitFAB extends StatelessWidget {
             onPressed: () => onSelectCategory(category),
             chi1d: CachedNetworkImage(imageUrl: category.imageUrl),
           ),
+        ),
+        FABOption(
+          text: 'Add payment',
+          onPressed: onAddPayment,
+          chi1d: const Icon(Icons.currency_exchange),
+          shouldShowBackground: true,
         ),
         FABOption(
           text: 'Edit group preferences',

@@ -5,7 +5,6 @@ This app is a customizable experience for the splitwise services, which aims to 
 I made it with the best experience for me in mind, I'll add some gifs here in the future (:
 
 ### Next steps:
-- [ ] Expenses List - Option to add payment
 - [ ] Expenses Export - Integration with GSheets - select export sheet
 - [ ] Integration with SettleUp
 
@@ -38,6 +37,7 @@ I made it with the best experience for me in mind, I'll add some gifs here in th
 - [ ] Add animations
 
 ### Done
+- [x] Expenses List - Option to add payment
 - [x] Category Editor - Delete/Edit/Reorder Category
 - [x] Expenses Export - Show total of the selected month
 - [x] Expense Editor - Undo delete/edit

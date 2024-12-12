@@ -19,6 +19,7 @@ class ExpenseEntity {
   int? id;
   int? payerId;
   ExpenseEntity? backup;
+  bool payment;
 
   ExpenseEntity({
     required this.state,
@@ -33,36 +34,41 @@ class ExpenseEntity {
     this.id,
     this.payerId,
     this.backup,
+    this.payment = false,
   });
 
   ExpenseEntity copyWith({
     ExpenseEntityState? state,
+    String? cost,
     String? description,
     DateTime? date,
     int? groupId,
     int? categoryId,
+    List<UserExpenseEntity>? users,
     String? imageUrl,
     String? currencyCode,
     int? id,
     int? payerId,
     ExpenseEntity? backup,
+    bool? payment,
   }) =>
       ExpenseEntity(
         state: state ?? this.state,
-        cost: cost,
+        cost: cost ?? this.cost,
         description: description ?? this.description,
         date: date ?? this.date,
         groupId: groupId ?? this.groupId,
         categoryId: categoryId ?? this.categoryId,
+        users: users ?? this.users,
         imageUrl: imageUrl ?? this.imageUrl,
-        users: users,
         currencyCode: currencyCode ?? this.currencyCode,
         id: id ?? this.id,
         payerId: payerId ?? this.payerId,
         backup: backup ?? this.backup,
+        payment: payment ?? this.payment,
       );
 
-  static List<UserExpenseEntity> getUsers(
+  static List<UserExpenseEntity> _getUsers(
     String cost,
     Map<String, SplitzConfig> splitzConfigs,
   ) =>
@@ -83,7 +89,7 @@ class ExpenseEntity {
     required Map<String, SplitzConfig> splitzConfigs,
   }) {
     final costToUse = cost ?? this.cost;
-    final users = getUsers(costToUse, splitzConfigs);
+    final users = _getUsers(costToUse, splitzConfigs);
     final payerId = users.firstWhereOrNull((e) => e.paidShare != _zero)?.userId;
 
     return ExpenseEntity(
@@ -99,6 +105,7 @@ class ExpenseEntity {
       id: id,
       payerId: payerId,
       backup: backup,
+      payment: payment,
     );
   }
 
@@ -120,6 +127,7 @@ class ExpenseEntity {
       id: newVersion.id,
       payerId: newVersion.payerId,
       backup: backup,
+      payment: payment,
     );
   }
 
@@ -145,10 +153,12 @@ class ExpenseEntity {
       id: e.id,
       payerId: payerId,
       backup: null,
+      payment: e.payment,
     );
   }
 
   factory ExpenseEntity.fromSplitzConfig({
+    required Map<String, SplitzConfig> splitzConfigs,
     required cost,
     String description = '',
     DateTime? date,
@@ -156,7 +166,6 @@ class ExpenseEntity {
     int categoryId = 0,
     String imageUrl = '',
     String currencyCode = 'BRL',
-    required Map<String, SplitzConfig> splitzConfigs,
     ExpenseEntity? newVersion,
   }) {
     final payerId =
@@ -169,10 +178,26 @@ class ExpenseEntity {
       groupId: groupId,
       categoryId: categoryId,
       imageUrl: imageUrl,
-      users: getUsers(cost, splitzConfigs),
+      users: _getUsers(cost, splitzConfigs),
       currencyCode: currencyCode,
       payerId: payerId,
       backup: newVersion,
+      payment: false,
+    );
+  }
+
+  factory ExpenseEntity.payment({
+    required groupId,
+  }) {
+    return ExpenseEntity(
+      state: ExpenseEntityState.example,
+      cost: '0.0',
+      description: 'Payment',
+      date: DateTime.now(),
+      groupId: groupId,
+      categoryId: 18,
+      users: [],
+      payment: true,
     );
   }
 

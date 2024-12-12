@@ -11,6 +11,7 @@ abstract class ExpenseRequest {
       "currency_code": expense.currencyCode,
       "category_id": expense.categoryId,
       "group_id": expense.groupId,
+      "payment": expense.payment,
     };
 
     final entries = expense.users.asMap().entries.fold(

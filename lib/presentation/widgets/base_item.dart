@@ -36,7 +36,7 @@ class BaseItem extends StatelessWidget {
   }) =>
       Container(
         constraints: const BoxConstraints(
-          minHeight: contentMinHeight + contentPadding * 2,
+          minHeight: (contentMinHeight / 2) + contentPadding * 2,
         ),
         decoration: BoxDecoration(
           color: ThemeColors.surfaceBright,

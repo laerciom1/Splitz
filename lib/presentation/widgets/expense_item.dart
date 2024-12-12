@@ -33,17 +33,24 @@ class ExpenseItem extends StatelessWidget {
         ),
       );
 
-  Widget getImage(Color backgroundcolor) => Container(
-        clipBehavior: Clip.hardEdge,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        height: BaseItem.contentMinHeight,
-        width: BaseItem.contentMinHeight,
-        child: expense.imageUrl.isNotNullNorEmpty
-            ? CachedNetworkImage(imageUrl: expense.imageUrl!)
-            : getImagePlaceholder(backgroundcolor),
-      );
+  Widget getImage() {
+    final size = BaseItem.contentMinHeight / (expense.payment ? 2 : 1);
+    Widget child;
+    if (expense.payment) {
+      child = const Icon(Icons.currency_exchange);
+    } else {
+      child = expense.imageUrl.isNotNullNorEmpty
+          ? CachedNetworkImage(imageUrl: expense.imageUrl!)
+          : getImagePlaceholder(ThemeColors.surfaceBright);
+    }
+    return Container(
+      clipBehavior: Clip.hardEdge,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.0)),
+      height: size,
+      width: size,
+      child: child,
+    );
+  }
 
   Widget getInfo(String str) => Text(
         style: const TextStyle(fontSize: 11),
@@ -56,20 +63,21 @@ class ExpenseItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           getInfo(expense.date.toDateFormat('dd/MM')),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              getInfo(
-                'Total: ${double.parse(expense.cost).toBRL()}',
-              ),
-              ...expense.users.map(
-                (e) => getInfo(
-                  '${e.firstName}: ${double.parse(e.owedShare).toBRL()}',
+          if (!expense.payment)
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                getInfo(
+                  'Total: ${double.parse(expense.cost).toBRL()}',
                 ),
-              ),
-            ],
-          ),
+                ...expense.users.map(
+                  (e) => getInfo(
+                    '${e.firstName}: ${double.parse(e.owedShare).toBRL()}',
+                  ),
+                ),
+              ],
+            ),
         ],
       );
 
@@ -112,6 +120,24 @@ class ExpenseItem extends StatelessWidget {
     }
   }
 
+  String getPaymentDescription() {
+    String payer = '';
+    String receiver = '';
+    String cost = '';
+    for (final user in expense.users) {
+      if (payer.isNotEmpty && receiver.isNotEmpty) break;
+      if (user.paidShare.isNotNullNorEmpty && user.paidShare != '0.0') {
+        payer = user.firstName;
+        cost = user.paidShare!;
+      }
+      if (user.owedShare.isNotEmpty && user.owedShare != '0.0') {
+        receiver = user.firstName;
+        cost = user.owedShare;
+      }
+    }
+    return '$payer paid ${double.parse(cost).toBRL()} to $receiver';
+  }
+
   @override
   Widget build(BuildContext context) {
     final isOnErrorState = expense.state == ExpenseEntityState.createError ||
@@ -121,6 +147,8 @@ class ExpenseItem extends StatelessWidget {
         expense.state == ExpenseEntityState.listed || isOnErrorState;
     final selectable =
         expense.state == ExpenseEntityState.listed && onSelect != null;
+    final description =
+        expense.payment ? getPaymentDescription() : expense.description;
     return BaseItem(
       dismissible: dismissible,
       dismissibleKey: Key('${expense.id}-${expense.categoryId}'),
@@ -140,14 +168,14 @@ class ExpenseItem extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          getImage(ThemeColors.surfaceBright),
+          getImage(),
           const SizedBox(width: 8.0),
           Flexible(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(expense.description, softWrap: true),
+                Text(description, softWrap: true),
                 getExpenseInfo(),
               ],
             ),
