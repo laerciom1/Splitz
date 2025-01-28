@@ -27,8 +27,8 @@ class UserSelector extends StatelessWidget {
       final decoration = BoxDecoration(
         borderRadius: BorderRadius.circular(_padding * 2),
         border: Border.all(
-          color: ThemeColors.primary.withOpacity(
-            selection == config ? 1 : 0,
+          color: ThemeColors.primary.withAlpha(
+            selection == config ? 255 : 0,
           ),
           strokeAlign: BorderSide.strokeAlignOutside,
         ),

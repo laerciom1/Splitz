@@ -52,8 +52,11 @@ class ExpenseItem extends StatelessWidget {
     );
   }
 
-  Widget getInfo(String str) => Text(
-        style: const TextStyle(fontSize: 11),
+  Widget getInfo(String str, [bool bold = false]) => Text(
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: bold ? FontWeight.w900 : FontWeight.normal,
+        ),
         str,
         softWrap: true,
       );
@@ -71,11 +74,13 @@ class ExpenseItem extends StatelessWidget {
                 getInfo(
                   'Total: ${double.parse(expense.cost).toBRL()}',
                 ),
-                ...expense.users.map(
-                  (e) => getInfo(
-                    '${e.firstName}: ${double.parse(e.owedShare).toBRL()}',
-                  ),
-                ),
+                ...expense.users.map((e) {
+                  final hasPaid = double.parse(e.paidShare) != 0;
+                  return getInfo(
+                    '${hasPaid ? '\$ ' : ''}${e.firstName}: ${double.parse(e.owedShare).toBRL()}',
+                    hasPaid,
+                  );
+                }),
               ],
             ),
         ],
@@ -128,7 +133,7 @@ class ExpenseItem extends StatelessWidget {
       if (payer.isNotEmpty && receiver.isNotEmpty) break;
       if (user.paidShare.isNotNullNorEmpty && user.paidShare != '0.0') {
         payer = user.firstName;
-        cost = user.paidShare!;
+        cost = user.paidShare;
       }
       if (user.owedShare.isNotEmpty && user.owedShare != '0.0') {
         receiver = user.firstName;

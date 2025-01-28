@@ -71,7 +71,7 @@ class _PaymentEditorScreenState extends State<PaymentEditorScreen>
         String receiverId = '';
         for (final user in _expense!.users) {
           if (payerId.isNotEmpty && receiverId.isNotEmpty) break;
-          if (double.parse(user.paidShare ?? '0.0') != 0) {
+          if (double.parse(user.paidShare) != 0) {
             payerId = '${user.userId}';
           }
           if (double.parse(user.owedShare) != 0) {

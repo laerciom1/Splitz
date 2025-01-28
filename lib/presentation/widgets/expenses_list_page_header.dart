@@ -44,7 +44,7 @@ class ExpensesListPageHeader extends SliverPersistentHeaderDelegate {
   Widget getShadow(double size, double opacity) => Container(
         width: double.infinity,
         height: size,
-        color: Colors.black.withOpacity(opacity),
+        color: Colors.black.withAlpha((255 * opacity).toInt()),
       );
 
   Widget getGroupInfo({

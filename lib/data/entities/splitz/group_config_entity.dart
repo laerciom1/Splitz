@@ -53,7 +53,7 @@ class GroupConfigEntity {
     if (currentUserId != null) payerId = int.parse(currentUserId);
     if (users != null) {
       final payerUser = users.firstWhereOrNull((e) =>
-          e.paidShare.isNotNullNorEmpty && double.parse(e.paidShare!) != 0.0,);
+          e.paidShare.isNotNullNorEmpty && double.parse(e.paidShare) != 0,);
       payerId = payerUser?.userId ?? payerId;
     }
     var splitzConfigs = {...this.splitzConfigs};

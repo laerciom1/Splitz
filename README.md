@@ -5,7 +5,12 @@ This app is a customizable experience for the splitwise services, which aims to 
 I made it with the best experience for me in mind, I'll add some gifs here in the future (:
 
 ### Next steps:
-- [ ] Expenses Export - Integration with GSheets - select export sheet
+- [ ] Expenses List - Search and Filters:
+  - [ ] By Category
+  - [ ] By Date:
+    - [ ] before/after some date
+    - [ ] specific month
+    - [ ] specific interval
 - [ ] Integration with SettleUp
 
 ### Refactors
@@ -13,12 +18,6 @@ I made it with the best experience for me in mind, I'll add some gifs here in th
 ### Features
 - [ ] Auto order category based on usage
 - [ ] Expenses suggestions (notifications)
-- [ ] Filters:
-  - [ ] By Category
-  - [ ] By Date:
-    - [ ] before/after some date
-    - [ ] specific month
-    - [ ] specific interval
 - [ ] Edit a group of selected expenses (limited options on edition)
   - [ ] Category, date, Split config (division)
 - [ ] "Load more" button on Expenses List Screen
@@ -37,6 +36,8 @@ I made it with the best experience for me in mind, I'll add some gifs here in th
 - [ ] Add animations
 
 ### Done
+- [x] Expenses List - Show who paid each expense
+- [x] Expenses Export - Integration with GSheets - select export sheet
 - [x] Expenses List - Option to add payment
 - [x] Category Editor - Delete/Edit/Reorder Category
 - [x] Expenses Export - Show total of the selected month

@@ -208,13 +208,13 @@ class UserExpenseEntity {
   String firstName;
   int userId;
   String owedShare;
-  String? paidShare;
+  String paidShare;
 
   UserExpenseEntity({
     required this.firstName,
     required this.userId,
     required this.owedShare,
-    this.paidShare,
+    required this.paidShare,
   });
 
   factory UserExpenseEntity.fromUserElementResponse(UserElement e) =>
