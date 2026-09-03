@@ -1,9 +1,7 @@
 flutter_native_splash:
   android: true
-  ios: true
   web: false
   color: "#000505"
   android_12:
     color: "#000505"
     icon_background_color: "#ffffff"
-  image_ios: assets/icon/icon-rounded.png

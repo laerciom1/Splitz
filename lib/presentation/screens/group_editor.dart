@@ -391,7 +391,7 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
           Expanded(
             child: ReorderableListView(
               proxyDecorator: proxyDecorator,
-              onReorder: onReorder,
+              onReorderItem: onReorder,
               children: categories,
             ),
           ),

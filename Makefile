@@ -47,15 +47,12 @@ store-private:
 	mkdir -p private/config
 	mkdir -p private/lib
 	mkdir -p private/android/app
-	mkdir -p private/ios/Runner
 	cp firebase.json private/
 	cp config/.env private/config/
 	cp lib/firebase_options.dart private/lib/
 	cp lib/gsheets_credentials.dart private/lib/
 	cp android/app/google-services.json private/android/app/
 	cp android/app/key.jks private/android/app/
-	cp ios/Runner/GoogleService-Info.plist private/ios/Runner/
-	cp ios/Runner/Info.plist private/ios/Runner/
 
 restore-private:
 	-rm firebase.json
@@ -64,8 +61,6 @@ restore-private:
 	-rm lib/gsheets_credentials.dart
 	-rm android/app/google-services.json
 	-rm android/app/key.jks
-	-rm ios/Runner/GoogleService-Info.plist
-	-rm ios/Runner/Info.plist
 	mkdir config/
 	cp private/firebase.json .
 	cp private/config/.env config/
@@ -73,5 +68,3 @@ restore-private:
 	cp private/lib/gsheets_credentials.dart lib/
 	cp private/android/app/google-services.json android/app/
 	cp private/android/app/key.jks android/app/
-	cp private/ios/Runner/GoogleService-Info.plist ios/Runner/
-	cp private/ios/Runner/Info.plist ios/Runner/
