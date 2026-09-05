@@ -7,6 +7,7 @@ I pretend to clarify what, how and why I have to save this information later, bu
 
 ## Next steps:
 - [-] Add the concept of "owner" to Splitz Config (permission to edit)
+- [ ] Add current version somewhere
 - [ ] GSheets setup flow
 - [ ] Expenses List - Search and Filters:
   - [ ] By Category
