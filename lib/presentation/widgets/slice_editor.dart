@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:splitz/data/entities/splitz/group_config_entity.dart';
-import 'package:splitz/extensions/list.dart';
-import 'package:splitz/extensions/strings.dart';
+import 'package:splitz/application/entities/splitz/group_config_entity.dart';
+import 'package:splitz/util/extensions/list.dart';
+import 'package:splitz/util/extensions/strings.dart';
 import 'package:splitz/presentation/theme/slice_colors.dart';
 import 'package:splitz/presentation/theme/util.dart';
 import 'package:splitz/presentation/widgets/circle_avatar.dart';
@@ -27,12 +27,10 @@ class SliceEditor extends StatelessWidget {
   final void Function(Map<String, SplitzConfig>) onEditConfigs;
   final bool enablePayerSelection;
 
-  List<double> getRanges() =>
-      [...splitzConfigs.values.map((e) => e.slice.toDouble())];
+  List<double> getRanges() => [...splitzConfigs.values.map((e) => e.slice.toDouble())];
 
   void setRange(SplitzConfig c, int newSlice) {
-    splitzConfigs['${c.id}'] =
-        splitzConfigs['${c.id}']!.copyWith(slice: newSlice);
+    splitzConfigs['${c.id}'] = splitzConfigs['${c.id}']!.copyWith(slice: newSlice);
     onEditConfigs(splitzConfigs);
   }
 

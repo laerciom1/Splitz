@@ -5,8 +5,7 @@ class CreateExpenseResponse {
 
   CreateExpenseResponse({required this.expenses});
 
-  factory CreateExpenseResponse.fromMap(Map<String, dynamic> json) =>
-      CreateExpenseResponse(
+  factory CreateExpenseResponse.fromMap(Map json) => CreateExpenseResponse(
         expenses: json["expenses"] == null
             ? []
             : List<ExpenseBasic>.from(

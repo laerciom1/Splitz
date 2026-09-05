@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:splitz/extensions/list.dart';
-import 'package:splitz/navigator.dart';
+import 'package:splitz/util/extensions/list.dart';
+import 'package:splitz/core/navigator.dart';
 import 'package:splitz/presentation/screens/expenses_export.dart';
 import 'package:splitz/presentation/screens/groups_list.dart';
-import 'package:splitz/presentation/screens/login_splitz.dart';
-import 'package:splitz/services/splitz_service.dart';
+import 'package:splitz/application/services/splitz_service.dart';
 
 const _iconSize = 24.0;
 
@@ -32,9 +31,7 @@ class ContextMenu extends StatelessWidget {
           },
           icon: Icon(icon),
         ),
-        menuChildren: (children as List<Widget>)
-            .intersperse(const SizedBox(height: 8.0))
-            .toList(),
+        menuChildren: (children as List<Widget>).intersperse(const SizedBox(height: 8.0)).toList(),
       ),
     );
   }
@@ -92,8 +89,7 @@ class ContextMenuOption extends StatelessWidget {
       );
 
   static ContextMenuOption export(int groupId) => ContextMenuOption(
-        onTap: () =>
-            AppNavigator.push(ExpensesExportScreen(groupId: '$groupId')),
+        onTap: () => AppNavigator.push(ExpensesExportScreen(groupId: '$groupId')),
         child: const Row(
           children: [
             Icon(Icons.cloud_upload),
@@ -104,10 +100,7 @@ class ContextMenuOption extends StatelessWidget {
       );
 
   static ContextMenuOption get logout => ContextMenuOption(
-        onTap: () {
-          SplitzService.signOut();
-          AppNavigator.replaceAll([const SplitzLoginScreen()]);
-        },
+        onTap: SplitzService.signOut,
         child: const Row(
           children: [
             Icon(Icons.logout),

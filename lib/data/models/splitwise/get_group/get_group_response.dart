@@ -5,6 +5,5 @@ class GetGroupResponse {
 
   GetGroupResponse({required this.group});
 
-  factory GetGroupResponse.fromMap(Map<String, dynamic> json) =>
-      GetGroupResponse(group: FullGroup.fromMap(json["group"]));
+  factory GetGroupResponse.fromMap(Map json) => GetGroupResponse(group: FullGroup.fromMap(json["group"]));
 }

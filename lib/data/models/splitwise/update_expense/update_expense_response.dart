@@ -5,8 +5,7 @@ class UpdateExpenseResponse {
 
   UpdateExpenseResponse({required this.expenses});
 
-  factory UpdateExpenseResponse.fromMap(Map<String, dynamic> json) =>
-      UpdateExpenseResponse(
+  factory UpdateExpenseResponse.fromMap(Map json) => UpdateExpenseResponse(
         expenses: json["expenses"] == null
             ? []
             : List<ExpenseBasic>.from(

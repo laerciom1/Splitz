@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:splitz/data/entities/splitz/group_config_entity.dart';
+import 'package:splitz/application/entities/splitz/group_config_entity.dart';
 import 'package:splitz/presentation/theme/util.dart';
 import 'package:splitz/presentation/widgets/category_image.dart';
 

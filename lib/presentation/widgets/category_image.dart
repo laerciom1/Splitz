@@ -1,7 +1,7 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:splitz/data/entities/splitz/group_config_entity.dart';
+import 'package:splitz/application/entities/splitz/group_config_entity.dart';
 import 'package:splitz/presentation/theme/util.dart';
+import 'package:splitz/presentation/widgets/splitz_image.dart';
 
 class CategoryImage extends StatelessWidget {
   const CategoryImage({
@@ -25,13 +25,11 @@ class CategoryImage extends StatelessWidget {
         clipBehavior: Clip.hardEdge,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(6),
-          border: isSelected
-              ? Border.all(color: ThemeColors.primary)
-              : null,
+          border: isSelected ? Border.all(color: ThemeColors.primary) : null,
         ),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: CachedNetworkImage(imageUrl: category.imageUrl),
+          child: SplitzImage(imageUrl: category.imageUrl),
         ),
       ),
     );

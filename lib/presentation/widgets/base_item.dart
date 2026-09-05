@@ -40,8 +40,7 @@ class BaseItem extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           color: ThemeColors.surfaceBright,
-          borderRadius:
-              dismissible ? null : const BorderRadius.all(Radius.circular(12)),
+          borderRadius: dismissible ? null : const BorderRadius.all(Radius.circular(12)),
         ),
         child: Padding(
           padding: const EdgeInsets.all(contentPadding),

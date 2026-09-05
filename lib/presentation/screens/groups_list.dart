@@ -1,17 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:splitz/data/entities/external/group_entity.dart';
-import 'package:splitz/extensions/list.dart';
-import 'package:splitz/extensions/strings.dart';
-import 'package:splitz/navigator.dart';
+import 'package:splitz/application/entities/splitwise/group_entity.dart';
+import 'package:splitz/util/extensions/list.dart';
+import 'package:splitz/util/extensions/strings.dart';
+import 'package:splitz/core/navigator.dart';
 import 'package:splitz/presentation/screens/expenses_list.dart';
 import 'package:splitz/presentation/templates/base_screen.dart';
 import 'package:splitz/presentation/widgets/context_menu.dart';
 import 'package:splitz/presentation/widgets/feedback_message.dart';
 import 'package:splitz/presentation/widgets/group_item.dart';
 import 'package:splitz/presentation/widgets/loading.dart';
-import 'package:splitz/services/splitz_service.dart';
+import 'package:splitz/application/services/splitz_service.dart';
 
 class GroupsListScreen extends StatefulWidget {
   const GroupsListScreen({super.key});

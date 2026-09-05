@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:splitz/presentation/widgets/splitz_divider.dart';
@@ -7,11 +8,13 @@ class SplitzAppBar extends AppBar {
   final Color bgColor;
   final String? center;
   final Widget? customLeading;
+  final Future<void> Function()? onRefresh;
   SplitzAppBar({
     required this.detailColor,
     required this.bgColor,
     this.center,
     this.customLeading,
+    this.onRefresh,
     super.key,
   }) : super(
           title: Text(center ?? 'Z'),
@@ -30,6 +33,7 @@ class SplitzAppBar extends AppBar {
             child: SplitzDivider(color: detailColor),
           ),
           actions: [
+            if (kIsWeb && onRefresh != null) IconButton(onPressed: onRefresh, icon: Icon(Icons.refresh)),
             const Padding(
               padding: EdgeInsets.only(right: 8.0),
               child: SizedBox(

@@ -3,8 +3,7 @@ class GetCategoriesResponse {
 
   GetCategoriesResponse({required this.categories});
 
-  factory GetCategoriesResponse.fromMap(Map<String, dynamic> json) =>
-      GetCategoriesResponse(
+  factory GetCategoriesResponse.fromMap(Map json) => GetCategoriesResponse(
         categories: json["categories"] == null
             ? []
             : List<FullCategory>.from(
@@ -24,7 +23,7 @@ class FullCategory {
     required this.subcategories,
   });
 
-  factory FullCategory.fromMap(Map<String, dynamic> json) => FullCategory(
+  factory FullCategory.fromMap(Map json) => FullCategory(
         id: json["id"],
         iconTypes: IconTypes.fromMap(json["icon_types"]),
         subcategories: json["subcategories"] == null
@@ -40,8 +39,7 @@ class IconTypes {
 
   IconTypes({required this.square});
 
-  factory IconTypes.fromMap(Map<String, dynamic> json) =>
-      IconTypes(square: Square.fromMap(json["square"]));
+  factory IconTypes.fromMap(Map json) => IconTypes(square: Square.fromMap(json["square"]));
 }
 
 class Square {
@@ -49,6 +47,5 @@ class Square {
 
   Square({required this.large});
 
-  factory Square.fromMap(Map<String, dynamic> json) =>
-      Square(large: json["large"]);
+  factory Square.fromMap(Map json) => Square(large: json["large"]);
 }

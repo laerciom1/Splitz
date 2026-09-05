@@ -1,8 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:splitz/data/entities/splitz/group_config_entity.dart';
+import 'package:splitz/application/entities/splitz/group_config_entity.dart';
 import 'package:splitz/presentation/widgets/base_item.dart';
 import 'package:splitz/presentation/widgets/slice_badges.dart';
+import 'package:splitz/presentation/widgets/splitz_image.dart';
 
 class CategoryItem extends StatelessWidget {
   const CategoryItem({
@@ -41,9 +41,8 @@ class CategoryItem extends StatelessWidget {
                   height: BaseItem.contentMinHeight,
                   width: BaseItem.contentMinHeight,
                   clipBehavior: Clip.hardEdge,
-                  decoration:
-                      BoxDecoration(borderRadius: BorderRadius.circular(8)),
-                  child: CachedNetworkImage(imageUrl: category.imageUrl),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+                  child: SplitzImage(imageUrl: category.imageUrl),
                 ),
                 const SizedBox(width: BaseItem.contentMinHeight / 10),
                 Expanded(

@@ -3,8 +3,7 @@ class GetCurrentUserResponse {
 
   GetCurrentUserResponse({required this.user});
 
-  factory GetCurrentUserResponse.fromMap(Map<String, dynamic> json) =>
-      GetCurrentUserResponse(user: User.fromMap(json["user"]));
+  factory GetCurrentUserResponse.fromMap(Map json) => GetCurrentUserResponse(user: User.fromMap(json["user"]));
 }
 
 class User {
@@ -12,5 +11,5 @@ class User {
 
   User({required this.id});
 
-  factory User.fromMap(Map<String, dynamic> json) => User(id: json["id"]);
+  factory User.fromMap(Map json) => User(id: json["id"]);
 }

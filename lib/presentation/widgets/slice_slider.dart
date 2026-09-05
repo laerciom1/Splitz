@@ -17,9 +17,7 @@ class SliceSlider extends StatelessWidget {
     this.rangesQty,
     this.initRangeValues,
     super.key,
-  }) : assert(
-            (initRangeValues == null && rangesQty != null) ||
-                (initRangeValues != null && rangesQty == null),
+  }) : assert((initRangeValues == null && rangesQty != null) || (initRangeValues != null && rangesQty == null),
             'Choose only one of initRangeValues or rangesQty');
 
   final void Function(List<double>)? onRangesChanged;
@@ -82,13 +80,11 @@ class SliceSlider extends StatelessWidget {
         activeTrackBarHeight: _sliderHeight,
         inactiveTrackBarHeight: _sliderHeight,
         inactiveTrackBar: BoxDecoration(
-          borderRadius:
-              const BorderRadius.all(Radius.circular(_sliderHeight)),
+          borderRadius: const BorderRadius.all(Radius.circular(_sliderHeight)),
           color: sliceColors[1],
         ),
         activeTrackBar: BoxDecoration(
-          borderRadius:
-              const BorderRadius.all(Radius.circular(_sliderHeight)),
+          borderRadius: const BorderRadius.all(Radius.circular(_sliderHeight)),
           color: sliceColors[0],
         ),
       ),
@@ -126,8 +122,7 @@ class SliceSlider extends StatelessWidget {
         activeTrackBarHeight: _sliderHeight,
         inactiveTrackBarHeight: _sliderHeight,
         inactiveTrackBar: BoxDecoration(
-          borderRadius:
-              const BorderRadius.all(Radius.circular(_sliderHeight)),
+          borderRadius: const BorderRadius.all(Radius.circular(_sliderHeight)),
           gradient: LinearGradient(colors: colors, stops: stops),
           color: Colors.black,
         ),

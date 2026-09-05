@@ -4,10 +4,10 @@ import 'dart:ui';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:splitz/data/entities/external/group_entity.dart';
-import 'package:splitz/data/entities/splitz/group_config_entity.dart';
-import 'package:splitz/extensions/strings.dart';
-import 'package:splitz/navigator.dart';
+import 'package:splitz/application/entities/splitwise/group_entity.dart';
+import 'package:splitz/application/entities/splitz/group_config_entity.dart';
+import 'package:splitz/util/extensions/strings.dart';
+import 'package:splitz/core/navigator.dart';
 import 'package:splitz/presentation/screens/category_editor.dart';
 import 'package:splitz/presentation/screens/expenses_list.dart';
 import 'package:splitz/presentation/templates/base_screen.dart';
@@ -20,7 +20,7 @@ import 'package:splitz/presentation/widgets/loading.dart';
 import 'package:splitz/presentation/widgets/slice_editor.dart';
 import 'package:splitz/presentation/widgets/snackbar.dart';
 import 'package:splitz/presentation/widgets/splitz_divider.dart';
-import 'package:splitz/services/splitz_service.dart';
+import 'package:splitz/application/services/splitz_service.dart';
 
 const _waitTime = Duration(seconds: 1);
 const _waitTimeWidth = 24.0;
@@ -34,8 +34,7 @@ class GroupEditorScreen extends StatefulWidget {
   State<GroupEditorScreen> createState() => _GroupEditorScreenState();
 }
 
-class _GroupEditorScreenState extends State<GroupEditorScreen>
-    with WidgetsBindingObserver {
+class _GroupEditorScreenState extends State<GroupEditorScreen> with WidgetsBindingObserver {
   GroupConfigEntity? _groupConfig;
   String _screenTitle = '';
   String _feedbackMessage = '';
@@ -88,14 +87,11 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
         SplitzService.getGroupInfo(widget.groupId),
       ]);
       final splitzConfigs = SplitzService.mergeSplitzConfigs(
+        SplitzService.getSplitzConfigsFromMembers(splitwiseGroupInfo.members),
         splitzGroupConfig?.splitzConfigs ?? {},
-        SplitzService.getSplitzConfigsFromMembers(
-          splitwiseGroupInfo.members,
-        ),
       );
       setData(
-        screenTitle:
-            '${splitzGroupConfig != null ? 'Editing' : 'Creating'} group',
+        screenTitle: '${splitzGroupConfig != null ? 'Editing' : 'Creating'} group',
         groupConfig: GroupConfigEntity(
           splitzCategories: splitzGroupConfig?.splitzCategories ?? [],
           splitzConfigs: splitzConfigs,
@@ -110,8 +106,7 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
 
   void initializeFocusAndControllers(Map<String, SplitzConfig> splitzConfigs) {
     _controllersWasInitialized = true;
-    _focusNodes = List.generate(splitzConfigs.length,
-        (_) => FocusNode()..addListener(trackFocusChanges));
+    _focusNodes = List.generate(splitzConfigs.length, (_) => FocusNode()..addListener(trackFocusChanges));
     _controllers = [
       ...splitzConfigs.values.map(
         (config) => TextEditingController(text: '${config.slice}'),
@@ -196,8 +191,7 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
     if (category == null) return;
 
     final categories = [..._groupConfig!.splitzCategories];
-    final prefixMatchIndex =
-        categories.indexWhere((e) => e.prefix == category.prefix);
+    final prefixMatchIndex = categories.indexWhere((e) => e.prefix == category.prefix);
 
     if (categoryToEdit == null) {
       // Adding new category
@@ -256,8 +250,7 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
     updateSplitzGroupConfig(groupConfig);
   }
 
-  void finishEditing() =>
-      AppNavigator.replaceAll([ExpensesListScreen(groupId: widget.groupId)]);
+  void finishEditing() => AppNavigator.replaceAll([ExpensesListScreen(groupId: widget.groupId)]);
 
   @override
   Widget build(BuildContext context) {
@@ -333,8 +326,7 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
 
     for (int idx = 0; idx < _groupConfig!.splitzCategories.length; idx += 1) {
       final category = _groupConfig!.splitzCategories[idx];
-      final splitzConfigs =
-          category.splitzConfigs ?? _groupConfig!.splitzConfigs;
+      final splitzConfigs = category.splitzConfigs ?? _groupConfig!.splitzConfigs;
       categories.add(
         CategoryItem(
           key: Key('${category.id}-${category.prefix}'),
@@ -358,8 +350,7 @@ class _GroupEditorScreenState extends State<GroupEditorScreen>
           final double animValue = Curves.easeInOut.transform(animation.value);
           final double scale = lerpDouble(1, 1.02, animValue)!;
           final category = _groupConfig!.splitzCategories[index];
-          final splitzConfigs =
-              category.splitzConfigs ?? _groupConfig!.splitzConfigs;
+          final splitzConfigs = category.splitzConfigs ?? _groupConfig!.splitzConfigs;
           return Material(
             color: Colors.transparent,
             child: Transform.scale(

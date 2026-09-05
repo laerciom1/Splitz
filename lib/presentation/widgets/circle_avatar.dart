@@ -1,5 +1,5 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:splitz/presentation/widgets/splitz_image.dart';
 
 class SplitzCircleAvatar extends StatelessWidget {
   const SplitzCircleAvatar({
@@ -18,7 +18,7 @@ class SplitzCircleAvatar extends StatelessWidget {
       width: radius,
       clipBehavior: Clip.hardEdge,
       decoration: const BoxDecoration(shape: BoxShape.circle),
-      child: CachedNetworkImage(imageUrl: avatarUrl),
+      child: SplitzImage(imageUrl: avatarUrl),
     );
   }
 }

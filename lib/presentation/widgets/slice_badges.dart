@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:splitz/data/entities/splitz/group_config_entity.dart';
-import 'package:splitz/extensions/list.dart';
+import 'package:splitz/application/entities/splitz/group_config_entity.dart';
+import 'package:splitz/util/extensions/list.dart';
 import 'package:splitz/presentation/theme/slice_colors.dart';
 
 const _size = 24.0;
@@ -24,8 +24,7 @@ class SliceBadges extends StatelessWidget {
     return configs
         .map<Widget>((value) => Container(
               height: _size,
-              width:
-                  (availableWidth * (value.slice / 100)).clamp(_size, maxWidth),
+              width: (availableWidth * (value.slice / 100)).clamp(_size, maxWidth),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(_size),
                 color: sliceColors[index++],

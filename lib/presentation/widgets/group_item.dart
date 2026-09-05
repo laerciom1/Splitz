@@ -1,7 +1,7 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:splitz/data/entities/external/group_entity.dart';
+import 'package:splitz/application/entities/splitwise/group_entity.dart';
 import 'package:splitz/presentation/theme/util.dart';
+import 'package:splitz/presentation/widgets/splitz_image.dart';
 
 const _cardHeight = 180.0;
 
@@ -22,11 +22,7 @@ class GroupItem extends StatelessWidget {
         child: Stack(
           alignment: AlignmentDirectional.bottomEnd,
           children: [
-            CachedNetworkImage(
-              width: double.infinity,
-              imageUrl: imageUrl,
-              fit: BoxFit.cover,
-            ),
+            SplitzImage(imageUrl: imageUrl, width: double.infinity, fit: BoxFit.cover),
             Padding(
               padding: const EdgeInsets.all(4.0),
               child: Container(

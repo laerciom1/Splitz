@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:splitz/data/entities/external/expense_entity.dart';
-import 'package:splitz/data/entities/splitz/export_entity.dart';
-import 'package:splitz/extensions/datetime.dart';
-import 'package:splitz/extensions/double.dart';
-import 'package:splitz/extensions/list.dart';
-import 'package:splitz/extensions/strings.dart';
-import 'package:splitz/navigator.dart';
+import 'package:splitz/application/entities/splitwise/expense_entity.dart';
+import 'package:splitz/application/entities/splitz/export_entity.dart';
+import 'package:splitz/util/extensions/datetime.dart';
+import 'package:splitz/util/extensions/double.dart';
+import 'package:splitz/util/extensions/list.dart';
+import 'package:splitz/util/extensions/strings.dart';
+import 'package:splitz/core/navigator.dart';
 import 'package:splitz/presentation/templates/base_screen.dart';
 import 'package:splitz/presentation/theme/util.dart';
 import 'package:splitz/presentation/widgets/button_primary.dart';
@@ -14,7 +14,7 @@ import 'package:splitz/presentation/widgets/feedback_message.dart';
 import 'package:splitz/presentation/widgets/footer_action.dart';
 import 'package:splitz/presentation/widgets/loading.dart';
 import 'package:splitz/presentation/widgets/splitz_divider.dart';
-import 'package:splitz/services/splitz_service.dart';
+import 'package:splitz/application/services/splitz_service.dart';
 
 const _spacing = 24.0;
 const _expenseTextStyle = TextStyle(fontSize: 12);
@@ -57,8 +57,7 @@ class _ExpensesExportStateScreen extends State<ExpensesExportScreen> {
     setState(() {
       _export = export ?? _export;
       if (_export != null) {
-        _selectedMonthTotal = _export!.categories
-            .fold<double>(.0, (accu, curr) => accu + curr.total);
+        _selectedMonthTotal = _export!.categories.fold<double>(.0, (accu, curr) => accu + curr.total);
       }
       _selectedMonth = selectedMonth ?? _selectedMonth;
       _feedbackMessage = feedbackMessage;
@@ -84,8 +83,7 @@ class _ExpensesExportStateScreen extends State<ExpensesExportScreen> {
       );
       setData(export: export);
     } catch (e, s) {
-      const message =
-          'Something went wrong retrieving the expenses of this month.\n'
+      const message = 'Something went wrong retrieving the expenses of this month.\n'
           'You can drag down to retry or select other month.';
       setData(feedbackMessage: message.addErrorDescription(e, s));
     }
@@ -95,7 +93,7 @@ class _ExpensesExportStateScreen extends State<ExpensesExportScreen> {
     _lastFunc = export;
     try {
       setData(isLoading: true);
-      await SplitzService.exportExpenses(_export!);
+      await SplitzService.exportExpenses(widget.groupId, _export!);
       setData();
     } catch (e, s) {
       const message = 'Something went wrong exporting to GSheets.\n'
@@ -199,9 +197,7 @@ class _ExpensesExportStateScreen extends State<ExpensesExportScreen> {
               '${_selectedMonth!.toDateFormat('MMM/yy')} - ${_selectedMonthTotal!.toBRL()}',
               style: const TextStyle(fontSize: 20),
             ),
-            ..._export!.categories
-                .map<Widget>(getExportCategory)
-                .intersperse(const SizedBox(height: _spacing))
+            ..._export!.categories.map<Widget>(getExportCategory).intersperse(const SizedBox(height: _spacing))
           ],
         ),
       );

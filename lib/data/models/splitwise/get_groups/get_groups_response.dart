@@ -5,10 +5,7 @@ class GetGroupsResponse {
 
   GetGroupsResponse({required this.groups});
 
-  factory GetGroupsResponse.fromMap(Map<String, dynamic> json) =>
-      GetGroupsResponse(
-        groups: json["groups"] == null
-            ? []
-            : List<FullGroup>.from(json["groups"]!.map((x) => FullGroup.fromMap(x))),
+  factory GetGroupsResponse.fromMap(Map json) => GetGroupsResponse(
+        groups: json["groups"] == null ? [] : List<FullGroup>.from(json["groups"]!.map((x) => FullGroup.fromMap(x))),
       );
 }

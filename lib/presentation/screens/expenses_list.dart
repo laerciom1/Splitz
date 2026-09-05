@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:splitz/data/entities/external/expense_entity.dart';
-import 'package:splitz/data/entities/external/group_entity.dart';
-import 'package:splitz/data/entities/splitz/group_config_entity.dart';
-import 'package:splitz/extensions/strings.dart';
-import 'package:splitz/navigator.dart';
+import 'package:splitz/application/entities/splitwise/expense_entity.dart';
+import 'package:splitz/application/entities/splitwise/group_entity.dart';
+import 'package:splitz/application/entities/splitz/group_config_entity.dart';
+import 'package:splitz/util/extensions/strings.dart';
+import 'package:splitz/core/navigator.dart';
 import 'package:splitz/presentation/screens/expense_editor.dart';
 import 'package:splitz/presentation/screens/group_editor.dart';
 import 'package:splitz/presentation/screens/groups_list.dart';
@@ -16,7 +16,7 @@ import 'package:splitz/presentation/widgets/feedback_message.dart';
 import 'package:splitz/presentation/widgets/loading.dart';
 import 'package:splitz/presentation/widgets/expenses_list_page_header.dart';
 import 'package:splitz/presentation/widgets/snackbar.dart';
-import 'package:splitz/services/splitz_service.dart';
+import 'package:splitz/application/services/splitz_service.dart';
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -88,8 +88,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
       remoteGroupConfig = config as GroupConfigEntity?;
       remoteGroupInfo = info as GroupEntity;
     } catch (e, s) {
-      const message =
-          'Something went wrong retrieving your group preferences.\n'
+      const message = 'Something went wrong retrieving your group preferences.\n'
           'You can drag down to retry.';
       return setData(feedbackMessage: message.addErrorDescription(e, s));
     }
@@ -138,10 +137,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
   Future<void> handleNewExpense(ExpenseEntity? expense) async {
     if (expense == null) return;
     setData(
-      expenses: [
-        expense.copyWith(state: ExpenseEntityState.loading),
-        ..._expenses!
-      ],
+      expenses: [expense.copyWith(state: ExpenseEntityState.loading), ..._expenses!],
     );
     await onRetryCreate(expense, 0);
   }
@@ -183,8 +179,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
         ),
       );
     } else {
-      final category = _groupConfig!.splitzCategories
-          .firstWhereOrNull((e) => e.prefix == expenseToEdit.prefix);
+      final category = _groupConfig!.splitzCategories.firstWhereOrNull((e) => e.prefix == expenseToEdit.prefix);
       if (category == null) {
         showToast(
           "You can't edit an expense of a category that doesn't exist on your group preferences anymore",
@@ -328,8 +323,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
     return false;
   }
 
-  void editGroupPreferences() =>
-      AppNavigator.replaceAll([GroupEditorScreen(groupId: widget.groupId)]);
+  void editGroupPreferences() => AppNavigator.replaceAll([GroupEditorScreen(groupId: widget.groupId)]);
 
   void onPop() {
     if (_scaffoldKey.currentState?.isDrawerOpen ?? false) {
@@ -372,8 +366,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
           ),
         ),
         if (_isLoading) const SliverToBoxAdapter(child: Loading()),
-        if (_feedbackMessage.isNotEmpty)
-          SliverToBoxAdapter(child: FeedbackMessage(message: _feedbackMessage)),
+        if (_feedbackMessage.isNotEmpty) SliverToBoxAdapter(child: FeedbackMessage(message: _feedbackMessage)),
         if (_expenses != null && !_isLoading)
           SliverList(
             delegate: SliverChildBuilderDelegate(

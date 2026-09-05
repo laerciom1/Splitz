@@ -1,10 +1,10 @@
 import 'dart:math';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:splitz/data/entities/external/group_entity.dart';
-import 'package:splitz/extensions/double.dart';
-import 'package:splitz/extensions/strings.dart';
+import 'package:splitz/application/entities/splitwise/group_entity.dart';
+import 'package:splitz/presentation/widgets/splitz_image.dart';
+import 'package:splitz/util/extensions/double.dart';
+import 'package:splitz/util/extensions/strings.dart';
 import 'package:splitz/presentation/theme/util.dart';
 import 'package:splitz/presentation/widgets/context_menu.dart';
 
@@ -35,7 +35,7 @@ class ExpensesListPageHeader extends SliverPersistentHeaderDelegate {
   Widget getBackgroundImage(double size) => SizedBox(
         width: double.infinity,
         height: size,
-        child: CachedNetworkImage(
+        child: SplitzImage(
           imageUrl: groupInfo.imageUrl,
           fit: BoxFit.cover,
         ),
@@ -76,7 +76,7 @@ class ExpensesListPageHeader extends SliverPersistentHeaderDelegate {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(6.0),
                   ),
-                  child: CachedNetworkImage(imageUrl: imageUrl),
+                  child: SplitzImage(imageUrl: imageUrl),
                 ),
               ),
             ),
@@ -132,8 +132,7 @@ class ExpensesListPageHeader extends SliverPersistentHeaderDelegate {
     final scale = max(firstScale, minScale);
 
     final headerSize = maxExtent * scale;
-    final avatarOffset = max(
-        (maxExtent * firstScale) - (_avatarSize / 2), -1 * (_avatarSize / 4));
+    final avatarOffset = max((maxExtent * firstScale) - (_avatarSize / 2), -1 * (_avatarSize / 4));
     final shadowOpacity = 1 - scale;
 
     final simplifiedDebtsText = getSimplifiedDebtsText();
@@ -142,10 +141,11 @@ class ExpensesListPageHeader extends SliverPersistentHeaderDelegate {
       return SingleChildScrollView(
         // physics: const AlwaysScrollableScrollPhysics(),
         child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          constraints: BoxConstraints(minHeight: constraints.maxHeight, minWidth: constraints.maxWidth),
           child: Column(
             children: [
               Stack(
+                fit: StackFit.passthrough,
                 clipBehavior: Clip.none,
                 children: [
                   getBackgroundImage(headerSize),

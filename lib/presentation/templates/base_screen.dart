@@ -45,9 +45,7 @@ class BaseScreen extends StatelessWidget {
         child: ConstrainedBox(
           constraints: BoxConstraints(
             minHeight: constraints.maxHeight,
-            maxHeight: shouldHaveMaxHeightConstraint
-                ? constraints.maxHeight
-                : double.infinity,
+            maxHeight: shouldHaveMaxHeightConstraint ? constraints.maxHeight : double.infinity,
           ),
           child: child,
         ),
@@ -75,6 +73,7 @@ class BaseScreen extends StatelessWidget {
             center: appBarCenterText,
             detailColor: ThemeColors.primary,
             bgColor: ThemeColors.surface,
+            onRefresh: onRefresh,
           );
 
     Widget screen = Scaffold(
@@ -86,8 +85,7 @@ class BaseScreen extends StatelessWidget {
 
     if (safeArea) screen = SafeArea(child: screen);
     if (onPop != null) {
-      screen =
-          PopScope(canPop: false, onPopInvokedWithResult: onPop, child: screen);
+      screen = PopScope(canPop: false, onPopInvokedWithResult: onPop, child: screen);
     }
     return screen;
   }

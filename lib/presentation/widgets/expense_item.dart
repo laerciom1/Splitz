@@ -1,9 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:splitz/data/entities/external/expense_entity.dart';
-import 'package:splitz/extensions/datetime.dart';
-import 'package:splitz/extensions/double.dart';
-import 'package:splitz/extensions/strings.dart';
+import 'package:splitz/application/entities/splitwise/expense_entity.dart';
+import 'package:splitz/presentation/widgets/splitz_image.dart';
+import 'package:splitz/util/extensions/datetime.dart';
+import 'package:splitz/util/extensions/double.dart';
+import 'package:splitz/util/extensions/strings.dart';
 import 'package:splitz/presentation/theme/util.dart';
 import 'package:splitz/presentation/widgets/base_item.dart';
 
@@ -40,7 +40,7 @@ class ExpenseItem extends StatelessWidget {
       child = const Icon(Icons.currency_exchange);
     } else {
       child = expense.imageUrl.isNotNullNorEmpty
-          ? CachedNetworkImage(imageUrl: expense.imageUrl!)
+          ? SplitzImage(imageUrl: expense.imageUrl!)
           : getImagePlaceholder(ThemeColors.surfaceBright);
     }
     return Container(
@@ -145,15 +145,12 @@ class ExpenseItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isOnErrorState = expense.state == ExpenseEntityState.createError ||
-        expense.state == ExpenseEntityState.editError;
+    final isOnErrorState =
+        expense.state == ExpenseEntityState.createError || expense.state == ExpenseEntityState.editError;
     final isOnErrorOnEditState = expense.state == ExpenseEntityState.editError;
-    final dismissible =
-        expense.state == ExpenseEntityState.listed || isOnErrorState;
-    final selectable =
-        expense.state == ExpenseEntityState.listed && onSelect != null;
-    final description =
-        expense.payment ? getPaymentDescription() : expense.description;
+    final dismissible = expense.state == ExpenseEntityState.listed || isOnErrorState;
+    final selectable = expense.state == ExpenseEntityState.listed && onSelect != null;
+    final description = expense.payment ? getPaymentDescription() : expense.description;
     return BaseItem(
       dismissible: dismissible,
       dismissibleKey: Key('${expense.id}-${expense.categoryId}'),

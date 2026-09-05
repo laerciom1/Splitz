@@ -2,10 +2,10 @@ import 'package:collection/collection.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:splitz/data/entities/external/expense_entity.dart';
-import 'package:splitz/data/entities/splitz/group_config_entity.dart';
-import 'package:splitz/extensions/strings.dart';
-import 'package:splitz/navigator.dart';
+import 'package:splitz/application/entities/splitwise/expense_entity.dart';
+import 'package:splitz/application/entities/splitz/group_config_entity.dart';
+import 'package:splitz/util/extensions/strings.dart';
+import 'package:splitz/core/navigator.dart';
 import 'package:splitz/presentation/templates/base_screen.dart';
 import 'package:splitz/presentation/theme/util.dart';
 import 'package:splitz/presentation/widgets/button_primary.dart';
@@ -15,7 +15,7 @@ import 'package:splitz/presentation/widgets/field_primary.dart';
 import 'package:splitz/presentation/widgets/footer_action.dart';
 import 'package:splitz/presentation/widgets/slice_editor.dart';
 import 'package:splitz/presentation/widgets/splitz_divider.dart';
-import 'package:splitz/services/splitz_service.dart';
+import 'package:splitz/application/services/splitz_service.dart';
 
 const _initCost = '0.00';
 const _fieldTitleVPadding = 8.0;
@@ -39,8 +39,7 @@ class ExpenseEditorScreen extends StatefulWidget {
   State<ExpenseEditorScreen> createState() => _ExpenseEditorScreenState();
 }
 
-class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
-    with WidgetsBindingObserver {
+class _ExpenseEditorScreenState extends State<ExpenseEditorScreen> with WidgetsBindingObserver {
   Map<String, SplitzConfig>? _splitzConfigs;
   ExpenseEntity? _expense;
   String _screenTitle = '';
@@ -68,9 +67,7 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
     }
     setState(() {
       if (widget.expense == null) {
-        _splitzConfigs = widget.groupConfig
-            .withPayer(currentUserId: currentUserId!)
-            .splitzConfigs;
+        _splitzConfigs = widget.groupConfig.withPayer(currentUserId: currentUserId!).splitzConfigs;
         _expense = ExpenseEntity.fromSplitzConfig(
           cost: _initCost,
           description: '${widget.category.prefix} ',
@@ -82,9 +79,7 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
         _screenTitle = 'Creating expense';
       } else {
         _expense = widget.expense!;
-        _splitzConfigs = widget.groupConfig
-            .withPayer(users: widget.expense!.users)
-            .splitzConfigs;
+        _splitzConfigs = widget.groupConfig.withPayer(users: widget.expense!.users).splitzConfigs;
         _screenTitle = 'Editing expense';
       }
 
@@ -92,18 +87,15 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
     });
   }
 
-  String getInitialDescription() =>
-      _expense!.description.split('${widget.category.prefix} ')[1];
+  String getInitialDescription() => _expense!.description.split('${widget.category.prefix} ')[1];
 
   void initializeFocusAndControllers(Map<String, SplitzConfig> splitzConfigs) {
     if (!_controllersWasInitialized) {
       _controllersWasInitialized = true;
       _descriptionFocusNode = FocusNode()..addListener(trackFocusChanges);
       _costFocusNode = FocusNode()..addListener(trackFocusChanges);
-      _focusNodes = List.generate(splitzConfigs.length,
-          (_) => FocusNode()..addListener(trackFocusChanges));
-      _descriptionController =
-          TextEditingController(text: getInitialDescription());
+      _focusNodes = List.generate(splitzConfigs.length, (_) => FocusNode()..addListener(trackFocusChanges));
+      _descriptionController = TextEditingController(text: getInitialDescription());
       _costController = TextEditingController(text: _expense!.cost);
       _controllers = [
         ...splitzConfigs.values.map(
@@ -114,8 +106,8 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
   }
 
   void trackFocusChanges() {
-    final focusedNode = [..._focusNodes, _descriptionFocusNode, _costFocusNode]
-        .firstWhereOrNull((node) => node.hasFocus);
+    final focusedNode =
+        [..._focusNodes, _descriptionFocusNode, _costFocusNode].firstWhereOrNull((node) => node.hasFocus);
     _lastFocusedNode = focusedNode;
   }
 
@@ -148,8 +140,7 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
   }
 
   void onChangeDescription(String s) => setState(() {
-        _expense =
-            _expense!.copyWith(description: '${widget.category.prefix} $s');
+        _expense = _expense!.copyWith(description: '${widget.category.prefix} $s');
       });
 
   void onChangeCost(String s) => setState(() {
@@ -260,7 +251,12 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
                         final intPart = int.parse(parts[0]);
                         final inputedDigit = int.parse(parts[1].lastChar);
                         final newText = '${intPart + inputedDigit}.00';
-                        return TextEditingValue(text: newText);
+                        return TextEditingValue(
+                          text: newText,
+                          selection: TextSelection.collapsed(
+                            offset: newText.length,
+                          ),
+                        );
                       },
                     )
                   ],
@@ -305,9 +301,7 @@ class _ExpenseEditorScreenState extends State<ExpenseEditorScreen>
   Widget? getExpenseEditorBottom(BuildContext ctx) => ActionFooter(
         onAction: () => pop(_expense),
         text: 'Save',
-        enabled: (_expense?.description).isNotNullNorEmpty &&
-            _expense?.cost != _initCost &&
-            _expense?.payerId != null,
+        enabled: (_expense?.description).isNotNullNorEmpty && _expense?.cost != _initCost && _expense?.payerId != null,
         leading: PrimaryButton(
           text: 'Cancel',
           onPressed: pop,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:splitz/extensions/datetime.dart';
+import 'package:splitz/util/extensions/datetime.dart';
 import 'package:splitz/presentation/theme/util.dart';
 
 class DateField extends StatefulWidget {

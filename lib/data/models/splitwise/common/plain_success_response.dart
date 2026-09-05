@@ -3,6 +3,5 @@ class PlainSuccessResponse {
 
   PlainSuccessResponse({required this.success});
 
-  factory PlainSuccessResponse.fromMap(Map<String, dynamic> json) =>
-      PlainSuccessResponse(success: json["success"]);
+  factory PlainSuccessResponse.fromMap(Map json) => PlainSuccessResponse(success: json["success"]);
 }

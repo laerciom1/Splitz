@@ -1,10 +1,10 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:splitz/data/entities/external/expense_entity.dart';
-import 'package:splitz/data/entities/splitz/group_config_entity.dart';
-import 'package:splitz/extensions/strings.dart';
-import 'package:splitz/navigator.dart';
+import 'package:splitz/application/entities/splitwise/expense_entity.dart';
+import 'package:splitz/application/entities/splitz/group_config_entity.dart';
+import 'package:splitz/util/extensions/strings.dart';
+import 'package:splitz/core/navigator.dart';
 import 'package:splitz/presentation/templates/base_screen.dart';
 import 'package:splitz/presentation/theme/util.dart';
 import 'package:splitz/presentation/widgets/category_selector.dart';
@@ -15,7 +15,7 @@ import 'package:splitz/presentation/widgets/footer_action.dart';
 import 'package:splitz/presentation/widgets/loading.dart';
 import 'package:splitz/presentation/widgets/slice_editor.dart';
 import 'package:splitz/presentation/widgets/splitz_divider.dart';
-import 'package:splitz/services/splitz_service.dart';
+import 'package:splitz/application/services/splitz_service.dart';
 
 const _defaultCost = '1000.0';
 
@@ -33,8 +33,7 @@ class CategoryEditorScreen extends StatefulWidget {
   State<CategoryEditorScreen> createState() => _CategoryEditorScreenState();
 }
 
-class _CategoryEditorScreenState extends State<CategoryEditorScreen>
-    with WidgetsBindingObserver {
+class _CategoryEditorScreenState extends State<CategoryEditorScreen> with WidgetsBindingObserver {
   late SplitzCategory _currentCategory;
   late Map<String, SplitzConfig> _customSplitzConfigs;
   late bool _shoulUseCustomSplitzConfig;
@@ -56,12 +55,10 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _currentCategory =
-        widget.category ?? SplitzCategory(prefix: '', imageUrl: '', id: 0);
+    _currentCategory = widget.category ?? SplitzCategory(prefix: '', imageUrl: '', id: 0);
     _shoulUseCustomSplitzConfig = _currentCategory.splitzConfigs != null;
-    _customSplitzConfigs = _shoulUseCustomSplitzConfig
-        ? _currentCategory.splitzConfigs!
-        : {...widget.groupConfig.splitzConfigs};
+    _customSplitzConfigs =
+        _shoulUseCustomSplitzConfig ? _currentCategory.splitzConfigs! : {...widget.groupConfig.splitzConfigs};
     initScreen();
   }
 
@@ -100,8 +97,7 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
       );
       setAvailableCategories(availableCategories);
     } catch (e, s) {
-      const message =
-          'Something went wrong retrieving the available categories.\n'
+      const message = 'Something went wrong retrieving the available categories.\n'
           'You can drag down to retry.';
       return setFeedback(message.addErrorDescription(e, s));
     }
@@ -110,8 +106,7 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
   void initializeFocusAndControllers(Map<String, SplitzConfig> splitzConfigs) {
     _controllersWasInitialized = true;
     _preffixFocusNode = FocusNode()..addListener(trackFocusChanges);
-    _focusNodes = List.generate(splitzConfigs.length,
-        (_) => FocusNode()..addListener(trackFocusChanges));
+    _focusNodes = List.generate(splitzConfigs.length, (_) => FocusNode()..addListener(trackFocusChanges));
     _prefixController = TextEditingController(text: _currentCategory.prefix);
     _controllers = [
       ...splitzConfigs.values.map(
@@ -121,8 +116,7 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
   }
 
   void trackFocusChanges() {
-    final focusedNode = [..._focusNodes, _preffixFocusNode]
-        .firstWhereOrNull((node) => node.hasFocus);
+    final focusedNode = [..._focusNodes, _preffixFocusNode].firstWhereOrNull((node) => node.hasFocus);
     _lastFocusedNode = focusedNode;
   }
 
@@ -152,8 +146,7 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
   }
 
   void selectImage(SplitzCategory c) => setState(() {
-        _currentCategory =
-            _currentCategory.copyWith(imageUrl: c.imageUrl, id: c.id);
+        _currentCategory = _currentCategory.copyWith(imageUrl: c.imageUrl, id: c.id);
       });
 
   void onChangePrefix(String s) => setState(() {
@@ -304,7 +297,6 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen>
   Widget getCategoryEditorBottom(BuildContext ctx) => ActionFooter(
         onAction: save,
         text: 'Save',
-        enabled: _currentCategory.imageUrl.isNotEmpty &&
-            _currentCategory.prefix.isNotEmpty,
+        enabled: _currentCategory.imageUrl.isNotEmpty && _currentCategory.prefix.isNotEmpty,
       );
 }

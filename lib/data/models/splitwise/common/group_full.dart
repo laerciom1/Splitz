@@ -15,18 +15,15 @@ class FullGroup {
     required this.simplifiedDebts,
   });
 
-  factory FullGroup.fromMap(Map<String, dynamic> json) => FullGroup(
+  factory FullGroup.fromMap(Map json) => FullGroup(
         name: json["name"],
         id: json["id"],
         updatedAt: DateTime.parse(json["updated_at"]),
         coverPhoto: CoverPhoto.fromMap(json["cover_photo"]),
-        members: json["members"] == null
-            ? []
-            : List<Member>.from(json["members"]!.map((x) => Member.fromMap(x))),
+        members: json["members"] == null ? [] : List<Member>.from(json["members"]!.map((x) => Member.fromMap(x))),
         simplifiedDebts: json["simplified_debts"] == null
             ? []
-            : List<SimplifiedDebt>.from(json["simplified_debts"]!
-                .map((x) => SimplifiedDebt.fromMap(x))),
+            : List<SimplifiedDebt>.from(json["simplified_debts"]!.map((x) => SimplifiedDebt.fromMap(x))),
       );
 }
 
@@ -35,8 +32,7 @@ class CoverPhoto {
 
   CoverPhoto({required this.xxlarge});
 
-  factory CoverPhoto.fromMap(Map<String, dynamic> json) =>
-      CoverPhoto(xxlarge: json["xxlarge"]);
+  factory CoverPhoto.fromMap(Map json) => CoverPhoto(xxlarge: json["xxlarge"]);
 }
 
 class Member {
@@ -50,7 +46,7 @@ class Member {
     required this.picture,
   });
 
-  factory Member.fromMap(Map<String, dynamic> json) => Member(
+  factory Member.fromMap(Map json) => Member(
         id: json["id"],
         firstName: json["first_name"],
         picture: Picture.fromMap(json["picture"]),
@@ -62,8 +58,7 @@ class Picture {
 
   Picture({required this.large});
 
-  factory Picture.fromMap(Map<String, dynamic> json) =>
-      Picture(large: json["large"]);
+  factory Picture.fromMap(Map json) => Picture(large: json["large"]);
 }
 
 class SimplifiedDebt {
@@ -79,7 +74,7 @@ class SimplifiedDebt {
     required this.currencyCode,
   });
 
-  factory SimplifiedDebt.fromMap(Map<String, dynamic> json) => SimplifiedDebt(
+  factory SimplifiedDebt.fromMap(Map json) => SimplifiedDebt(
         from: json["from"],
         to: json["to"],
         amount: json["amount"],

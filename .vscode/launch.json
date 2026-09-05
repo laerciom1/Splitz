@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "splitz (debug)",
+      "name": "splitz (android)",
       "request": "launch",
       "type": "dart",
       "args": [
@@ -13,21 +13,13 @@
       ]
     },
     {
-      "name": "splitz (profile)",
+      "name": "splitz (web)",
       "request": "launch",
       "type": "dart",
-      "flutterMode": "profile",
+      "deviceId": "chrome",
       "args": [
-        "--dart-define-from-file=config/.env"
-      ]
-    },
-    {
-      "name": "splitz (release)",
-      "request": "launch",
-      "type": "dart",
-      "flutterMode": "release",
-      "args": [
-        "--dart-define-from-file=config/.env"
+        "--dart-define-from-file=config/.env",
+        "--web-port=5000"
       ]
     }
   ]

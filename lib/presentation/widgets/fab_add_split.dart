@@ -1,10 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:splitz/data/entities/splitz/group_config_entity.dart';
+import 'package:splitz/application/entities/splitz/group_config_entity.dart';
 import 'package:splitz/presentation/theme/util.dart';
 import 'package:splitz/presentation/widgets/fab_anchor.dart';
 import 'package:splitz/presentation/widgets/fab_option.dart';
+import 'package:splitz/presentation/widgets/splitz_image.dart';
 
 class AddSplitFAB extends StatelessWidget {
   const AddSplitFAB({
@@ -31,7 +31,7 @@ class AddSplitFAB extends StatelessWidget {
           (category) => FABOption(
             text: category.prefix,
             onPressed: () => onSelectCategory(category),
-            chi1d: CachedNetworkImage(imageUrl: category.imageUrl),
+            chi1d: SplitzImage(imageUrl: category.imageUrl),
           ),
         ),
         FABOption(

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:splitz/navigator.dart';
+import 'package:splitz/core/navigator.dart';
 
 void showToast(
   String message, {
@@ -18,6 +18,7 @@ void showToast(
       content: Text(message),
       behavior: SnackBarBehavior.fixed,
       action: action,
+      persist: false,
     ),
   );
 }

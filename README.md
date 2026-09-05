@@ -1,31 +1,38 @@
 # Splitz
-I made this app for my wife and I. It's basically an interface that helps us keep track of our spending.
-It uses splitwise as a backend for tracking expenses, so you can check your expenses in their app, as well as use the features that splitwise offers in conjunction with splitz.
-This app is a customizable experience for the splitwise services, which aims to make the task of tracking expenses in a standardized way simpler and faster.
-I made it with the best experience for me in mind, I'll add some gifs here in the future (:
+I made this app for me and my wife. It's an interface that help us keeping track on how we're spending money.
+It uses [Splitwise](https://www.splitwise.com) as a backend for tracking expenses, so we can check our expenses in their app too.
+So this app is basically a customizable experience for the Splitwise services, which aims to make the task of tracking expenses in a standardized way simpler and faster.
+To do that, we save some information in [Firebase Realtime Database](https://firebase.google.com/docs/database).
+I pretend to clarify what, how and why I have to save this information later, but only if I decide to open this app to general usage, since I made it firstly (and only) with the best experience for me and my wife in mind.
 
-### Next steps:
+## Next steps:
+- [-] Add the concept of "owner" to Splitz Config (permission to edit)
+- [ ] GSheets setup flow
 - [ ] Expenses List - Search and Filters:
   - [ ] By Category
   - [ ] By Date:
     - [ ] before/after some date
     - [ ] specific month
     - [ ] specific interval
-- [ ] Integration with SettleUp
 
-### Refactors
+## Security:
 
-### Features
+## Features
+### Must
+- [ ] Onboarding flow (tutorial)
+  - [ ] How to configure a GSheet to export correctly
+  - [ ] Which data is stored where (Splitwise vs Splitz databases)
+- [ ] "Load more" button on Expenses List Screen
+### Goods
 - [ ] Auto order category based on usage
 - [ ] Expenses suggestions (notifications)
 - [ ] Edit a group of selected expenses (limited options on edition)
   - [ ] Category, date, Split config (division)
-- [ ] "Load more" button on Expenses List Screen
 - [ ] Add other options to Splitz Login
   - [ ] Email/Password, Facebook, etc...
-- [ ] Add the concept of "owner" to Splitz Config (permission to edit)
 
-### Design
+## Design + UX
+- [ ] I18n + BR L10n
 - [ ] Improve Splitz Login
   - [ ] Make a decent screen
   - [ ] Use a custom buttom to login with Google option
@@ -35,7 +42,9 @@ I made it with the best experience for me in mind, I'll add some gifs here in th
 - [ ] Improve Splash Screen
 - [ ] Add animations
 
-### Done
+## Done
+- [x] Migration to Web
+- [x] Show expenses from the current month + last 2 months by default
 - [x] Expenses List - Show who paid each expense
 - [x] Expenses Export - Integration with GSheets - select export sheet
 - [x] Expenses List - Option to add payment
@@ -67,8 +76,3 @@ I made it with the best experience for me in mind, I'll add some gifs here in th
 - [x] Splitwise Repository
 - [x] Add splash (check isSignedIn and redirect to the correct screen)
 - [x] Custom animation for wait time on edit splitz config on group editor
-
-### Mandatory to go live (in the long term future, maybe?)
-- [ ] I11n & L10n
-- [ ] Onboarding flow (tutorial)
-- [ ] Encrypt data on Firebase

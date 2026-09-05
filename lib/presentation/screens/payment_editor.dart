@@ -1,17 +1,17 @@
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:splitz/data/entities/external/expense_entity.dart';
-import 'package:splitz/data/entities/splitz/group_config_entity.dart';
-import 'package:splitz/extensions/strings.dart';
-import 'package:splitz/navigator.dart';
+import 'package:splitz/application/entities/splitwise/expense_entity.dart';
+import 'package:splitz/application/entities/splitz/group_config_entity.dart';
+import 'package:splitz/util/extensions/strings.dart';
+import 'package:splitz/core/navigator.dart';
 import 'package:splitz/presentation/templates/base_screen.dart';
 import 'package:splitz/presentation/widgets/button_primary.dart';
 import 'package:splitz/presentation/widgets/field_date.dart';
 import 'package:splitz/presentation/widgets/field_primary.dart';
 import 'package:splitz/presentation/widgets/footer_action.dart';
 import 'package:splitz/presentation/widgets/user_selector.dart';
-import 'package:splitz/services/splitz_service.dart';
+import 'package:splitz/application/services/splitz_service.dart';
 
 const _initCost = '0.00';
 const _fieldTitleVPadding = 8.0;
@@ -33,8 +33,7 @@ class PaymentEditorScreen extends StatefulWidget {
   State<PaymentEditorScreen> createState() => _PaymentEditorScreenState();
 }
 
-class _PaymentEditorScreenState extends State<PaymentEditorScreen>
-    with WidgetsBindingObserver {
+class _PaymentEditorScreenState extends State<PaymentEditorScreen> with WidgetsBindingObserver {
   Map<String, SplitzConfig>? _splitzConfigs;
   ExpenseEntity? _expense;
   SplitzConfig? _payer;
@@ -264,8 +263,7 @@ class _PaymentEditorScreenState extends State<PaymentEditorScreen>
   Widget? getPaymentEditorBottom(BuildContext ctx) => ActionFooter(
         onAction: save,
         text: 'Save',
-        enabled:
-            _expense?.cost != _initCost && _payer != null && _receiver != null,
+        enabled: _expense?.cost != _initCost && _payer != null && _receiver != null,
         leading: PrimaryButton(
           text: 'Cancel',
           onPressed: cancel,

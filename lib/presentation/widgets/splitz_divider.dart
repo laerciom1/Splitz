@@ -6,6 +6,5 @@ class SplitzDivider extends StatelessWidget {
   final Color color;
 
   @override
-  Widget build(BuildContext context) =>
-      Container(color: color, height: 2.0, width: double.infinity);
+  Widget build(BuildContext context) => Container(color: color, height: 2.0, width: double.infinity);
 }

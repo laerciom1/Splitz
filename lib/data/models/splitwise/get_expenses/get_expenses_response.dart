@@ -3,8 +3,7 @@ class GetExpensesResponse {
 
   GetExpensesResponse({required this.expenses});
 
-  factory GetExpensesResponse.fromMap(Map<String, dynamic> json) =>
-      GetExpensesResponse(
+  factory GetExpensesResponse.fromMap(Map json) => GetExpensesResponse(
         expenses: json["expenses"] == null
             ? []
             : List<FullExpense>.from(
@@ -38,7 +37,7 @@ class FullExpense {
     required this.users,
   });
 
-  factory FullExpense.fromMap(Map<String, dynamic> json) => FullExpense(
+  factory FullExpense.fromMap(Map json) => FullExpense(
         id: json["id"],
         groupId: json["group_id"],
         cost: json["cost"],
@@ -46,14 +45,9 @@ class FullExpense {
         currencyCode: json["currency_code"],
         payment: json["payment"] ?? false,
         date: DateTime.parse(json["date"]),
-        deletedAt: json["deleted_at"] == null
-            ? null
-            : DateTime.parse(json["deleted_at"]),
+        deletedAt: json["deleted_at"] == null ? null : DateTime.parse(json["deleted_at"]),
         category: BasicCategory.fromMap(json["category"]),
-        users: json["users"] == null
-            ? []
-            : List<UserElement>.from(
-                json["users"]!.map((x) => UserElement.fromMap(x))),
+        users: json["users"] == null ? [] : List<UserElement>.from(json["users"]!.map((x) => UserElement.fromMap(x))),
       );
 }
 
@@ -62,8 +56,7 @@ class BasicCategory {
 
   BasicCategory({required this.id});
 
-  factory BasicCategory.fromMap(Map<String, dynamic> json) =>
-      BasicCategory(id: json["id"]);
+  factory BasicCategory.fromMap(Map json) => BasicCategory(id: json["id"]);
 }
 
 class UserElement {
@@ -79,7 +72,7 @@ class UserElement {
     required this.owedShare,
   });
 
-  factory UserElement.fromMap(Map<String, dynamic> json) => UserElement(
+  factory UserElement.fromMap(Map json) => UserElement(
         user: User.fromMap(json["user"]),
         userId: json["user_id"],
         paidShare: json["paid_share"],
@@ -92,6 +85,5 @@ class User {
 
   User({required this.firstName});
 
-  factory User.fromMap(Map<String, dynamic> json) =>
-      User(firstName: json["first_name"]);
+  factory User.fromMap(Map json) => User(firstName: json["first_name"]);
 }

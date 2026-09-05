@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:splitz/data/entities/splitz/group_config_entity.dart';
+import 'package:splitz/application/entities/splitz/group_config_entity.dart';
 import 'package:splitz/presentation/theme/util.dart';
 import 'package:splitz/presentation/widgets/circle_avatar.dart';
 
@@ -88,9 +88,7 @@ class UserSelector extends StatelessWidget {
           ColoredBox(
             color: ThemeColors.surface,
             child: LayoutBuilder(
-              builder: (context, constraints) => Wrap(children: [
-                ...getUserTiles(context, constraints.maxWidth / 2)
-              ]),
+              builder: (context, constraints) => Wrap(children: [...getUserTiles(context, constraints.maxWidth / 2)]),
             ),
           ),
         ],
